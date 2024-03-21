@@ -1,41 +1,59 @@
 package autobnb.dto;
 
 import javax.validation.constraints.*;
+import java.util.Date;
 
 public class RegistroData {
-    @NotNull(message = "El email no puede ser nulo.")
-    @Email(message = "Por favor, introduce una dirección de correo electrónico válida.")
-    private String eMail;
-
-    @NotNull(message = "La contraseña no puede ser nula.")
-    @Size(min = 6, message = "La contraseña debe tener al menos 6 caracteres.")
-    private String password;
 
     @NotNull(message = "El nombre no puede ser nulo.")
     private String nombre;
 
     private String apellidos;
 
+    @NotNull(message = "El email no puede ser nulo.")
+    @Email(message = "Por favor, introduce una dirección de correo electrónico válida.")
+    private String email;
+
+    @NotNull(message = "La contraseña no puede ser nula.")
+    @Size(min = 6, message = "La contraseña debe tener al menos 6 caracteres.")
+    private String password;
+
+    @NotNull(message = "La contraseña no puede ser nula.")
     @Pattern(regexp = "\\d{1,20}", message = "El teléfono debe contener solo números y tener máximo 20 dígitos.")
-    private String telefono;
+    private Integer telefono;
 
-    @Min(value = 0, message = "El código postal debe ser mayor o igual a 0.")
-    private Integer codigopostal;
+    @NotNull(message = "El DNI no puede ser nulo.")
+    @Size(min = 9, max = 9, message = "El DNI debe contener 9 carácteres.")
+    private String dni;
 
-    private String pais;
+    @NotNull(message = "La fecha de caducidad del DNI no puede ser nula.")
+    private Date fechaCaducidadDni;
 
-    private String poblacion;
-
+    @NotNull(message = "La dirección no puede ser nula.")
+    @Size(max = 100, message = "La dirección no puede superar los 100 caracteres.")
     private String direccion;
 
-    private boolean admin;
+    @NotNull(message = "La ciudad no puede ser nula.")
+    @Size(max = 50, message = "La ciudad no debe superar los 50 caracteres.")
+    private String ciudad;
+
+    @NotNull(message = "El código postal no puede ser nulo.")
+    @Min(value = 0, message = "El código postal debe ser mayor o igual a 0.")
+    private Integer codigoPostal;
+
+    @NotNull(message = "La fecha de expedición del carnet de conducir no puede ser nula.")
+    private Date fechaCarnetConducir;
+
+    @NotNull(message = "El número de cuenta no puede ser nulo.")
+    @Size(max = 50, message = "El número de cuenta debe tener 50 caracteres como máximo.")
+    private String numeroCuenta;
 
     public String getEmail() {
-        return eMail;
+        return email;
     }
 
-    public void setEmail(String eMail) {
-        this.eMail = eMail;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPassword() {
@@ -54,36 +72,28 @@ public class RegistroData {
         this.nombre = nombre;
     }
 
-    public String getTelefono() {
+    public Integer getTelefono() {
         return telefono;
     }
 
-    public void setTelefono(String telefono) {
+    public void setTelefono(Integer telefono) {
         this.telefono = telefono;
     }
 
-    public Integer getCodigopostal() {
-        return codigopostal;
+    public String getDni() {
+        return dni;
     }
 
-    public void setCodigopostal(Integer codigopostal) {
-        this.codigopostal = codigopostal;
+    public void setDni(String dni) {
+        this.dni = dni;
     }
 
-    public String getPais() {
-        return pais;
+    public Integer getCodigoPostal() {
+        return codigoPostal;
     }
 
-    public void setPais(String pais) {
-        this.pais = pais;
-    }
-
-    public String getPoblacion() {
-        return poblacion;
-    }
-
-    public void setPoblacion(String poblacion) {
-        this.poblacion = poblacion;
+    public void setCodigoPostal(Integer codigoPostal) {
+        this.codigoPostal = codigoPostal;
     }
 
     public String getDireccion() {
@@ -102,12 +112,35 @@ public class RegistroData {
         this.apellidos = apellidos;
     }
 
-    public boolean isAdmin() {
-        return admin;
+    public String getCiudad() {
+        return ciudad;
     }
 
-    public void setAdmin(boolean admin) {
-        this.admin = admin;
+    public void setCiudad(String ciudad) {
+        this.ciudad = ciudad;
     }
 
+    public String getNumeroCuenta() {
+        return numeroCuenta;
+    }
+
+    public void setNumeroCuenta(String numeroCuenta) {
+        this.numeroCuenta = numeroCuenta;
+    }
+
+    public Date getFechaCaducidadDni() {
+        return fechaCaducidadDni;
+    }
+
+    public void setFechaCaducidadDni(Date fechaCaducidadDni) {
+        this.fechaCaducidadDni = fechaCaducidadDni;
+    }
+
+    public Date getFechaCarnetConducir() {
+        return fechaCarnetConducir;
+    }
+
+    public void setFechaCarnetConducir(Date fechaCarnetConducir) {
+        this.fechaCarnetConducir = fechaCarnetConducir;
+    }
 }

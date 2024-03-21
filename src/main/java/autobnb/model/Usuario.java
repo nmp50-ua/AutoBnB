@@ -71,7 +71,6 @@ public class Usuario implements Serializable {
 
     private String imagen;
 
-    @NotNull
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
     private Cuenta cuenta;
 
