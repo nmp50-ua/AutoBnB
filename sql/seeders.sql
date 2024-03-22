@@ -1,8 +1,8 @@
 -- Seeder para la tabla Usuario
 INSERT INTO Usuario (idUsuario, nombre, apellidos, email, password, telefono, direccion, ciudad, codigoPostal, dni, fechaCaducidadDni, fechaCarnetConducir, administrador, esArrendador, esArrendatario, imagen) VALUES
-(1, 'Juan', 'Pérez', 'juan.perez@example.com', 'password123', 123456789, 'Calle Falsa 123', 'Madrid', 28080, '12345678Z', '2025-12-31', '2025-12-31', FALSE, TRUE, FALSE, NULL),
-(2, 'Ana', 'García', 'ana.garcia@example.com', 'password123', 987654321, 'Avenida de la Paz 456', 'Barcelona', 08080, '87654321X', '2026-05-30', '2026-05-30', FALSE, FALSE, TRUE, NULL),
-(3, 'Carlos', 'Martín', 'carlos.martin@example.com', 'passwordadmin', 112233445, 'Paseo de la Victoria 789', 'Sevilla', 41010, '98765432Q', '2027-09-15', '2027-09-15', TRUE, FALSE, FALSE, NULL);
+(1, 'Noel', 'Martínez', 'noel@gmail.com', 'noel2002', 123456789, 'Calle Falsa 123', 'Madrid', 28080, '12345678Z', '2025-12-31', '2025-12-31', FALSE, FALSE, FALSE, NULL),
+(2, 'Ana', 'García', 'ana.garcia@example.com', 'password123', 987654321, 'Avenida de la Paz 456', 'Barcelona', 08080, '87654321X', '2026-05-30', '2026-05-30', FALSE, FALSE, FALSE, NULL),
+(3, 'admin', 'admin', 'admin@gmail.com', 'admin00', 112233445, 'Paseo de la Victoria 789', 'Sevilla', 41010, '98765432Q', '2027-09-15', '2027-09-15', TRUE, FALSE, FALSE, NULL);
 
 -- Seeder para la tabla Cuenta
 INSERT INTO Cuenta (idCuenta, idUsuario, numeroCuenta, saldo) VALUES
@@ -12,9 +12,8 @@ INSERT INTO Cuenta (idCuenta, idUsuario, numeroCuenta, saldo) VALUES
 
 -- Seeder para la tabla Pago
 INSERT INTO Pago (idPago, titular, numeroTarjeta, idUsuario) VALUES
-(1, 'Juan Pérez', '1111222233334444', 1),
-(2, 'Ana García', '4444333322221111', 2),
-(3, 'Carlos Martín', '5555444433332222', 3);
+(1, 'Noel Martínez Pomares', '1111222233334444', 1),
+(2, 'Ana García', '4444333322221111', 2);
 
 -- Seeder para la tabla Marca
 INSERT INTO Marca (idMarca, nombre) VALUES
@@ -49,11 +48,9 @@ INSERT INTO Vehiculo (idVehiculo, descripcion, imagen, matricula, kilometraje, a
 -- Seeder para la tabla Comentario
 INSERT INTO Comentario (idComentario, descripcion, fechaCreacion, idVehiculo, idUsuario) VALUES
 (1, 'Gran vehículo, cómodo para la familia', '2023-03-20', 2, 2),
-(2, 'Excelente para viajes largos, muy económico en combustible', '2023-03-21', 1, 1),
-(3, 'Muy satisfecho con la atención y el servicio recibido', '2023-03-22', 1, 3);
+(2, 'Excelente para viajes largos, muy económico en combustible', '2023-03-21', 1, 1);
 
 -- Seeder para la tabla Alquiler
 INSERT INTO Alquiler (idAlquiler, fechaCreacion, fechaEntrega, fechaDevolucion, precioFinal, litrosCombustible, idVehiculo, idPago) VALUES
 (1, '2023-03-25', '2023-03-26', '2023-03-27', 60.00, 5, 1, 1),
-(2, '2023-04-01', '2023-04-02', '2023-04-03', 120.00, 10, 2, 2),
-(3, '2023-04-10', '2023-04-11', '2023-04-12', 90.00, 7, 1, 3);
+(2, '2023-04-01', '2023-04-02', '2023-04-03', 120.00, 10, 2, 2);
