@@ -4,8 +4,6 @@ import autobnb.dto.UsuarioData;
 import autobnb.model.Usuario;
 import autobnb.repository.UsuarioRepository;
 import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,9 +13,6 @@ import java.util.Optional;
 
 @Service
 public class UsuarioService {
-
-    Logger logger = LoggerFactory.getLogger(UsuarioService.class);
-
     public enum LoginStatus {LOGIN_OK, USER_NOT_FOUND, ERROR_PASSWORD}
 
     @Autowired
@@ -26,8 +21,9 @@ public class UsuarioService {
     private ModelMapper modelMapper;
 
     @Transactional(readOnly = true)
-    public LoginStatus login(String eMail, String password) {
-        Optional<Usuario> usuario = usuarioRepository.findByEmail(eMail);
+    public LoginStatus login(String email, String password) {
+        Optional<Usuario> usuario = usuarioRepository.findByEmail(email);
+
         if (!usuario.isPresent()) {
             return LoginStatus.USER_NOT_FOUND;
         } else if (!usuario.get().getPassword().equals(password)) {
@@ -37,9 +33,7 @@ public class UsuarioService {
         }
     }
 
-    // Se añade un usuario en la aplicación.
-    // El email y password del usuario deben ser distinto de null
-    // El email no debe estar registrado en la base de datos
+    // FALTA POR IMPLEMENTAR
     @Transactional
     public UsuarioData registrar(UsuarioData usuario) {
         Optional<Usuario> usuarioBD = usuarioRepository.findByEmail(usuario.getEmail());
@@ -59,6 +53,7 @@ public class UsuarioService {
     @Transactional(readOnly = true)
     public UsuarioData findByEmail(String email) {
         Usuario usuario = usuarioRepository.findByEmail(email).orElse(null);
+
         if (usuario == null) return null;
         else {
             return modelMapper.map(usuario, UsuarioData.class);
@@ -68,6 +63,7 @@ public class UsuarioService {
     @Transactional(readOnly = true)
     public UsuarioData findById(Long usuarioId) {
         Usuario usuario = usuarioRepository.findById(usuarioId).orElse(null);
+
         if (usuario == null) return null;
         else {
             return modelMapper.map(usuario, UsuarioData.class);

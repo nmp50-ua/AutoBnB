@@ -19,7 +19,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @Controller
-public class LoginController {
+public class AutenticacionController {
 
     @Autowired
     UsuarioService usuarioService;
@@ -34,27 +34,27 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public String loginSubmit(@ModelAttribute LoginData loginData, Model model, HttpSession session) {
-
-        // Llamada al servicio para comprobar si el login es correcto
-        UsuarioService.LoginStatus loginStatus = usuarioService.login(loginData.geteMail(), loginData.getPassword());
+    public String loginSubmit(@ModelAttribute LoginData loginData, Model model) {
+        UsuarioService.LoginStatus loginStatus = usuarioService.login(loginData.getEmail(), loginData.getPassword());
 
         if (loginStatus == UsuarioService.LoginStatus.LOGIN_OK) {
-            UsuarioData usuario = usuarioService.findByEmail(loginData.geteMail());
+            UsuarioData usuario = usuarioService.findByEmail(loginData.getEmail());
 
             managerUserSession.logearUsuario(usuario.getId());
 
             return "redirect:/about";
         } else if (loginStatus == UsuarioService.LoginStatus.USER_NOT_FOUND) {
-            model.addAttribute("error", "No existe usuario");
+            model.addAttribute("error", "No existe el usuario introducido.");
             return "formLogin";
         } else if (loginStatus == UsuarioService.LoginStatus.ERROR_PASSWORD) {
-            model.addAttribute("error", "Contraseña incorrecta");
+            model.addAttribute("error", "Contraseña incorrecta.");
             return "formLogin";
         }
+
         return "formLogin";
     }
 
+    // FALTA POR IMPLEMENTAR
     @GetMapping("/registro")
     public String registroForm(Model model) {
         model.addAttribute("registroData", new RegistroData());
@@ -76,6 +76,7 @@ public class LoginController {
         return "formRegistro";
     }
 
+    // FALTA POR IMPLEMENTAR
    @PostMapping("/registro")
    public String registroSubmit(@Valid RegistroData registroData, BindingResult result, Model model) {
 
@@ -96,11 +97,11 @@ public class LoginController {
 
        usuario.setApellidos(registroData.getApellidos());
        usuario.setTelefono(registroData.getTelefono());
-       usuario.setCodigopostal(registroData.getCodigopostal());
-       usuario.setPais(registroData.getPais());
-       usuario.setPoblacion(registroData.getPoblacion());
+       //usuario.setCodigopostal(registroData.getCodigopostal());
+       //usuario.setPais(registroData.getPais());
+       //usuario.setPoblacion(registroData.getPoblacion());
        usuario.setDireccion(registroData.getDireccion());
-       usuario.setAdmin(registroData.isAdmin());
+       //usuario.setAdmin(registroData.isAdmin());
 
         usuarioService.registrar(usuario);
         return "redirect:/login";
@@ -111,20 +112,4 @@ public class LoginController {
         managerUserSession.logout();
         return "redirect:/login";
    }
-
-    @GetMapping("/about")
-    public String about(Model model, HttpSession session) {
-        // Obtenemos el id del usuario en sesión para comprobar si está logueado o no
-        Long id = managerUserSession.usuarioLogeado();
-
-        if(id != null){
-            // Si está logueado, lo buscamos en la base de datos y lo añadimos al atributo "usuario"
-            UsuarioData user = usuarioService.findById(id);
-            // "usuario" lo usaremos en la vista html
-            model.addAttribute("usuario", user);
-        }
-
-        // si no está logueado, se mostrará el navbar de no estar logueado
-        return "about";
-    }
 }

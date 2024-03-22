@@ -24,7 +24,7 @@ public class HomeController {
     }
 
     @GetMapping("/home")
-    public String home(Model model, HttpSession session) {
+    public String home(Model model) {
         Long id = managerUserSession.usuarioLogeado();
 
         if(id != null){
@@ -33,5 +33,17 @@ public class HomeController {
         }
 
         return "home";
+    }
+
+    @GetMapping("/about")
+    public String about(Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        if(id != null){
+            UsuarioData user = usuarioService.findById(id);
+            model.addAttribute("usuario", user);
+        }
+
+        return "about";
     }
 }
