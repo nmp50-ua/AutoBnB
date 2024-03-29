@@ -15,7 +15,6 @@ public class Color implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "idColor")
     private Long id;
 
     @NotNull

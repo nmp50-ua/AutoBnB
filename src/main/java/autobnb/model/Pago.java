@@ -13,7 +13,6 @@ public class Pago implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "idPago")
     private Long id;
 
     @NotNull

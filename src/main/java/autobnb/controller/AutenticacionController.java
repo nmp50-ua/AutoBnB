@@ -1,10 +1,11 @@
 package autobnb.controller;
 
 import autobnb.authentication.ManagerUserSession;
+import autobnb.dto.CuentaData;
 import autobnb.dto.LoginData;
 import autobnb.dto.RegistroData;
 import autobnb.dto.UsuarioData;
-import autobnb.model.Usuario;
+import autobnb.service.CuentaService;
 import autobnb.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,13 +17,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.util.List;
+import java.math.BigDecimal;
 
 @Controller
 public class AutenticacionController {
 
     @Autowired
     UsuarioService usuarioService;
+
+    @Autowired
+    CuentaService cuentaService;
 
     @Autowired
     ManagerUserSession managerUserSession;
@@ -54,29 +58,12 @@ public class AutenticacionController {
         return "formLogin";
     }
 
-    // FALTA POR IMPLEMENTAR
     @GetMapping("/registro")
     public String registroForm(Model model) {
         model.addAttribute("registroData", new RegistroData());
-
-        boolean admin = false;
-
-        List<Usuario> listaUsuarios = usuarioService.listadoCompleto();
-
-        // Buscamos en el listado completo de usuarios si hay alguno de ellos que sea admin
-        for (Usuario listaUsuario : listaUsuarios) {
-            if (listaUsuario.isAdministrador()) {
-                admin = true;
-                break;
-            }
-        }
-
-        model.addAttribute("admin", admin);
-
         return "formRegistro";
     }
 
-    // FALTA POR IMPLEMENTAR
    @PostMapping("/registro")
    public String registroSubmit(@Valid RegistroData registroData, BindingResult result, Model model) {
 
@@ -86,7 +73,7 @@ public class AutenticacionController {
 
         if (usuarioService.findByEmail(registroData.getEmail()) != null) {
             model.addAttribute("registroData", registroData);
-            model.addAttribute("error", "El usuario " + registroData.getEmail() + " ya existe.");
+            model.addAttribute("error", "El usuario con email (" + registroData.getEmail() + ") ya existe.");
             return "formRegistro";
         }
 
@@ -94,16 +81,27 @@ public class AutenticacionController {
         usuario.setEmail(registroData.getEmail());
         usuario.setPassword(registroData.getPassword());
         usuario.setNombre(registroData.getNombre());
+        usuario.setApellidos(registroData.getApellidos());
+        usuario.setTelefono(registroData.getTelefono());
+        usuario.setDireccion(registroData.getDireccion());
+        usuario.setDni(registroData.getDni());
+        usuario.setFechaCaducidadDni(registroData.getFechaCaducidadDni());
+        usuario.setCiudad(registroData.getCiudad());
+        usuario.setCodigoPostal(registroData.getCodigoPostal());
+        usuario.setFechaCarnetConducir(registroData.getFechaCarnetConducir());
 
-       usuario.setApellidos(registroData.getApellidos());
-       usuario.setTelefono(registroData.getTelefono());
-       //usuario.setCodigopostal(registroData.getCodigopostal());
-       //usuario.setPais(registroData.getPais());
-       //usuario.setPoblacion(registroData.getPoblacion());
-       usuario.setDireccion(registroData.getDireccion());
-       //usuario.setAdmin(registroData.isAdmin());
+        UsuarioData nuevoUsuario = usuarioService.registrar(usuario);
 
-        usuarioService.registrar(usuario);
+        CuentaData cuenta = new CuentaData();
+        cuenta.setSaldo(BigDecimal.valueOf(100.0));
+        cuenta.setIdUsuario(nuevoUsuario.getId());
+        cuenta.setNumeroCuenta("ES" + registroData.getNumeroCuenta());
+
+        CuentaData nuevaCuenta = cuentaService.crearCuenta(cuenta);
+
+        nuevoUsuario.setIdCuenta(nuevaCuenta.getId());
+        usuarioService.añadirCuenta(nuevoUsuario.getId(), nuevoUsuario);
+
         return "redirect:/login";
    }
 

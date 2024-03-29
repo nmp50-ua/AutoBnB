@@ -1,7 +1,9 @@
 package autobnb.service;
 
 import autobnb.dto.UsuarioData;
+import autobnb.model.Cuenta;
 import autobnb.model.Usuario;
+import autobnb.repository.CuentaRepository;
 import autobnb.repository.UsuarioRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,8 @@ public class UsuarioService {
     @Autowired
     private UsuarioRepository usuarioRepository;
     @Autowired
+    private CuentaRepository cuentaRepository;
+    @Autowired
     private ModelMapper modelMapper;
 
     @Transactional(readOnly = true)
@@ -33,16 +37,11 @@ public class UsuarioService {
         }
     }
 
-    // FALTA POR IMPLEMENTAR
     @Transactional
     public UsuarioData registrar(UsuarioData usuario) {
         Optional<Usuario> usuarioBD = usuarioRepository.findByEmail(usuario.getEmail());
         if (usuarioBD.isPresent())
             throw new UsuarioServiceException("El usuario " + usuario.getEmail() + " ya está registrado");
-        else if (usuario.getEmail() == null)
-            throw new UsuarioServiceException("El usuario no tiene email");
-        else if (usuario.getPassword() == null)
-            throw new UsuarioServiceException("El usuario no tiene password");
         else {
             Usuario usuarioNuevo = modelMapper.map(usuario, Usuario.class);
             usuarioNuevo = usuarioRepository.save(usuarioNuevo);
@@ -74,5 +73,29 @@ public class UsuarioService {
     @Transactional(readOnly = true)
     public List<Usuario> listadoCompleto(){
         return (List<Usuario>) usuarioRepository.findAll();
+    }
+
+    @Transactional
+    public UsuarioData añadirCuenta(Long usuarioId, UsuarioData nuevosDatos) {
+        Optional<Usuario> usuarioExistente = usuarioRepository.findById(usuarioId);
+
+        if (!usuarioExistente.isPresent()) {
+            throw new UsuarioServiceException("El usuario con ID " + usuarioId + " no existe en la base de datos");
+        }
+
+        Usuario usuarioActualizado = usuarioExistente.get();
+
+        // Actualiza los campos con los nuevos datos proporcionados
+        if (nuevosDatos.getIdCuenta() != null) {
+            Optional<Cuenta> cuenta = cuentaRepository.findById(nuevosDatos.getIdCuenta());
+            usuarioActualizado.setCuenta(cuenta.get());
+        }
+        else{
+            throw new UsuarioServiceException("Se ha recibido una cuenta NULL");
+        }
+
+        usuarioActualizado = usuarioRepository.save(usuarioActualizado);
+
+        return modelMapper.map(usuarioActualizado, UsuarioData.class);
     }
 }

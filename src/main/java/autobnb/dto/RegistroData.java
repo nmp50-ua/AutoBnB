@@ -1,5 +1,7 @@
 package autobnb.dto;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import javax.validation.constraints.*;
 import java.util.Date;
 
@@ -19,7 +21,7 @@ public class RegistroData {
     private String password;
 
     @NotNull(message = "La contraseña no puede ser nula.")
-    @Pattern(regexp = "\\d{1,20}", message = "El teléfono debe contener solo números y tener máximo 20 dígitos.")
+    @Digits(integer = 9, fraction = 0, message = "El teléfono debe tener 9 dígitos.")
     private Integer telefono;
 
     @NotNull(message = "El DNI no puede ser nulo.")
@@ -27,6 +29,7 @@ public class RegistroData {
     private String dni;
 
     @NotNull(message = "La fecha de caducidad del DNI no puede ser nula.")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date fechaCaducidadDni;
 
     @NotNull(message = "La dirección no puede ser nula.")
@@ -42,6 +45,7 @@ public class RegistroData {
     private Integer codigoPostal;
 
     @NotNull(message = "La fecha de expedición del carnet de conducir no puede ser nula.")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date fechaCarnetConducir;
 
     @NotNull(message = "El número de cuenta no puede ser nulo.")

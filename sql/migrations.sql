@@ -1,6 +1,6 @@
 -- Usuario
 CREATE TABLE IF NOT EXISTS Usuario (
-    idUsuario INT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     nombre VARCHAR(50) NOT NULL,
     apellidos VARCHAR(50) NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
@@ -20,55 +20,55 @@ CREATE TABLE IF NOT EXISTS Usuario (
 
 -- Cuenta
 CREATE TABLE IF NOT EXISTS Cuenta (
-    idCuenta INT PRIMARY KEY,
-    idUsuario INT REFERENCES Usuario(idUsuario) NOT NULL,
+    id SERIAL PRIMARY KEY,
+    idUsuario INT REFERENCES Usuario(id) NOT NULL,
     numeroCuenta VARCHAR(50) UNIQUE NOT NULL,
     saldo DECIMAL(10,2) NOT NULL
 );
 
 -- Pago
 CREATE TABLE IF NOT EXISTS Pago (
-    idPago INT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     titular VARCHAR(50) NOT NULL,
     numeroTarjeta VARCHAR(16) NOT NULL,
-    idUsuario INT REFERENCES Usuario(idUsuario) NOT NULL
+    idUsuario INT REFERENCES Usuario(id) NOT NULL
 );
 
 -- Marca
 CREATE TABLE IF NOT EXISTS Marca (
-    idMarca INT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     nombre VARCHAR(255) UNIQUE NOT NULL
 );
 
 -- Modelo
 CREATE TABLE IF NOT EXISTS Modelo (
-    idModelo INT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     nombre VARCHAR(255) UNIQUE NOT NULL,
-    idMarca INT REFERENCES Marca(idMarca) NOT NULL
+    idMarca INT REFERENCES Marca(id) NOT NULL
 );
 
 -- Transmision
 CREATE TABLE IF NOT EXISTS Transmision (
-    idTransmision INT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     nombre VARCHAR(255) UNIQUE NOT NULL
 );
 
 -- Categoria
 CREATE TABLE IF NOT EXISTS Categoria (
-    idCategoria INT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     nombre VARCHAR(255) UNIQUE NOT NULL,
     descripcion VARCHAR(255) NULL
 );
 
 -- Color
 CREATE TABLE IF NOT EXISTS Color (
-    idColor INT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     nombre VARCHAR(255) UNIQUE NOT NULL
 );
 
 -- Vehiculo
 CREATE TABLE IF NOT EXISTS Vehiculo (
-    idVehiculo INT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     descripcion VARCHAR(255) NOT NULL,
     imagen VARCHAR(255) NOT NULL,
     matricula VARCHAR(7) UNIQUE NOT NULL,
@@ -84,31 +84,31 @@ CREATE TABLE IF NOT EXISTS Vehiculo (
     precioPorDia DECIMAL(10,2) NOT NULL,
     precioPorMedioDia DECIMAL(10,2) NOT NULL,
     precioCombustible DECIMAL(10,2) NOT NULL,
-    idCategoria INT REFERENCES Categoria(idCategoria),
-    idMarca INT REFERENCES Marca(idMarca),
-    idModelo INT REFERENCES Modelo(idModelo),
-    idTransmision INT REFERENCES Transmision(idTransmision),
-    idColor INT REFERENCES Color(idColor),
-    idUsuario INT REFERENCES Usuario(idUsuario)
+    idCategoria INT REFERENCES Categoria(id),
+    idMarca INT REFERENCES Marca(id),
+    idModelo INT REFERENCES Modelo(id),
+    idTransmision INT REFERENCES Transmision(id),
+    idColor INT REFERENCES Color(id),
+    idUsuario INT REFERENCES Usuario(id)
 );
 
 -- Comentario
 CREATE TABLE IF NOT EXISTS Comentario (
-    idComentario INT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     descripcion VARCHAR(255) NOT NULL,
     fechaCreacion DATE NOT NULL,
-    idVehiculo INT REFERENCES Vehiculo(idVehiculo) NOT NULL,
-    idUsuario INT REFERENCES Usuario(idUsuario) NOT NULL
+    idVehiculo INT REFERENCES Vehiculo(id) NOT NULL,
+    idUsuario INT REFERENCES Usuario(id) NOT NULL
 );
 
 -- Alquiler
 CREATE TABLE IF NOT EXISTS Alquiler (
-    idAlquiler INT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     fechaCreacion DATE NOT NULL,
     fechaEntrega DATE NOT NULL,
     fechaDevolucion DATE NOT NULL,
     precioFinal DECIMAL(10,2) NOT NULL,
     litrosCombustible DECIMAL(10,2) NULL,
-    idVehiculo INT REFERENCES Vehiculo(idVehiculo) NOT NULL,
-    idPago INT REFERENCES Pago(idPago) NOT NULL
+    idVehiculo INT REFERENCES Vehiculo(id) NOT NULL,
+    idPago INT REFERENCES Pago(id) NOT NULL
 );

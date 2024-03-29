@@ -15,7 +15,6 @@ public class Alquiler implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "idAlquiler")
     private Long id;
 
     @NotNull

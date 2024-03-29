@@ -15,7 +15,6 @@ public class Modelo implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "idModelo")
     private Long id;
 
     @NotNull

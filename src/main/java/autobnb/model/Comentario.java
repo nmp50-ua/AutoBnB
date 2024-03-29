@@ -14,7 +14,6 @@ public class Comentario implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "idComentario")
     private Long id;
 
     @NotNull

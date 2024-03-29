@@ -15,7 +15,6 @@ public class Transmision implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "idTransmision")
     private Long id;
 
     @NotNull
