@@ -1,8 +1,8 @@
 -- Seeder para la tabla Usuario
 INSERT INTO Usuario (id, nombre, apellidos, email, password, telefono, direccion, ciudad, codigoPostal, dni, fechaCaducidadDni, fechaCarnetConducir, administrador, esArrendador, esArrendatario, imagen) VALUES
-(1, 'Noel', 'Martínez', 'noel@gmail.com', 'noel2002', 123456789, 'Calle Falsa 123', 'Madrid', 28080, '12345678Z', '2025-12-31', '2025-12-31', FALSE, FALSE, FALSE, NULL),
-(2, 'Ana', 'García', 'ana.garcia@example.com', 'password123', 987654321, 'Avenida de la Paz 456', 'Barcelona', 08080, '87654321X', '2026-05-30', '2026-05-30', FALSE, FALSE, FALSE, NULL),
-(3, 'admin', 'admin', 'admin@gmail.com', 'admin00', 112233445, 'Paseo de la Victoria 789', 'Sevilla', 41010, '98765432Q', '2027-09-15', '2027-09-15', TRUE, FALSE, FALSE, NULL);
+(1, 'Noel', 'Martínez', 'noel@gmail.com', 'noel2002', 123456789, 'Calle Falsa 123', 'Madrid', 28080, '12345678Z', '2025-12-31', '2025-12-31', FALSE, FALSE, TRUE, 'cara.jpg'),
+(2, 'Ana', 'García', 'ana.garcia@example.com', 'password123', 987654321, 'Avenida de la Paz 456', 'Barcelona', 08080, '87654321X', '2026-05-30', '2026-05-30', FALSE, FALSE, TRUE, 'cara.jpg'),
+(3, 'admin', 'admin', 'admin@gmail.com', 'admin00', 112233445, 'Paseo de la Victoria 789', 'Sevilla', 41010, '98765432Q', '2027-09-15', '2027-09-15', TRUE, FALSE, TRUE, 'cara.jpg');
 
 -- Seeder para la tabla Cuenta
 INSERT INTO Cuenta (id, idUsuario, numeroCuenta, saldo) VALUES

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments :: head (titulo='Perfil')">
+    <!-- Enlace a Bootstrap Stylesheet -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+          integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8sh+WyL7Q4q6txlSZq9ubRSfau8UcK7J6h"
+          crossorigin="anonymous"/>
+</head>
+
+<body style="font-family: 'Quicksand', sans-serif;">
+    <div th:if="${logueado != null}">
+        <div th:replace="fragments :: navbar(userName=${usuario} ? ${usuario.getNombre()} : '',
+                         userId=${usuario} ? ${usuario.getId()} : '')"></div>
+
+        <main style="flex: 1;">
+            <div class="container mt-4">
+                <div class="row mt-4 justify-content-center">
+                    <div class="col-md-6">
+                        <dl class="row text-center">
+                            <div class="col-sm-6">
+                                <img th:src="@{/assets/{productoImg}(productoImg=${usuario.imagen})}" alt="Foto de perfil" />
+                                <label class="switch">
+                                    <input type="checkbox">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <dt>Correo Electrónico:</dt>
+                                <dd th:text="${usuario.email}"></dd>
+
+                                <dt>Nombre:</dt>
+                                <dd th:text="${usuario.nombre}"></dd>
+
+                                <dt>Apellidos:</dt>
+                                <dd th:text="${usuario.apellidos != null ? usuario.apellidos : 'No especificados'}"></dd>
+
+                                <dt>DNI:</dt>
+                                <dd th:text="${usuario.dni}"></dd>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <dt>Teléfono:</dt>
+                                <dd th:text="${usuario.telefono}"></dd>
+
+                                <dt>Código Postal:</dt>
+                                <dd th:text="${usuario.codigoPostal}"></dd>
+
+                                <dt>Ciudad:</dt>
+                                <dd th:text="${usuario.ciudad}"></dd>
+
+                                <dt>Dirección:</dt>
+                                <dd th:text="${usuario.direccion}"></dd>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <dt>Fecha carnet de condudir:</dt>
+                                <dd th:text="${usuario.fechaCarnetConducir}"></dd>
+
+                                <dt>Fecha caducidad DNI:</dt>
+                                <dd th:text="${usuario.fechaCaducidadDni}"></dd>
+                            </div>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col">
+                        <div class="text-center">
+                            <a th:href="@{'/perfil/' + ${logueado.getId()} + '/actualizar'}" class="btn btn-primary">Actualizar Perfil</a>
+                        </div>
+                    </div>
+                    <div th:if="${usuario.esArrendador}" class="col">
+                        <div class="text-center">
+                            <a href="" class="btn btn-primary" th:href="@{'/perfil/' + ${logueado.getId()} + '/coches'}">Ver Coches</a>
+                        </div>
+                    </div>
+                    <div th:if="${usuario.esArrendador}" class="col">
+                        <div class="text-center">
+                            <a href="" class="btn btn-primary" th:href="@{'/perfil/' + ${logueado.getId()} + '/añadir-coche'}">Añadir Coche</a>
+                        </div>
+                    </div>
+                    <div th:if="${usuario.esArrendatario}" class="col">
+                        <div class="text-center">
+                            <a href="" class="btn btn-primary" th:href="@{'/perfil/' + ${logueado.getId()} + '/comentarios'}">Ver Comentarios</a>
+                        </div>
+                    </div>
+                    <div th:if="${usuario.esArrendatario}" class="col">
+                        <div class="text-center">
+                            <a href="" class="btn btn-primary" th:href="@{'/perfil/' + ${logueado.getId()} + '/alquileres'}">Ver Alquileres</a>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="text-center">
+                            <a href="" class="btn btn-primary" th:href="@{'/perfil/' + ${logueado.getId()} + '/cuenta'}">Ver Cuenta</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div th:if="${usuario.administrador}" class="row mt-4">
+                    <div class="col">
+                        <div class="text-center">
+                            <span>Eres el administrador del sistema.</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <div th:replace="fragments :: footer"></div>
+    <div th:replace="fragments::javascript"></div>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        function toggleRol() {
+            var userId = [[${usuario.id}]]; // Asegúrate de que 'usuario' sea un objeto disponible en el modelo
+            var form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/perfil/cambiarRol/' + userId;
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        // Asegúrate de que el elemento exista en el DOM antes de añadirle el event listener
+        document.querySelector('.switch input[type="checkbox"]').addEventListener('change', toggleRol);
+        /*]]>*/
+    </script>
+</body>
+</html>

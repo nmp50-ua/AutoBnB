@@ -89,6 +89,8 @@ public class AutenticacionController {
         usuario.setCiudad(registroData.getCiudad());
         usuario.setCodigoPostal(registroData.getCodigoPostal());
         usuario.setFechaCarnetConducir(registroData.getFechaCarnetConducir());
+        usuario.setImagen("cara.jpg");
+        usuario.setEsArrendatario(true);
 
         UsuarioData nuevoUsuario = usuarioService.registrar(usuario);
 

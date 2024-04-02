@@ -75,6 +75,18 @@ public class UsuarioService {
         return (List<Usuario>) usuarioRepository.findAll();
     }
 
+    // Método que busca un Usuario en una lista de Usuarios pasado por parámetro y un id concreto a buscar
+    @Transactional(readOnly = true)
+    public Usuario buscarUsuarioPorId(List<Usuario> usuarios, Long idBuscado) {
+        for (Usuario usuario : usuarios) {
+            if (usuario.getId().equals(idBuscado)) {
+                return usuario; // Devuelve el usuario si se encuentra
+            }
+        }
+        return null; // Devuelve null si no se encuentra el usuario
+    }
+
+    // Método que añade una cuenta a un usuario
     @Transactional
     public UsuarioData añadirCuenta(Long usuarioId, UsuarioData nuevosDatos) {
         Optional<Usuario> usuarioExistente = usuarioRepository.findById(usuarioId);
@@ -93,6 +105,111 @@ public class UsuarioService {
         else{
             throw new UsuarioServiceException("Se ha recibido una cuenta NULL");
         }
+
+        usuarioActualizado = usuarioRepository.save(usuarioActualizado);
+
+        return modelMapper.map(usuarioActualizado, UsuarioData.class);
+    }
+
+    @Transactional
+    public UsuarioData cambiarRolUsuario(Long usuarioId) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new UsuarioServiceException("El usuario con ID " + usuarioId + " no se encuentra."));
+
+        // Cambiar roles
+        usuario.setEsArrendador(!usuario.isEsArrendador());
+        usuario.setEsArrendatario(!usuario.isEsArrendatario());
+
+        // Guardar el usuario actualizado
+        usuario = usuarioRepository.save(usuario);
+
+        // Convertir el usuario a UsuarioData para devolver
+        return modelMapper.map(usuario, UsuarioData.class);
+    }
+
+    @Transactional
+    public UsuarioData actualizarUsuarioPorId(Long usuarioId, UsuarioData nuevosDatos) {
+        Optional<Usuario> usuarioExistente = usuarioRepository.findById(usuarioId);
+
+        if (!usuarioExistente.isPresent()) {
+            throw new UsuarioServiceException("El usuario con ID " + usuarioId + " no existe en la base de datos");
+        }
+
+        Usuario usuarioActualizado = usuarioExistente.get();
+
+        // Actualiza los campos con los nuevos datos proporcionados
+        if (nuevosDatos.getNombre() != null) {
+            usuarioActualizado.setNombre(nuevosDatos.getNombre());
+        }
+        else{
+            throw new UsuarioServiceException("Se ha recibido un nombre NULL");
+        }
+
+        if (nuevosDatos.getPassword() != null) {
+            usuarioActualizado.setPassword(nuevosDatos.getPassword());
+        }
+        else{
+            throw new UsuarioServiceException("Se ha recibido un password NULL");
+        }
+
+        if (nuevosDatos.getEmail() != null) {
+            usuarioActualizado.setEmail(nuevosDatos.getEmail());
+        }
+        else{
+            throw new UsuarioServiceException("Se ha recibido un email NULL");
+        }
+
+        if (nuevosDatos.getTelefono() != null) {
+            usuarioActualizado.setTelefono(nuevosDatos.getTelefono());
+        }
+        else{
+            throw new UsuarioServiceException("Se ha recibido un telefono NULL");
+        }
+
+        if (nuevosDatos.getCodigoPostal() != null) {
+            usuarioActualizado.setCodigoPostal(nuevosDatos.getCodigoPostal());
+        }
+        else{
+            throw new UsuarioServiceException("Se ha recibido un codigo postal NULL");
+        }
+
+        if (nuevosDatos.getCiudad() != null) {
+            usuarioActualizado.setCiudad(nuevosDatos.getCiudad());
+        }
+        else{
+            throw new UsuarioServiceException("Se ha recibido una ciudad NULL");
+        }
+
+        if (nuevosDatos.getDireccion() != null) {
+            usuarioActualizado.setDireccion(nuevosDatos.getDireccion());
+        }
+        else{
+            throw new UsuarioServiceException("Se ha recibido una direccion NULL");
+        }
+
+        if (nuevosDatos.getDni() != null) {
+            usuarioActualizado.setDni(nuevosDatos.getDni());
+        }
+        else{
+            throw new UsuarioServiceException("Se ha recibido un dni NULL");
+        }
+
+        if (nuevosDatos.getFechaCaducidadDni() != null) {
+            usuarioActualizado.setFechaCaducidadDni(nuevosDatos.getFechaCaducidadDni());
+        }
+        else{
+            throw new UsuarioServiceException("Se ha recibido una fecha de caducidad de dni NULL");
+        }
+
+        if (nuevosDatos.getFechaCarnetConducir() != null) {
+            usuarioActualizado.setFechaCarnetConducir(nuevosDatos.getFechaCarnetConducir());
+        }
+        else{
+            throw new UsuarioServiceException("Se ha recibido una fecha de carnet de conducir NULL");
+        }
+
+        usuarioActualizado.setApellidos(nuevosDatos.getApellidos());
+        usuarioActualizado.setImagen(nuevosDatos.getImagen());
 
         usuarioActualizado = usuarioRepository.save(usuarioActualizado);
 

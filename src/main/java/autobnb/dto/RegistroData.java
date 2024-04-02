@@ -52,6 +52,8 @@ public class RegistroData {
     @Size(max = 50, message = "El número de cuenta debe tener 50 caracteres como máximo.")
     private String numeroCuenta;
 
+    private String imagen;
+
     public String getEmail() {
         return email;
     }
@@ -146,5 +148,13 @@ public class RegistroData {
 
     public void setFechaCarnetConducir(Date fechaCarnetConducir) {
         this.fechaCarnetConducir = fechaCarnetConducir;
+    }
+
+    public String getImagen() {
+        return imagen;
+    }
+
+    public void setImagen(String imagen) {
+        this.imagen = imagen;
     }
 }

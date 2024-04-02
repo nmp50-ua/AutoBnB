@@ -19,6 +19,7 @@ autobnb\model\Modelo.class
 autobnb\model\Vehiculo.class
 autobnb\dto\ModeloData.class
 autobnb\repository\ModeloRepository.class
+autobnb\controller\PerfilController.class
 autobnb\model\Color.class
 autobnb\model\Cuenta.class
 autobnb\dto\CategoriaData.class
