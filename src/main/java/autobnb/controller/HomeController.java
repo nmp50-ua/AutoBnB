@@ -31,6 +31,9 @@ public class HomeController {
             UsuarioData user = usuarioService.findById(id);
             model.addAttribute("usuario", user);
         }
+        else {
+            model.addAttribute("usuario", null);
+        }
 
         return "home";
     }
@@ -42,6 +45,9 @@ public class HomeController {
         if(id != null){
             UsuarioData user = usuarioService.findById(id);
             model.addAttribute("usuario", user);
+        }
+        else {
+            model.addAttribute("usuario", null);
         }
 
         return "about";
