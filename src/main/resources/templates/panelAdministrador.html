@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments :: head (titulo='Panel de Administrador')"></head>
+
+<body>
+<!-- Si el usuario está logueado, incluye el Navbar normal -->
+<div th:if="${usuario != null}">
+    <!-- Recuperamos el objeto "usuarios" que nos pasa el Controller y usamos sus atributos, pasandolos al NavBar -->
+    <div th:replace="fragments :: navbar(userName=${usuario} ? ${usuario.getNombre()} : '',
+                         userId=${usuario} ? ${usuario.getId()} : '',
+                         admin=${usuario} ? ${usuario.isAdministrador()} : '')"></div>
+</div>
+
+<!-- Si el usuario no está logueado, incluye el Navbar para no logueados -->
+<div th:if="${usuario == null}">
+    <div th:replace="fragments :: navbar_noLogueado"></div>
+</div>
+
+<main style="display: flex; justify-content: center; align-items: center; height: calc(100vh - 60px); font-family: Arial, sans-serif;">
+    <div style="text-align: center; width: 100%;">
+        <h1 style="margin-bottom: 20px;">Panel de Administrador</h1>
+        <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; max-width: 800px; margin: auto;">
+            <button style="padding: 10px 15px; margin: 5px; border: 1px solid #ccc; background-color: #f5f5f5; cursor: pointer;">USUARIOS</button>
+            <button style="padding: 10px 15px; margin: 5px; border: 1px solid #ccc; background-color: #f5f5f5; cursor: pointer;">VEHÍCULOS</button>
+            <button style="padding: 10px 15px; margin: 5px; border: 1px solid #ccc; background-color: #f5f5f5; cursor: pointer;">COMENTARIOS</button>
+            <button style="padding: 10px 15px; margin: 5px; border: 1px solid #ccc; background-color: #f5f5f5; cursor: pointer;">CUENTAS</button>
+            <button style="padding: 10px 15px; margin: 5px; border: 1px solid #ccc; background-color: #f5f5f5; cursor: pointer;">COLORES</button>
+            <button style="padding: 10px 15px; margin: 5px; border: 1px solid #ccc; background-color: #f5f5f5; cursor: pointer;">CATEGORÍAS</button>
+            <button style="padding: 10px 15px; margin: 5px; border: 1px solid #ccc; background-color: #f5f5f5; cursor: pointer;">ALQUILERES</button>
+            <button style="padding: 10px 15px; margin: 5px; border: 1px solid #ccc; background-color: #f5f5f5; cursor: pointer;">TRANSMISIONES</button>
+            <button style="padding: 10px 15px; margin: 5px; border: 1px solid #ccc; background-color: #f5f5f5; cursor: pointer;">MARCAS</button>
+            <button style="padding: 10px 15px; margin: 5px; border: 1px solid #ccc; background-color: #f5f5f5; cursor: pointer;">MODELOS</button>
+        </div>
+    </div>
+</main>
+
+<div th:replace="fragments :: footer"></div>
+<div th:replace="fragments::javascript"/>
+
+</body>
+</html>

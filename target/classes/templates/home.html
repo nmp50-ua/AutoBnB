@@ -8,7 +8,8 @@
     <div th:if="${usuario != null}">
         <!-- Recuperamos el objeto "usuarios" que nos pasa el Controller y usamos sus atributos, pasandolos al NavBar -->
         <div th:replace="fragments :: navbar(userName=${usuario} ? ${usuario.getNombre()} : '',
-                         userId=${usuario} ? ${usuario.getId()} : '')"></div>
+                         userId=${usuario} ? ${usuario.getId()} : '',
+                         admin=${usuario} ? ${usuario.isAdministrador()} : '')"></div>
     </div>
 
     <!-- Si el usuario no está logueado, incluye el Navbar para no logueados -->
