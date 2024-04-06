@@ -1,8 +1,10 @@
 package autobnb.service;
 
 import autobnb.dto.UsuarioData;
+import autobnb.model.Comentario;
 import autobnb.model.Cuenta;
 import autobnb.model.Usuario;
+import autobnb.repository.ComentarioRepository;
 import autobnb.repository.CuentaRepository;
 import autobnb.repository.UsuarioRepository;
 import org.modelmapper.ModelMapper;
@@ -21,6 +23,8 @@ public class UsuarioService {
     private UsuarioRepository usuarioRepository;
     @Autowired
     private CuentaRepository cuentaRepository;
+    @Autowired
+    private ComentarioRepository comentarioRepository;
     @Autowired
     private ModelMapper modelMapper;
 
@@ -214,5 +218,11 @@ public class UsuarioService {
         usuarioActualizado = usuarioRepository.save(usuarioActualizado);
 
         return modelMapper.map(usuarioActualizado, UsuarioData.class);
+    }
+
+    // Método para obtener todos los comentarios de un usuario específico
+    @Transactional(readOnly = true)
+    public List<Comentario> obtenerComentariosPorUsuarioId(Long usuarioId) {
+        return comentarioRepository.findByUsuarioId(usuarioId);
     }
 }

@@ -296,15 +296,13 @@ public class Usuario implements Serializable {
                 password.equals(usuario.password) && direccion.equals(usuario.direccion) &&
                 ciudad.equals(usuario.ciudad) && codigoPostal.equals(usuario.codigoPostal) && dni.equals(usuario.dni) &&
                 fechaCaducidadDni.equals(usuario.fechaCaducidadDni) && fechaCarnetConducir.equals(usuario.fechaCarnetConducir) &&
-                administrador == usuario.administrador && esArrendador == usuario.esArrendador && esArrendatario == usuario.esArrendatario
-                && cuenta.equals(usuario.cuenta);
+                administrador == usuario.administrador && esArrendador == usuario.esArrendador && esArrendatario == usuario.esArrendatario;
     }
 
     @Override
     public int hashCode() {
         // Generamos un hash basado en los campos obligatorios
         return Objects.hash(email, nombre, password, direccion, ciudad, codigoPostal,
-                dni, fechaCaducidadDni, fechaCarnetConducir, administrador, esArrendador, esArrendatario,
-                cuenta);
+                dni, fechaCaducidadDni, fechaCarnetConducir, administrador, esArrendador, esArrendatario);
     }
 }

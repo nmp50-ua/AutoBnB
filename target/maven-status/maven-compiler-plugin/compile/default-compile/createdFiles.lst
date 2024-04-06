@@ -27,6 +27,7 @@ autobnb\service\UsuarioServiceException.class
 autobnb\repository\CategoriaRepository.class
 autobnb\dto\UsuarioData.class
 autobnb\model\Transmision.class
+autobnb\service\ComentarioService.class
 autobnb\repository\ComentarioRepository.class
 autobnb\controller\exception\UsuarioNoAutorizadoException.class
 autobnb\dto\RegistroData.class
