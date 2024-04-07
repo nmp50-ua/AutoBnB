@@ -5,6 +5,7 @@ import autobnb.controller.exception.UsuarioNoAutorizadoException;
 import autobnb.controller.exception.UsuarioNoLogeadoException;
 import autobnb.dto.ComentarioData;
 import autobnb.dto.MarcaData;
+import autobnb.dto.ModeloData;
 import autobnb.dto.UsuarioData;
 import autobnb.model.*;
 import autobnb.service.*;
@@ -36,6 +37,8 @@ public class AdministracionController {
     CuentaService cuentaService;
     @Autowired
     MarcaService marcaService;
+    @Autowired
+    ModeloService modeloService;
 
     private void comprobarAdmin(Long idUsuario) {
         if (idUsuario != null) {
@@ -60,23 +63,21 @@ public class AdministracionController {
         return "panelAdministrador";
     }
 
+
     // COMENTARIOS
 
     @GetMapping("/administracion/comentarios")
     public String mostrarListadoComentarios(Model model) {
         Long id = managerUserSession.usuarioLogeado();
 
-        if(id != null){
-            List<Usuario> usuarios = usuarioService.listadoCompleto();
-            Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
-            model.addAttribute("usuario", usuario);
+        comprobarAdmin(id);
 
-            List<Comentario> comentarios = comentarioService.listadoCompleto();
-            model.addAttribute("comentarios", comentarios);
-        }
-        else {
-            throw new UsuarioNoLogeadoException();
-        }
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+        model.addAttribute("usuario", usuario);
+
+        List<Comentario> comentarios = comentarioService.listadoCompleto();
+        model.addAttribute("comentarios", comentarios);
 
         return "administracionComentarios";
     }
@@ -85,31 +86,29 @@ public class AdministracionController {
     public String mostrarEditarComentario(@PathVariable(value = "comentarioId") Long comentarioId, Model model) {
         Long id = managerUserSession.usuarioLogeado();
 
+        comprobarAdmin(id);
+
         List<Usuario> usuarios = usuarioService.listadoCompleto();
         Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
         model.addAttribute("usuario", usuario);
 
-        if(id != null){
-            ComentarioData comentario = comentarioService.findById(comentarioId);
+        ComentarioData comentario = comentarioService.findById(comentarioId);
 
-            if (comentario != null) {
-                List<Comentario> comentarios = comentarioService.listadoCompleto();
-                Comentario comentarioBuscado = comentarioService.buscarComentarioPorId(comentarios, comentarioId);
-                model.addAttribute("comentario", comentarioBuscado);
+        if (comentario != null) {
+            List<Comentario> comentarios = comentarioService.listadoCompleto();
+            Comentario comentarioBuscado = comentarioService.buscarComentarioPorId(comentarios, comentarioId);
+            model.addAttribute("comentario", comentarioBuscado);
 
-                ComentarioData comentarioData = new ComentarioData();
-                comentarioData.setDescripcion(comentarioBuscado.getDescripcion());
-                comentarioData.setFechaCreacion(comentarioBuscado.getFechaCreacion());
-                comentarioData.setIdVehiculo(comentarioBuscado.getVehiculo().getId());
-                comentarioData.setIdUsuario(comentarioBuscado.getUsuario().getId());
+            ComentarioData comentarioData = new ComentarioData();
+            comentarioData.setDescripcion(comentarioBuscado.getDescripcion());
+            comentarioData.setFechaCreacion(comentarioBuscado.getFechaCreacion());
+            comentarioData.setIdVehiculo(comentarioBuscado.getVehiculo().getId());
+            comentarioData.setIdUsuario(comentarioBuscado.getUsuario().getId());
 
-                model.addAttribute("comentarioData", comentarioData);
-                return "editarComentarioAdministrador";
-            }
+            model.addAttribute("comentarioData", comentarioData);
+            return "editarComentarioAdministrador";
         }
-        else {
-            throw new UsuarioNoLogeadoException();
-        }
+
 
         return "redirect:/administracion/comentarios";
     }
@@ -118,34 +117,31 @@ public class AdministracionController {
     public String actualizarComentario(@PathVariable Long comentarioId, @Valid ComentarioData comentarioData, BindingResult result, Model model) {
         Long id = managerUserSession.usuarioLogeado();
 
+        comprobarAdmin(id);
+
         if (result.hasErrors()) {
             System.out.println("Ha ocurrido un error.");
         }
         else{
-            if(id != null){
-                try {
-                    ComentarioData nuevoComentarioData = comentarioService.findById(comentarioId);
+            try {
+                ComentarioData nuevoComentarioData = comentarioService.findById(comentarioId);
 
-                    if(comentarioData.getDescripcion() != null) {
-                        nuevoComentarioData.setDescripcion(comentarioData.getDescripcion());
-                        nuevoComentarioData.setFechaCreacion(comentarioData.getFechaCreacion());
-                        nuevoComentarioData.setIdUsuario(comentarioData.getIdUsuario());
-                        nuevoComentarioData.setIdVehiculo(comentarioData.getIdVehiculo());
+                if(comentarioData.getDescripcion() != null) {
+                    nuevoComentarioData.setDescripcion(comentarioData.getDescripcion());
+                    nuevoComentarioData.setFechaCreacion(comentarioData.getFechaCreacion());
+                    nuevoComentarioData.setIdUsuario(comentarioData.getIdUsuario());
+                    nuevoComentarioData.setIdVehiculo(comentarioData.getIdVehiculo());
 
-                        comentarioService.actualizarComentario(comentarioId, nuevoComentarioData);
+                    comentarioService.actualizarComentario(comentarioId, nuevoComentarioData);
 
-                        return "redirect:/administracion/comentarios";
-                    }
-                    else{
-                        model.addAttribute("errorActualizar", "Ho ocurrido un error al intentar actualizar.");
-                    }
-
-                } catch (UsuarioServiceException e) {
-                    model.addAttribute("errorActualizar", e.getMessage());
+                    return "redirect:/administracion/comentarios";
                 }
-            }
-            else {
-                throw new UsuarioNoLogeadoException();
+                else{
+                    model.addAttribute("errorActualizar", "Ho ocurrido un error al intentar actualizar.");
+                }
+
+            } catch (UsuarioServiceException e) {
+                model.addAttribute("errorActualizar", e.getMessage());
             }
         }
 
@@ -165,16 +161,11 @@ public class AdministracionController {
     @PostMapping("/administracion/comentarios/eliminar/{comentarioId}")
     public String eliminarComentario(@PathVariable("comentarioId") Long comentarioId) {
         Long id = managerUserSession.usuarioLogeado();
-
-        if(id != null){
-            comentarioService.eliminarComentario(comentarioId);
-        }
-        else {
-            throw new UsuarioNoLogeadoException();
-        }
-
+        comprobarAdmin(id);
+        comentarioService.eliminarComentario(comentarioId);
         return "redirect:/administracion/comentarios";
     }
+
 
     // ALQUILERES
 
@@ -182,17 +173,14 @@ public class AdministracionController {
     public String mostrarListadoAlquileres(Model model) {
         Long id = managerUserSession.usuarioLogeado();
 
-        if(id != null){
-            List<Usuario> usuarios = usuarioService.listadoCompleto();
-            Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
-            model.addAttribute("usuario", usuario);
+        comprobarAdmin(id);
 
-            List<Alquiler> alquileres = alquilerService.listadoCompleto();
-            model.addAttribute("alquileres", alquileres);
-        }
-        else {
-            throw new UsuarioNoLogeadoException();
-        }
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+        model.addAttribute("usuario", usuario);
+
+        List<Alquiler> alquileres = alquilerService.listadoCompleto();
+        model.addAttribute("alquileres", alquileres);
 
         return "administracionAlquileres";
     }
@@ -200,16 +188,11 @@ public class AdministracionController {
     @PostMapping("/administracion/alquileres/eliminar/{alquilerId}")
     public String eliminarAlquiler(@PathVariable("alquilerId") Long alquilerId) {
         Long id = managerUserSession.usuarioLogeado();
-
-        if(id != null){
-            alquilerService.eliminarAlquiler(alquilerId);
-        }
-        else {
-            throw new UsuarioNoLogeadoException();
-        }
-
+        comprobarAdmin(id);
+        alquilerService.eliminarAlquiler(alquilerId);
         return "redirect:/administracion/alquileres";
     }
+
 
     // CUENTAS
 
@@ -217,20 +200,18 @@ public class AdministracionController {
     public String mostrarListadoCuentas(Model model) {
         Long id = managerUserSession.usuarioLogeado();
 
-        if(id != null){
-            List<Usuario> usuarios = usuarioService.listadoCompleto();
-            Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
-            model.addAttribute("usuario", usuario);
+        comprobarAdmin(id);
 
-            List<Cuenta> cuentas = cuentaService.listadoCompleto();
-            model.addAttribute("cuentas", cuentas);
-        }
-        else {
-            throw new UsuarioNoLogeadoException();
-        }
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+        model.addAttribute("usuario", usuario);
+
+        List<Cuenta> cuentas = cuentaService.listadoCompleto();
+        model.addAttribute("cuentas", cuentas);
 
         return "administracionCuentas";
     }
+
 
     // MARCAS
 
@@ -238,17 +219,14 @@ public class AdministracionController {
     public String mostrarListadoMarcas(Model model) {
         Long id = managerUserSession.usuarioLogeado();
 
-        if(id != null){
-            List<Usuario> usuarios = usuarioService.listadoCompleto();
-            Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
-            model.addAttribute("usuario", usuario);
+        comprobarAdmin(id);
 
-            List<Marca> marcas = marcaService.listadoCompleto();
-            model.addAttribute("marcas", marcas);
-        }
-        else {
-            throw new UsuarioNoLogeadoException();
-        }
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+        model.addAttribute("usuario", usuario);
+
+        List<Marca> marcas = marcaService.listadoCompleto();
+        model.addAttribute("marcas", marcas);
 
         return "administracionMarcas";
     }
@@ -257,27 +235,24 @@ public class AdministracionController {
     public String mostrarEditarMarca(@PathVariable(value = "marcaId") Long marcaId, Model model) {
         Long id = managerUserSession.usuarioLogeado();
 
+        comprobarAdmin(id);
+
         List<Usuario> usuarios = usuarioService.listadoCompleto();
         Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
         model.addAttribute("usuario", usuario);
 
-        if(id != null){
-            MarcaData marca = marcaService.findById(marcaId);
+        MarcaData marca = marcaService.findById(marcaId);
 
-            if (marca != null) {
-                List<Marca> marcas = marcaService.listadoCompleto();
-                Marca marcaBuscada = marcaService.buscarMarcaPorId(marcas, marcaId);
-                model.addAttribute("marca", marcaBuscada);
+        if (marca != null) {
+            List<Marca> marcas = marcaService.listadoCompleto();
+            Marca marcaBuscada = marcaService.buscarMarcaPorId(marcas, marcaId);
+            model.addAttribute("marca", marcaBuscada);
 
-                MarcaData marcaData = new MarcaData();
-                marcaData.setNombre(marcaBuscada.getNombre());
+            MarcaData marcaData = new MarcaData();
+            marcaData.setNombre(marcaBuscada.getNombre());
 
-                model.addAttribute("marcaData", marcaData);
-                return "editarMarcaAdministrador";
-            }
-        }
-        else {
-            throw new UsuarioNoLogeadoException();
+            model.addAttribute("marcaData", marcaData);
+            return "editarMarcaAdministrador";
         }
 
         return "redirect:/administracion/marcas";
@@ -286,6 +261,8 @@ public class AdministracionController {
     @PostMapping("/administracion/marcas/editar/{marcaId}")
     public String actualizarMarca(@PathVariable Long marcaId, @Valid MarcaData marcaData, BindingResult result, Model model) {
         Long id = managerUserSession.usuarioLogeado();
+
+        comprobarAdmin(id);
 
         model.addAttribute("marcaData", marcaData);
 
@@ -306,32 +283,27 @@ public class AdministracionController {
             return "editarMarcaAdministrador";
         }
         else{
-            if(id != null){
-                try {
-                    MarcaData nuevaMarcaData = marcaService.findById(marcaId);
+            try {
+                MarcaData nuevaMarcaData = marcaService.findById(marcaId);
 
-                    if(nuevaMarcaData.getNombre() != null) {
-                        if (marcaService.findByNombre(nuevaMarcaData.getNombre()) != null) {
-                            model.addAttribute("errorActualizar", "La marca con nombre (" + marcaData.getNombre() + ") ya existe.");
-                            return "editarMarcaAdministrador";
-                        }
-
-                        nuevaMarcaData.setNombre(marcaData.getNombre());
-
-                        marcaService.actualizarMarca(marcaId, nuevaMarcaData);
-
-                        return "redirect:/administracion/marcas";
-                    }
-                    else{
-                        model.addAttribute("errorActualizar", "Ha ocurrido un error al intentar actualizar.");
+                if(nuevaMarcaData.getNombre() != null) {
+                    if (marcaService.findByNombre(nuevaMarcaData.getNombre()) != null) {
+                        model.addAttribute("errorActualizar", "La marca con nombre (" + marcaData.getNombre() + ") ya existe.");
+                        return "editarMarcaAdministrador";
                     }
 
-                } catch (UsuarioServiceException e) {
-                    model.addAttribute("errorActualizar", e.getMessage());
+                    nuevaMarcaData.setNombre(marcaData.getNombre());
+
+                    marcaService.actualizarMarca(marcaId, nuevaMarcaData);
+
+                    return "redirect:/administracion/marcas";
                 }
-            }
-            else {
-                throw new UsuarioNoLogeadoException();
+                else{
+                    model.addAttribute("errorActualizar", "Ha ocurrido un error al intentar actualizar.");
+                }
+
+            } catch (UsuarioServiceException e) {
+                model.addAttribute("errorActualizar", e.getMessage());
             }
         }
 
@@ -342,15 +314,13 @@ public class AdministracionController {
     public String eliminarMarca(@PathVariable("marcaId") Long marcaId, Model model) {
         Long id = managerUserSession.usuarioLogeado();
 
-        if (id != null) {
-            if (marcaService.tieneVehiculosAsociados(marcaId)) {
-                model.addAttribute("error", "No se puede eliminar la marca porque tiene vehículos asociados.");
-            } else {
-                marcaService.eliminarMarca(marcaId);
-                model.addAttribute("success", "Marca eliminada con éxito.");
-            }
+        comprobarAdmin(id);
+
+        if (marcaService.tieneVehiculosAsociados(marcaId)) {
+            model.addAttribute("error", "No se puede eliminar la marca porque tiene vehículos asociados.");
         } else {
-            throw new UsuarioNoLogeadoException();
+            marcaService.eliminarMarca(marcaId);
+            model.addAttribute("success", "Marca eliminada con éxito.");
         }
 
         return "redirect:/administracion/marcas";
@@ -360,23 +330,22 @@ public class AdministracionController {
     public String mostrarCrearMarca(Model model) {
         Long id = managerUserSession.usuarioLogeado();
 
+        comprobarAdmin(id);
+
         List<Usuario> usuarios = usuarioService.listadoCompleto();
         Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
         model.addAttribute("usuario", usuario);
 
-        if(id != null){
-                MarcaData marcaData = new MarcaData();
-                model.addAttribute("marcaData", marcaData);
-                return "crearMarca";
-        }
-        else {
-            throw new UsuarioNoLogeadoException();
-        }
+        MarcaData marcaData = new MarcaData();
+        model.addAttribute("marcaData", marcaData);
+        return "crearMarca";
     }
 
     @PostMapping("/administracion/marcas/crear")
     public String crearMarca(@Valid MarcaData marcaData, BindingResult result, Model model) {
         Long id = managerUserSession.usuarioLogeado();
+
+        comprobarAdmin(id);
 
         model.addAttribute("marcaData", marcaData);
 
@@ -393,28 +362,198 @@ public class AdministracionController {
             return "crearMarca";
         }
         else{
-            if(id != null){
-                try {
-                    if (marcaService.findByNombre(marcaData.getNombre()) != null) {
-                        model.addAttribute("errorCrear", "La marca con nombre (" + marcaData.getNombre() + ") ya existe.");
-                        return "crearMarca";
-                    }
-
-                    marcaService.crearMarca(marcaData);
-
-                    return "redirect:/administracion/marcas";
-
-                } catch (UsuarioServiceException e) {
-                    model.addAttribute("errorCrear", e.getMessage());
+            try {
+                if (marcaService.findByNombre(marcaData.getNombre()) != null) {
+                    model.addAttribute("errorCrear", "La marca con nombre (" + marcaData.getNombre() + ") ya existe.");
+                    return "crearMarca";
                 }
-            }
-            else {
-                throw new UsuarioNoLogeadoException();
+
+                marcaService.crearMarca(marcaData);
+
+                return "redirect:/administracion/marcas";
+
+            } catch (UsuarioServiceException e) {
+                model.addAttribute("errorCrear", e.getMessage());
             }
         }
 
         return "crearMarca";
     }
 
+
     // MODELOS
+
+    @GetMapping("/administracion/modelos")
+    public String mostrarListadoModelos(Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarAdmin(id);
+
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+        model.addAttribute("usuario", usuario);
+
+        List<Modelo> modelos = modeloService.listadoCompleto();
+        model.addAttribute("modelos", modelos);
+
+        return "administracionModelos";
+    }
+
+    @GetMapping("/administracion/modelos/editar/{modeloId}")
+    public String mostrarEditarModelo(@PathVariable(value = "modeloId") Long modeloId, Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarAdmin(id);
+
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+        model.addAttribute("usuario", usuario);
+
+        ModeloData modelo = modeloService.findById(modeloId);
+
+        if (modelo != null) {
+            List<Modelo> modelos = modeloService.listadoCompleto();
+            Modelo modeloBuscado = modeloService.buscarModeloPorId(modelos, modeloId);
+            model.addAttribute("modelo", modeloBuscado);
+
+            ModeloData modeloData = new ModeloData();
+            modeloData.setNombre(modeloBuscado.getNombre());
+
+            model.addAttribute("modeloData", modeloData);
+            return "editarModeloAdministrador";
+        }
+
+        return "redirect:/administracion/modelos";
+    }
+
+    @PostMapping("/administracion/modelos/editar/{modeloId}")
+    public String actualizarModelo(@PathVariable Long modeloId, @Valid ModeloData modeloData, BindingResult result, Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarAdmin(id);
+
+        model.addAttribute("modeloData", modeloData);
+
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+        model.addAttribute("usuario", usuario);
+
+        List<Modelo> modelos = modeloService.listadoCompleto();
+        Modelo modeloBuscado = modeloService.buscarModeloPorId(modelos, modeloId);
+        model.addAttribute("modelo", modeloBuscado);
+
+        if (result.hasErrors() || modeloData.getNombre().trim().isEmpty()) {
+            if(modeloData.getNombre().trim().isEmpty()) {
+                model.addAttribute("errorActualizar", "El nombre del modelo no puede estar vacío.");
+            } else {
+                System.out.println("Ha ocurrido un error.");
+            }
+            return "editarModeloAdministrador";
+        }
+        else{
+            try {
+                ModeloData nuevoModeloData = modeloService.findById(modeloId);
+
+                if(nuevoModeloData.getNombre() != null) {
+                    if (modeloService.findByNombre(modeloData.getNombre()) != null) {
+                        model.addAttribute("errorActualizar", "El modelo con nombre (" + modeloData.getNombre() + ") ya existe.");
+                        return "editarModeloAdministrador";
+                    }
+
+                    nuevoModeloData.setNombre(modeloData.getNombre());
+
+                    modeloService.actualizarModelo(modeloId, nuevoModeloData);
+
+                    return "redirect:/administracion/modelos";
+                }
+                else{
+                    model.addAttribute("errorActualizar", "Ha ocurrido un error al intentar actualizar.");
+                }
+
+            } catch (UsuarioServiceException e) {
+                model.addAttribute("errorActualizar", e.getMessage());
+            }
+        }
+
+        return "editarModeloAdministrador";
+    }
+
+    @PostMapping("/administracion/modelos/eliminar/{modeloId}")
+    public String eliminarModelo(@PathVariable("modeloId") Long modeloId, Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarAdmin(id);
+
+        if (modeloService.tieneVehiculosAsociados(modeloId)) {
+            model.addAttribute("error", "No se puede eliminar el modelo porque tiene vehículos asociados.");
+        } else {
+            modeloService.eliminarModelo(modeloId);
+            model.addAttribute("success", "Modelo eliminada con éxito.");
+        }
+
+        return "redirect:/administracion/modelos";
+    }
+
+    @GetMapping("/administracion/modelos/crear")
+    public String mostrarCrearModelo(Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarAdmin(id);
+
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+        model.addAttribute("usuario", usuario);
+
+        ModeloData modeloData = new ModeloData();
+        model.addAttribute("modeloData", modeloData);
+
+        List<Marca> marcas = marcaService.listadoCompleto();
+        model.addAttribute("marcas", marcas);
+
+        return "crearModelo";
+    }
+
+    @PostMapping("/administracion/modelos/crear")
+    public String crearModelo(@Valid ModeloData modeloData, BindingResult result, Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarAdmin(id);
+
+        model.addAttribute("modeloData", modeloData);
+
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+        model.addAttribute("usuario", usuario);
+
+        List<Marca> marcas = marcaService.listadoCompleto();
+        model.addAttribute("marcas", marcas);
+
+        if (result.hasErrors() || modeloData.getNombre().trim().isEmpty() || modeloData.getIdMarca() == null) {
+            if(modeloData.getNombre().trim().isEmpty()) {
+                model.addAttribute("errorCrear", "El nombre del modelo no puede estar vacío.");
+            } else if(modeloData.getIdMarca() == null) {
+                model.addAttribute("errorCrear", "Debe seleccionar una marca.");
+            } else {
+                System.out.println("Ha ocurrido un error.");
+            }
+            return "crearModelo";
+        }
+        else{
+            try {
+                if (modeloService.findByNombre(modeloData.getNombre()) != null) {
+                    model.addAttribute("errorCrear", "El modelo con nombre (" + modeloData.getNombre() + ") ya existe.");
+                    return "crearModelo";
+                }
+
+                modeloService.crearModelo(modeloData);
+
+                return "redirect:/administracion/modelos";
+
+            } catch (UsuarioServiceException e) {
+                model.addAttribute("errorCrear", e.getMessage());
+            }
+        }
+
+        return "crearModelo";
+    }
 }

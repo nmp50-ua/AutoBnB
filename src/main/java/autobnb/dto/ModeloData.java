@@ -1,10 +1,12 @@
 package autobnb.dto;
 
+import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
 public class ModeloData {
 
     private Long id;
+    @NotNull
     private String nombre;
     private Long idMarca;
 
