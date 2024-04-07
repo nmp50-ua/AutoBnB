@@ -3,9 +3,11 @@ package autobnb.service;
 import autobnb.dto.UsuarioData;
 import autobnb.model.Comentario;
 import autobnb.model.Cuenta;
+import autobnb.model.Pago;
 import autobnb.model.Usuario;
 import autobnb.repository.ComentarioRepository;
 import autobnb.repository.CuentaRepository;
+import autobnb.repository.PagoRepository;
 import autobnb.repository.UsuarioRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,8 @@ public class UsuarioService {
     private CuentaRepository cuentaRepository;
     @Autowired
     private ComentarioRepository comentarioRepository;
+    @Autowired
+    private PagoRepository pagoRepository;
     @Autowired
     private ModelMapper modelMapper;
 
@@ -224,5 +228,10 @@ public class UsuarioService {
     @Transactional(readOnly = true)
     public List<Comentario> obtenerComentariosPorUsuarioId(Long usuarioId) {
         return comentarioRepository.findByUsuarioId(usuarioId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Pago> obtenerPagosPorUsuarioId(Long usuarioId) {
+        return pagoRepository.findByUsuarioId(usuarioId);
     }
 }

@@ -5,8 +5,10 @@ import autobnb.controller.exception.UsuarioNoAutorizadoException;
 import autobnb.controller.exception.UsuarioNoLogeadoException;
 import autobnb.dto.ComentarioData;
 import autobnb.dto.UsuarioData;
+import autobnb.model.Alquiler;
 import autobnb.model.Comentario;
 import autobnb.model.Usuario;
+import autobnb.service.AlquilerService;
 import autobnb.service.ComentarioService;
 import autobnb.service.UsuarioService;
 import autobnb.service.UsuarioServiceException;
@@ -31,6 +33,8 @@ public class AdministracionController {
     UsuarioService usuarioService;
     @Autowired
     ComentarioService comentarioService;
+    @Autowired
+    AlquilerService alquilerService;
 
     private void comprobarAdmin(Long idUsuario) {
         if (idUsuario != null) {
@@ -169,5 +173,40 @@ public class AdministracionController {
         }
 
         return "redirect:/administracion/comentarios";
+    }
+
+    // ALQUILERES
+
+    @GetMapping("/administracion/alquileres")
+    public String mostrarListadoAlquileres(Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        if(id != null){
+            List<Usuario> usuarios = usuarioService.listadoCompleto();
+            Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+            model.addAttribute("usuario", usuario);
+
+            List<Alquiler> alquileres = alquilerService.listadoCompleto();
+            model.addAttribute("alquileres", alquileres);
+        }
+        else {
+            throw new UsuarioNoLogeadoException();
+        }
+
+        return "administracionAlquileres";
+    }
+
+    @PostMapping("/administracion/alquileres/eliminar/{alquilerId}")
+    public String eliminarAlquiler(@PathVariable("alquilerId") Long alquilerId) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        if(id != null){
+            alquilerService.eliminarAlquiler(alquilerId);
+        }
+        else {
+            throw new UsuarioNoLogeadoException();
+        }
+
+        return "redirect:/administracion/alquileres";
     }
 }

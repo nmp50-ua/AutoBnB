@@ -3,6 +3,7 @@ autobnb\service\UsuarioService.class
 autobnb\controller\AutenticacionController.class
 autobnb\dto\LoginData.class
 autobnb\dto\MarcaData.class
+autobnb\service\AlquilerService.class
 autobnb\dto\ColorData.class
 autobnb\dto\ComentarioData.class
 autobnb\authentication\ManagerUserSession.class

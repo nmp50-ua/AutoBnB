@@ -40,18 +40,15 @@ public class ComentarioService {
     public void eliminarComentario(Long comentarioId) {
         Comentario comentario = comentarioRepository.findById(comentarioId).orElse(null);
         if (comentario != null) {
-            // Elimina la referencia en el usuario y el vehículo antes de eliminar el comentario
             Usuario usuario = comentario.getUsuario();
             Vehiculo vehiculo = comentario.getVehiculo();
 
             usuario.getComentarios().remove(comentario);
             vehiculo.getComentarios().remove(comentario);
 
-            // Actualizar el usuario y el vehículo para reflejar la eliminación del comentario en la base de datos
             usuarioRepository.save(usuario);
             vehiculoRepository.save(vehiculo);
 
-            // Finalmente, elimina el comentario de la base de datos
             comentarioRepository.delete(comentario);
         }
     }

@@ -42,7 +42,7 @@ public class Alquiler implements Serializable {
     private Vehiculo vehiculo;
 
     @NotNull
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "idPago", unique = true)
     private Pago pago;
 

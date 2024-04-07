@@ -6,7 +6,9 @@ import autobnb.dto.ComentarioData;
 import autobnb.dto.RegistroData;
 import autobnb.dto.UsuarioData;
 import autobnb.model.Comentario;
+import autobnb.model.Pago;
 import autobnb.model.Usuario;
+import autobnb.service.AlquilerService;
 import autobnb.service.ComentarioService;
 import autobnb.service.UsuarioService;
 import autobnb.service.UsuarioServiceException;
@@ -31,6 +33,9 @@ public class PerfilController {
 
     @Autowired
     ComentarioService comentarioService;
+
+    @Autowired
+    AlquilerService alquilerService;
 
     // Método que devuelve el perfil
     @GetMapping("/perfil/{id}")
@@ -271,5 +276,43 @@ public class PerfilController {
         }
 
         return "redirect:/perfil/" + idUsuario + "/comentarios";
+    }
+
+    // ALQUILERES DE USUARIO
+
+    // Método para mostrar los alquileres de un usuario
+    @GetMapping("/perfil/{id}/alquileres")
+    public String mostrarListadoAlquileres(@PathVariable(value = "id") Long idUsuario, Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        if(id != null){
+            List<Usuario> usuarios = usuarioService.listadoCompleto();
+            Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, idUsuario);
+            model.addAttribute("usuario", usuario);
+
+            List<Pago> pagos = usuarioService.obtenerPagosPorUsuarioId(idUsuario);
+
+            model.addAttribute("pagos", pagos);
+        }
+        else {
+            throw new UsuarioNoLogeadoException();
+        }
+
+        return "alquileresUsuario";
+    }
+
+    //
+    @PostMapping("/perfil/{id}/alquileres/eliminar/{alquilerId}")
+    public String eliminarAlquiler(@PathVariable("id") Long idUsuario, @PathVariable("alquilerId") Long alquilerId) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        if(id != null){
+            alquilerService.eliminarAlquiler(alquilerId);
+        }
+        else {
+            throw new UsuarioNoLogeadoException();
+        }
+
+        return "redirect:/perfil/" + idUsuario + "/alquileres";
     }
 }
