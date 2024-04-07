@@ -11,7 +11,7 @@ import autobnb.model.Usuario;
 import autobnb.service.AlquilerService;
 import autobnb.service.ComentarioService;
 import autobnb.service.UsuarioService;
-import autobnb.service.UsuarioServiceException;
+import autobnb.service.exception.UsuarioServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

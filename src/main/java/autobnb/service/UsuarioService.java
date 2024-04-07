@@ -9,6 +9,7 @@ import autobnb.repository.ComentarioRepository;
 import autobnb.repository.CuentaRepository;
 import autobnb.repository.PagoRepository;
 import autobnb.repository.UsuarioRepository;
+import autobnb.service.exception.UsuarioServiceException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

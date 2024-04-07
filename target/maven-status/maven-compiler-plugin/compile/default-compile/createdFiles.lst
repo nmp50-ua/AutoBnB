@@ -14,6 +14,7 @@ autobnb\repository\VehiculoRepository.class
 autobnb\model\Alquiler.class
 autobnb\controller\exception\UsuarioNoLogeadoException.class
 autobnb\dto\TransmisionData.class
+autobnb\service\exception\UsuarioServiceException.class
 autobnb\model\Pago.class
 autobnb\dto\VehiculoData.class
 autobnb\model\Modelo.class
@@ -24,7 +25,6 @@ autobnb\controller\PerfilController.class
 autobnb\model\Color.class
 autobnb\model\Cuenta.class
 autobnb\dto\CategoriaData.class
-autobnb\service\UsuarioServiceException.class
 autobnb\repository\CategoriaRepository.class
 autobnb\dto\UsuarioData.class
 autobnb\model\Transmision.class
@@ -44,6 +44,8 @@ autobnb\repository\AlquilerRepository.class
 autobnb\repository\ColorRepository.class
 autobnb\model\Comentario.class
 autobnb\service\CuentaService.class
+autobnb\service\MarcaService.class
+autobnb\service\exception\MarcaServiceException.class
 autobnb\model\Marca.class
 autobnb\dto\CuentaData.class
 autobnb\Application.class
