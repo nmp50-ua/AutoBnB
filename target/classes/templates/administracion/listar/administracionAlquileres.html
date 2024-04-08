@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments :: head (titulo='Administración Alquileres')"></head>
+
+<body>
+<!-- Si el usuario está logueado, incluye el Navbar normal -->
+<div th:if="${usuario != null}">
+    <!-- Recuperamos el objeto "usuarios" que nos pasa el Controller y usamos sus atributos, pasandolos al NavBar -->
+    <div th:replace="fragments :: navbar(userName=${usuario} ? ${usuario.getNombre()} : '',
+                         userId=${usuario} ? ${usuario.getId()} : '',
+                         admin=${usuario} ? ${usuario.isAdministrador()} : '')"></div>
+</div>
+
+<!-- Si el usuario no está logueado, incluye el Navbar para no logueados -->
+<div th:if="${usuario == null}">
+    <div th:replace="fragments :: navbar_noLogueado"></div>
+</div>
+
+<main style="flex: 1;">
+    <div class="container-fluid">
+        <div class="row mt-3">
+            <div class="col">
+                <h2>Administración Alquileres</h2>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Vehículo</th>
+                        <th>Usuario</th>
+                        <th>Fecha Entrega</th>
+                        <th>Fecha Devolución</th>
+                        <th>Días Alquilado</th>
+                        <th>Litros Combustible</th>
+                        <th>Precio Final</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="alquiler: ${alquileres}">
+                        <td th:text="${alquiler.id}"></td>
+                        <td th:text="${alquiler.vehiculo.marca.nombre} + ' ' + ${alquiler.vehiculo.modelo.nombre}"></td>
+                        <td th:text="${alquiler.pago.usuario.nombre}"></td>
+                        <td th:text="${alquiler.fechaEntrega}"></td>
+                        <td th:text="${alquiler.fechaDevolucion}"></td>
+                        <td th:text="${alquiler.litrosCombustible == null} ? ${#dates.daysBetween(alquiler.fechaEntrega, alquiler.fechaDevolucion)} : '-'"></td>
+                        <td th:text="${alquiler.litrosCombustible != null} ? ${alquiler.litrosCombustible} : '-'"></td>
+                        <td th:text="${alquiler.precioFinal} + ' €'"></td>
+                        <td>
+                            <form th:action="@{'/administracion/alquileres/eliminar/' + ${alquiler.id}}" method="post">
+                                <button type="submit" class="btn btn-danger btn-xs">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <p class="text-center mt-3"><a href="/administracion" class="btn btn-link" style="color: #171a1d;">Volver al Panel</a></p>
+    </div>
+</main>
+
+<div th:replace="fragments :: footer"></div>
+<div th:replace="fragments::javascript"/>
+</body>
+</html>

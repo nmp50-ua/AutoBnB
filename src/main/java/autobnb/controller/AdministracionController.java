@@ -3,10 +3,7 @@ package autobnb.controller;
 import autobnb.authentication.ManagerUserSession;
 import autobnb.controller.exception.UsuarioNoAutorizadoException;
 import autobnb.controller.exception.UsuarioNoLogeadoException;
-import autobnb.dto.ComentarioData;
-import autobnb.dto.MarcaData;
-import autobnb.dto.ModeloData;
-import autobnb.dto.UsuarioData;
+import autobnb.dto.*;
 import autobnb.model.*;
 import autobnb.service.*;
 import autobnb.service.exception.UsuarioServiceException;
@@ -17,10 +14,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Objects;
 
 @Controller
 public class AdministracionController {
@@ -39,6 +36,12 @@ public class AdministracionController {
     MarcaService marcaService;
     @Autowired
     ModeloService modeloService;
+    @Autowired
+    ColorService colorService;
+    @Autowired
+    TransmisionService transmisionService;
+    @Autowired
+    CategoriaService categoriaService;
 
     private void comprobarAdmin(Long idUsuario) {
         if (idUsuario != null) {
@@ -60,7 +63,7 @@ public class AdministracionController {
         UsuarioData user = usuarioService.findById(id);
         model.addAttribute("usuario", user);
 
-        return "panelAdministrador";
+        return "administracion/panelAdministrador";
     }
 
 
@@ -79,7 +82,7 @@ public class AdministracionController {
         List<Comentario> comentarios = comentarioService.listadoCompleto();
         model.addAttribute("comentarios", comentarios);
 
-        return "administracionComentarios";
+        return "administracion/listar/administracionComentarios";
     }
 
     @GetMapping("/administracion/comentarios/editar/{comentarioId}")
@@ -106,7 +109,7 @@ public class AdministracionController {
             comentarioData.setIdUsuario(comentarioBuscado.getUsuario().getId());
 
             model.addAttribute("comentarioData", comentarioData);
-            return "editarComentarioAdministrador";
+            return "administracion/editar/editarComentarioAdministrador";
         }
 
 
@@ -155,7 +158,7 @@ public class AdministracionController {
         Comentario comentarioBuscado = comentarioService.buscarComentarioPorId(comentarios, comentarioId);
         model.addAttribute("comentario", comentarioBuscado);
 
-        return "editarComentarioAdministrador";
+        return "administracion/editar/editarComentarioAdministrador";
     }
 
     @PostMapping("/administracion/comentarios/eliminar/{comentarioId}")
@@ -182,7 +185,7 @@ public class AdministracionController {
         List<Alquiler> alquileres = alquilerService.listadoCompleto();
         model.addAttribute("alquileres", alquileres);
 
-        return "administracionAlquileres";
+        return "administracion/listar/administracionAlquileres";
     }
 
     @PostMapping("/administracion/alquileres/eliminar/{alquilerId}")
@@ -209,7 +212,7 @@ public class AdministracionController {
         List<Cuenta> cuentas = cuentaService.listadoCompleto();
         model.addAttribute("cuentas", cuentas);
 
-        return "administracionCuentas";
+        return "administracion/listar/administracionCuentas";
     }
 
 
@@ -228,7 +231,7 @@ public class AdministracionController {
         List<Marca> marcas = marcaService.listadoCompleto();
         model.addAttribute("marcas", marcas);
 
-        return "administracionMarcas";
+        return "administracion/listar/administracionMarcas";
     }
 
     @GetMapping("/administracion/marcas/editar/{marcaId}")
@@ -252,7 +255,7 @@ public class AdministracionController {
             marcaData.setNombre(marcaBuscada.getNombre());
 
             model.addAttribute("marcaData", marcaData);
-            return "editarMarcaAdministrador";
+            return "administracion/editar/editarMarcaAdministrador";
         }
 
         return "redirect:/administracion/marcas";
@@ -280,16 +283,16 @@ public class AdministracionController {
             } else {
                 System.out.println("Ha ocurrido un error.");
             }
-            return "editarMarcaAdministrador";
+            return "administracion/editar/editarMarcaAdministrador";
         }
         else{
             try {
                 MarcaData nuevaMarcaData = marcaService.findById(marcaId);
 
                 if(nuevaMarcaData.getNombre() != null) {
-                    if (marcaService.findByNombre(nuevaMarcaData.getNombre()) != null) {
+                    if (marcaService.findByNombre(marcaData.getNombre()) != null) {
                         model.addAttribute("errorActualizar", "La marca con nombre (" + marcaData.getNombre() + ") ya existe.");
-                        return "editarMarcaAdministrador";
+                        return "administracion/editar/editarMarcaAdministrador";
                     }
 
                     nuevaMarcaData.setNombre(marcaData.getNombre());
@@ -307,7 +310,7 @@ public class AdministracionController {
             }
         }
 
-        return "editarMarcaAdministrador";
+        return "administracion/editar/editarMarcaAdministrador";
     }
 
     @PostMapping("/administracion/marcas/eliminar/{marcaId}")
@@ -338,7 +341,7 @@ public class AdministracionController {
 
         MarcaData marcaData = new MarcaData();
         model.addAttribute("marcaData", marcaData);
-        return "crearMarca";
+        return "administracion/crear/crearMarca";
     }
 
     @PostMapping("/administracion/marcas/crear")
@@ -359,13 +362,13 @@ public class AdministracionController {
             } else {
                 System.out.println("Ha ocurrido un error.");
             }
-            return "crearMarca";
+            return "administracion/crear/crearMarca";
         }
         else{
             try {
                 if (marcaService.findByNombre(marcaData.getNombre()) != null) {
                     model.addAttribute("errorCrear", "La marca con nombre (" + marcaData.getNombre() + ") ya existe.");
-                    return "crearMarca";
+                    return "administracion/crear/crearMarca";
                 }
 
                 marcaService.crearMarca(marcaData);
@@ -377,7 +380,7 @@ public class AdministracionController {
             }
         }
 
-        return "crearMarca";
+        return "administracion/crear/crearMarca";
     }
 
 
@@ -396,7 +399,7 @@ public class AdministracionController {
         List<Modelo> modelos = modeloService.listadoCompleto();
         model.addAttribute("modelos", modelos);
 
-        return "administracionModelos";
+        return "administracion/listar/administracionModelos";
     }
 
     @GetMapping("/administracion/modelos/editar/{modeloId}")
@@ -420,7 +423,7 @@ public class AdministracionController {
             modeloData.setNombre(modeloBuscado.getNombre());
 
             model.addAttribute("modeloData", modeloData);
-            return "editarModeloAdministrador";
+            return "administracion/editar/editarModeloAdministrador";
         }
 
         return "redirect:/administracion/modelos";
@@ -448,7 +451,7 @@ public class AdministracionController {
             } else {
                 System.out.println("Ha ocurrido un error.");
             }
-            return "editarModeloAdministrador";
+            return "administracion/editar/editarModeloAdministrador";
         }
         else{
             try {
@@ -457,7 +460,7 @@ public class AdministracionController {
                 if(nuevoModeloData.getNombre() != null) {
                     if (modeloService.findByNombre(modeloData.getNombre()) != null) {
                         model.addAttribute("errorActualizar", "El modelo con nombre (" + modeloData.getNombre() + ") ya existe.");
-                        return "editarModeloAdministrador";
+                        return "administracion/editar/editarModeloAdministrador";
                     }
 
                     nuevoModeloData.setNombre(modeloData.getNombre());
@@ -475,7 +478,7 @@ public class AdministracionController {
             }
         }
 
-        return "editarModeloAdministrador";
+        return "administracion/editar/editarModeloAdministrador";
     }
 
     @PostMapping("/administracion/modelos/eliminar/{modeloId}")
@@ -510,7 +513,7 @@ public class AdministracionController {
         List<Marca> marcas = marcaService.listadoCompleto();
         model.addAttribute("marcas", marcas);
 
-        return "crearModelo";
+        return "administracion/crear/crearModelo";
     }
 
     @PostMapping("/administracion/modelos/crear")
@@ -536,13 +539,13 @@ public class AdministracionController {
             } else {
                 System.out.println("Ha ocurrido un error.");
             }
-            return "crearModelo";
+            return "administracion/crear/crearModelo";
         }
         else{
             try {
                 if (modeloService.findByNombre(modeloData.getNombre()) != null) {
                     model.addAttribute("errorCrear", "El modelo con nombre (" + modeloData.getNombre() + ") ya existe.");
-                    return "crearModelo";
+                    return "administracion/crear/crearModelo";
                 }
 
                 modeloService.crearModelo(modeloData);
@@ -554,6 +557,515 @@ public class AdministracionController {
             }
         }
 
-        return "crearModelo";
+        return "administracion/crear/crearModelo";
+    }
+
+
+    // COLORES
+
+    @GetMapping("/administracion/colores")
+    public String mostrarListadoColores(Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarAdmin(id);
+
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+        model.addAttribute("usuario", usuario);
+
+        List<Color> colores = colorService.listadoCompleto();
+        model.addAttribute("colores", colores);
+
+        return "administracion/listar/administracionColores";
+    }
+
+    @GetMapping("/administracion/colores/editar/{colorId}")
+    public String mostrarEditarColor(@PathVariable(value = "colorId") Long colorId, Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarAdmin(id);
+
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+        model.addAttribute("usuario", usuario);
+
+        ColorData color = colorService.findById(colorId);
+
+        if (color != null) {
+            List<Color> colores = colorService.listadoCompleto();
+            Color colorBuscado = colorService.buscarColorPorId(colores, colorId);
+            model.addAttribute("color", colorBuscado);
+
+            ColorData colorData = new ColorData();
+            colorData.setNombre(colorBuscado.getNombre());
+
+            model.addAttribute("colorData", colorData);
+            return "administracion/editar/editarColorAdministrador";
+        }
+
+        return "redirect:/administracion/colores";
+    }
+
+    @PostMapping("/administracion/colores/editar/{colorId}")
+    public String actualizarColor(@PathVariable Long colorId, @Valid ColorData colorData, BindingResult result, Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarAdmin(id);
+
+        model.addAttribute("colorData", colorData);
+
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+        model.addAttribute("usuario", usuario);
+
+        List<Color> colores = colorService.listadoCompleto();
+        Color colorBuscado = colorService.buscarColorPorId(colores, colorId);
+        model.addAttribute("color", colorBuscado);
+
+        if (result.hasErrors() || colorData.getNombre().trim().isEmpty()) {
+            if(colorData.getNombre().trim().isEmpty()) {
+                model.addAttribute("errorActualizar", "El nombre del color no puede estar vacío.");
+            } else {
+                System.out.println("Ha ocurrido un error.");
+            }
+            return "administracion/editar/editarColorAdministrador";
+        }
+        else{
+            try {
+                ColorData nuevoColorData = colorService.findById(colorId);
+
+                if(nuevoColorData.getNombre() != null) {
+                    if (colorService.findByNombre(colorData.getNombre()) != null) {
+                        model.addAttribute("errorActualizar", "El color con nombre (" + colorData.getNombre() + ") ya existe.");
+                        return "administracion/editar/editarColorAdministrador";
+                    }
+
+                    nuevoColorData.setNombre(colorData.getNombre());
+
+                    colorService.actualizarColor(colorId, nuevoColorData);
+
+                    return "redirect:/administracion/colores";
+                }
+                else{
+                    model.addAttribute("errorActualizar", "Ha ocurrido un error al intentar actualizar.");
+                }
+
+            } catch (UsuarioServiceException e) {
+                model.addAttribute("errorActualizar", e.getMessage());
+            }
+        }
+
+        return "administracion/editar/editarColorAdministrador";
+    }
+
+    @PostMapping("/administracion/colores/eliminar/{colorId}")
+    public String eliminarColor(@PathVariable("colorId") Long colorId, Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarAdmin(id);
+
+        if (colorService.tieneVehiculosAsociados(colorId)) {
+            model.addAttribute("error", "No se puede eliminar el color porque tiene vehículos asociados.");
+        } else {
+            colorService.eliminarColor(colorId);
+            model.addAttribute("success", "Color eliminado con éxito.");
+        }
+
+        return "redirect:/administracion/colores";
+    }
+
+    @GetMapping("/administracion/colores/crear")
+    public String mostrarCrearColor(Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarAdmin(id);
+
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+        model.addAttribute("usuario", usuario);
+
+        ColorData colorData = new ColorData();
+        model.addAttribute("colorData", colorData);
+
+        return "administracion/crear/crearColor";
+    }
+
+    @PostMapping("/administracion/colores/crear")
+    public String crearColor(@Valid ColorData colorData, BindingResult result, Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarAdmin(id);
+
+        model.addAttribute("colorData", colorData);
+
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+        model.addAttribute("usuario", usuario);
+
+        if (result.hasErrors() || colorData.getNombre().trim().isEmpty()) {
+            if(colorData.getNombre().trim().isEmpty()) {
+                model.addAttribute("errorCrear", "El nombre del color no puede estar vacío.");
+            } else {
+                System.out.println("Ha ocurrido un error.");
+            }
+            return "administracion/crear/crearColor";
+        }
+        else{
+            try {
+                if (colorService.findByNombre(colorData.getNombre()) != null) {
+                    model.addAttribute("errorCrear", "El color con nombre (" + colorData.getNombre() + ") ya existe.");
+                    return "administracion/crear/crearColor";
+                }
+
+                colorService.crearColor(colorData);
+
+                return "redirect:/administracion/colores";
+
+            } catch (UsuarioServiceException e) {
+                model.addAttribute("errorCrear", e.getMessage());
+            }
+        }
+
+        return "administracion/crear/crearColor";
+    }
+
+
+    // TRANSMISIONES
+
+    @GetMapping("/administracion/transmisiones")
+    public String mostrarListadoTransmisiones(Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarAdmin(id);
+
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+        model.addAttribute("usuario", usuario);
+
+        List<Transmision> transmisiones = transmisionService.listadoCompleto();
+        model.addAttribute("transmisiones", transmisiones);
+
+        return "administracion/listar/administracionTransmisiones";
+    }
+
+    @GetMapping("/administracion/transmisiones/editar/{transmisionId}")
+    public String mostrarEditarTransmision(@PathVariable(value = "transmisionId") Long transmisionId, Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarAdmin(id);
+
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+        model.addAttribute("usuario", usuario);
+
+        TransmisionData transmision = transmisionService.findById(transmisionId);
+
+        if (transmision != null) {
+            List<Transmision> transmisiones = transmisionService.listadoCompleto();
+            Transmision transmisionBuscada = transmisionService.buscarTransmisionPorId(transmisiones, transmisionId);
+            model.addAttribute("transmision", transmisionBuscada);
+
+            TransmisionData transmisionData = new TransmisionData();
+            transmisionData.setNombre(transmisionBuscada.getNombre());
+
+            model.addAttribute("transmisionData", transmisionData);
+            return "administracion/editar/editarTransmisionAdministrador";
+        }
+
+        return "redirect:/administracion/transmisiones";
+    }
+
+    @PostMapping("/administracion/transmisiones/editar/{transmisionId}")
+    public String actualizarTransmision(@PathVariable Long transmisionId, @Valid TransmisionData transmisionData, BindingResult result, Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarAdmin(id);
+
+        model.addAttribute("transmisionData", transmisionData);
+
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+        model.addAttribute("usuario", usuario);
+
+        List<Transmision> transmisiones = transmisionService.listadoCompleto();
+        Transmision transmisionBuscada = transmisionService.buscarTransmisionPorId(transmisiones, transmisionId);
+        model.addAttribute("transmision", transmisionBuscada);
+
+        if (result.hasErrors() || transmisionData.getNombre().trim().isEmpty()) {
+            if(transmisionData.getNombre().trim().isEmpty()) {
+                model.addAttribute("errorActualizar", "El nombre de la transmisión no puede estar vacío.");
+            } else {
+                System.out.println("Ha ocurrido un error.");
+            }
+            return "administracion/editar/editarTransmisionAdministrador";
+        }
+        else{
+            try {
+                TransmisionData nuevoTransmisionData = transmisionService.findById(transmisionId);
+
+                if(nuevoTransmisionData.getNombre() != null) {
+                    if (transmisionService.findByNombre(transmisionData.getNombre()) != null) {
+                        model.addAttribute("errorActualizar", "La transmisión con nombre (" + transmisionData.getNombre() + ") ya existe.");
+                        return "administracion/editar/editarTransmisionAdministrador";
+                    }
+
+                    nuevoTransmisionData.setNombre(transmisionData.getNombre());
+
+                    transmisionService.actualizarTransmision(transmisionId, nuevoTransmisionData);
+
+                    return "redirect:/administracion/transmisiones";
+                }
+                else{
+                    model.addAttribute("errorActualizar", "Ha ocurrido un error al intentar actualizar.");
+                }
+
+            } catch (UsuarioServiceException e) {
+                model.addAttribute("errorActualizar", e.getMessage());
+            }
+        }
+
+        return "administracion/editar/editarTransmisionAdministrador";
+    }
+
+    @PostMapping("/administracion/transmisiones/eliminar/{transmisionId}")
+    public String eliminarTransmision(@PathVariable("transmisionId") Long transmisionId, Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarAdmin(id);
+
+        if (transmisionService.tieneVehiculosAsociados(transmisionId)) {
+            model.addAttribute("error", "No se puede eliminar la transmisión porque tiene vehículos asociados.");
+        } else {
+            transmisionService.eliminarTransmision(transmisionId);
+            model.addAttribute("success", "Transmisión eliminada con éxito.");
+        }
+
+        return "redirect:/administracion/transmisiones";
+    }
+
+    @GetMapping("/administracion/transmisiones/crear")
+    public String mostrarCrearTransmision(Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarAdmin(id);
+
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+        model.addAttribute("usuario", usuario);
+
+        TransmisionData transmisionData = new TransmisionData();
+        model.addAttribute("transmisionData", transmisionData);
+
+        return "administracion/crear/crearTransmision";
+    }
+
+    @PostMapping("/administracion/transmisiones/crear")
+    public String crearTransmision(@Valid TransmisionData transmisionData, BindingResult result, Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarAdmin(id);
+
+        model.addAttribute("transmisionData", transmisionData);
+
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+        model.addAttribute("usuario", usuario);
+
+        if (result.hasErrors() || transmisionData.getNombre().trim().isEmpty()) {
+            if(transmisionData.getNombre().trim().isEmpty()) {
+                model.addAttribute("errorCrear", "El nombre de la transmisión no puede estar vacío.");
+            } else {
+                System.out.println("Ha ocurrido un error.");
+            }
+            return "administracion/crear/crearTransmision";
+        }
+        else{
+            try {
+                if (transmisionService.findByNombre(transmisionData.getNombre()) != null) {
+                    model.addAttribute("errorCrear", "La transmisión con nombre (" + transmisionData.getNombre() + ") ya existe.");
+                    return "administracion/crear/crearTransmision";
+                }
+
+                transmisionService.crearTransmision(transmisionData);
+
+                return "redirect:/administracion/transmisiones";
+
+            } catch (UsuarioServiceException e) {
+                model.addAttribute("errorCrear", e.getMessage());
+            }
+        }
+
+        return "administracion/crear/crearTransmision";
+    }
+
+
+    // CATETORIAS
+
+    @GetMapping("/administracion/categorias")
+    public String mostrarListadoCategorias(Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarAdmin(id);
+
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+        model.addAttribute("usuario", usuario);
+
+        List<Categoria> categorias = categoriaService.listadoCompleto();
+        model.addAttribute("categorias", categorias);
+
+        return "administracion/listar/administracionCategorias";
+    }
+
+    @GetMapping("/administracion/categorias/editar/{categoriaId}")
+    public String mostrarEditarCategoria(@PathVariable(value = "categoriaId") Long categoriaId, Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarAdmin(id);
+
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+        model.addAttribute("usuario", usuario);
+
+        CategoriaData categoria = categoriaService.findById(categoriaId);
+
+        if (categoria != null) {
+            List<Categoria> categorias = categoriaService.listadoCompleto();
+            Categoria categoriaBuscada = categoriaService.buscarCategoriaPorId(categorias, categoriaId);
+            model.addAttribute("categoria", categoriaBuscada);
+
+            CategoriaData categoriaData = new CategoriaData();
+            categoriaData.setNombre(categoriaBuscada.getNombre());
+            categoriaData.setDescripcion(categoriaBuscada.getDescripcion());
+
+            model.addAttribute("categoriaData", categoriaData);
+            return "administracion/editar/editarCategoriaAdministrador";
+        }
+
+        return "redirect:/administracion/categorias";
+    }
+
+    @PostMapping("/administracion/categorias/editar/{categoriaId}")
+    public String actualizarCategoria(@PathVariable Long categoriaId, @Valid CategoriaData categoriaData, BindingResult result, Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarAdmin(id);
+
+        model.addAttribute("categoriaData", categoriaData);
+
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+        model.addAttribute("usuario", usuario);
+
+        List<Categoria> categorias = categoriaService.listadoCompleto();
+        Categoria categoriaBuscada = categoriaService.buscarCategoriaPorId(categorias, categoriaId);
+        model.addAttribute("categoria", categoriaBuscada);
+
+        if (result.hasErrors() || categoriaData.getNombre().trim().isEmpty()) {
+            if(categoriaData.getNombre().trim().isEmpty()) {
+                model.addAttribute("errorActualizar", "El nombre de la categoria no puede estar vacío.");
+            } else {
+                System.out.println("Ha ocurrido un error.");
+            }
+            return "administracion/editar/editarCategoriaAdministrador";
+        }
+        else{
+            try {
+                CategoriaData nuevaCategoriaData = categoriaService.findById(categoriaId);
+
+                if(nuevaCategoriaData.getNombre() != null) {
+                    if ((categoriaService.findByNombre(categoriaData.getNombre()) != null) && Objects.equals(categoriaData.getDescripcion(), nuevaCategoriaData.getDescripcion())) {
+                        model.addAttribute("errorActualizar", "La categoria con nombre (" + categoriaData.getNombre() + ") ya existe.");
+                        return "administracion/editar/editarCategoriaAdministrador";
+                    }
+
+                    nuevaCategoriaData.setNombre(categoriaData.getNombre());
+                    nuevaCategoriaData.setDescripcion(categoriaData.getDescripcion());
+
+                    categoriaService.actualizarCategoria(categoriaId, nuevaCategoriaData);
+
+                    return "redirect:/administracion/categorias";
+                }
+                else{
+                    model.addAttribute("errorActualizar", "Ha ocurrido un error al intentar actualizar.");
+                }
+
+            } catch (UsuarioServiceException e) {
+                model.addAttribute("errorActualizar", e.getMessage());
+            }
+        }
+
+        return "administracion/editar/editarCategoriaAdministrador";
+    }
+
+    @PostMapping("/administracion/categorias/eliminar/{categoriaId}")
+    public String eliminarCategoria(@PathVariable("categoriaId") Long categoriaId, Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarAdmin(id);
+
+        if (categoriaService.tieneVehiculosAsociados(categoriaId)) {
+            model.addAttribute("error", "No se puede eliminar la categoria porque tiene vehículos asociados.");
+        } else {
+            categoriaService.eliminarCategoria(categoriaId);
+            model.addAttribute("success", "Categoria eliminada con éxito.");
+        }
+
+        return "redirect:/administracion/categorias";
+    }
+
+    @GetMapping("/administracion/categorias/crear")
+    public String mostrarCrearCategoria(Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarAdmin(id);
+
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+        model.addAttribute("usuario", usuario);
+
+        CategoriaData categoriaData = new CategoriaData();
+        model.addAttribute("categoriaData", categoriaData);
+
+        return "administracion/crear/crearCategoria";
+    }
+
+    @PostMapping("/administracion/categorias/crear")
+    public String crearCategoria(@Valid CategoriaData categoriaData, BindingResult result, Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarAdmin(id);
+
+        model.addAttribute("categoriaData", categoriaData);
+
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+        model.addAttribute("usuario", usuario);
+
+        if (result.hasErrors() || categoriaData.getNombre().trim().isEmpty()) {
+            if(categoriaData.getNombre().trim().isEmpty()) {
+                model.addAttribute("errorCrear", "El nombre de la categoria no puede estar vacío.");
+            } else {
+                System.out.println("Ha ocurrido un error.");
+            }
+            return "administracion/crear/crearCategoria";
+        }
+        else{
+            try {
+                if (categoriaService.findByNombre(categoriaData.getNombre()) != null) {
+                    model.addAttribute("errorCrear", "La categoria con nombre (" + categoriaData.getNombre() + ") ya existe.");
+                    return "administracion/crear/crearCategoria";
+                }
+
+                categoriaService.crearCategoria(categoriaData);
+
+                return "redirect:/administracion/categorias";
+
+            } catch (UsuarioServiceException e) {
+                model.addAttribute("errorCrear", e.getMessage());
+            }
+        }
+
+        return "administracion/crear/crearCategoria";
     }
 }
