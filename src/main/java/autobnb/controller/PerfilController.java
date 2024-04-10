@@ -1,16 +1,11 @@
 package autobnb.controller;
 
 import autobnb.authentication.ManagerUserSession;
+import autobnb.controller.exception.UsuarioNoAutorizadoException;
 import autobnb.controller.exception.UsuarioNoLogeadoException;
-import autobnb.dto.ComentarioData;
-import autobnb.dto.RegistroData;
-import autobnb.dto.UsuarioData;
-import autobnb.model.Comentario;
-import autobnb.model.Pago;
-import autobnb.model.Usuario;
-import autobnb.service.AlquilerService;
-import autobnb.service.ComentarioService;
-import autobnb.service.UsuarioService;
+import autobnb.dto.*;
+import autobnb.model.*;
+import autobnb.service.*;
 import autobnb.service.exception.UsuarioServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,42 +14,57 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class PerfilController {
     @Autowired
     private ManagerUserSession managerUserSession;
-
     @Autowired
     UsuarioService usuarioService;
-
     @Autowired
     ComentarioService comentarioService;
-
     @Autowired
     AlquilerService alquilerService;
+    @Autowired
+    VehiculoService vehiculoService;
+    @Autowired
+    MarcaService marcaService;
+    @Autowired
+    ModeloService modeloService;
+    @Autowired
+    ColorService colorService;
+    @Autowired
+    TransmisionService transmisionService;
+    @Autowired
+    CategoriaService categoriaService;
+
+    private void comprobarLogueado(Long idUsuario) {
+        if (idUsuario == null) {
+            throw new UsuarioNoLogeadoException();
+        }
+    }
 
     // Método que devuelve el perfil
     @GetMapping("/perfil/{id}")
     public String perfil(@PathVariable(value = "id") Long idUsuario, Model model) {
         Long id = managerUserSession.usuarioLogeado();
 
-        if(id != null){
-            // Si está logueado, lo buscamos en la base de datos y lo añadimos al atributo "usuario"
-            UsuarioData user = usuarioService.findById(id);
-            model.addAttribute("logueado", user);
+        comprobarLogueado(id);
 
-            List<Usuario> usuarios = usuarioService.listadoCompleto();
-            Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, idUsuario);
+        // Si está logueado, lo buscamos en la base de datos y lo añadimos al atributo "usuario"
+        UsuarioData user = usuarioService.findById(id);
+        model.addAttribute("logueado", user);
 
-            model.addAttribute("usuario", usuario);
-        }
-        else {
-            throw new UsuarioNoLogeadoException();
-        }
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, idUsuario);
+
+        model.addAttribute("usuario", usuario);
 
         return "perfil";
     }
@@ -69,31 +79,28 @@ public class PerfilController {
     public String mostrarActualizarPerfil(@PathVariable(value = "id") Long idUsuario, Model model) {
         Long id = managerUserSession.usuarioLogeado();
 
-        if(id != null){
-            List<Usuario> usuarios = usuarioService.listadoCompleto();
-            Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, idUsuario);
-            model.addAttribute("usuario", usuario);
+        comprobarLogueado(id);
 
-            RegistroData nuevo = new RegistroData();
-            nuevo.setEmail(usuario.getEmail());
-            nuevo.setPassword(usuario.getPassword());
-            nuevo.setNombre(usuario.getNombre());
-            nuevo.setApellidos(usuario.getApellidos());
-            nuevo.setTelefono(usuario.getTelefono());
-            nuevo.setCodigoPostal(usuario.getCodigoPostal());
-            nuevo.setCiudad(usuario.getCiudad());
-            nuevo.setDireccion(usuario.getDireccion());
-            nuevo.setDni(usuario.getDni());
-            nuevo.setFechaCaducidadDni(usuario.getFechaCaducidadDni());
-            nuevo.setFechaCarnetConducir(usuario.getFechaCarnetConducir());
-            nuevo.setImagen(usuario.getImagen());
-            nuevo.setNumeroCuenta(usuario.getCuenta().getNumeroCuenta());
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, idUsuario);
+        model.addAttribute("usuario", usuario);
 
-            model.addAttribute("registroData", nuevo);
-        }
-        else {
-            throw new UsuarioNoLogeadoException();
-        }
+        RegistroData nuevo = new RegistroData();
+        nuevo.setEmail(usuario.getEmail());
+        nuevo.setPassword(usuario.getPassword());
+        nuevo.setNombre(usuario.getNombre());
+        nuevo.setApellidos(usuario.getApellidos());
+        nuevo.setTelefono(usuario.getTelefono());
+        nuevo.setCodigoPostal(usuario.getCodigoPostal());
+        nuevo.setCiudad(usuario.getCiudad());
+        nuevo.setDireccion(usuario.getDireccion());
+        nuevo.setDni(usuario.getDni());
+        nuevo.setFechaCaducidadDni(usuario.getFechaCaducidadDni());
+        nuevo.setFechaCarnetConducir(usuario.getFechaCarnetConducir());
+        nuevo.setImagen(usuario.getImagen());
+        nuevo.setNumeroCuenta(usuario.getCuenta().getNumeroCuenta());
+
+        model.addAttribute("registroData", nuevo);
 
         return "actualizarPerfil";
     }
@@ -107,43 +114,40 @@ public class PerfilController {
             System.out.println("Ha ocurrido un error.");
         }
         else{
-            if(id != null){
-                try {
-                    UsuarioData nuevoUsuarioData = usuarioService.findById(idUsuario);
+            comprobarLogueado(id);
 
-                    if(registroData.getEmail() != null && registroData.getPassword() != null && registroData.getNombre() != null
-                            && registroData.getTelefono() != null && registroData.getCodigoPostal() != null
-                            && registroData.getCiudad() != null && registroData.getDireccion() != null && registroData.getDni() != null
-                            && registroData.getFechaCaducidadDni() != null && registroData.getFechaCarnetConducir() != null) {
-                        nuevoUsuarioData.setEmail(registroData.getEmail());
-                        nuevoUsuarioData.setPassword(registroData.getPassword());
-                        nuevoUsuarioData.setNombre(registroData.getNombre());
-                        nuevoUsuarioData.setApellidos(registroData.getApellidos());
-                        nuevoUsuarioData.setTelefono(registroData.getTelefono());
-                        nuevoUsuarioData.setCiudad(registroData.getCiudad());
-                        nuevoUsuarioData.setDireccion(registroData.getDireccion());
-                        nuevoUsuarioData.setCodigoPostal(registroData.getCodigoPostal());
-                        nuevoUsuarioData.setDni(registroData.getDni());
-                        nuevoUsuarioData.setFechaCaducidadDni(registroData.getFechaCaducidadDni());
-                        nuevoUsuarioData.setFechaCarnetConducir(registroData.getFechaCarnetConducir());
-                        nuevoUsuarioData.setImagen(registroData.getImagen());
+            try {
+                UsuarioData nuevoUsuarioData = usuarioService.findById(idUsuario);
 
-                        // Validar y actualizar los datos del usuario en el servicio
-                        usuarioService.actualizarUsuarioPorId(idUsuario, nuevoUsuarioData);
+                if(registroData.getEmail() != null && registroData.getPassword() != null && registroData.getNombre() != null
+                        && registroData.getTelefono() != null && registroData.getCodigoPostal() != null
+                        && registroData.getCiudad() != null && registroData.getDireccion() != null && registroData.getDni() != null
+                        && registroData.getFechaCaducidadDni() != null && registroData.getFechaCarnetConducir() != null) {
+                    nuevoUsuarioData.setEmail(registroData.getEmail());
+                    nuevoUsuarioData.setPassword(registroData.getPassword());
+                    nuevoUsuarioData.setNombre(registroData.getNombre());
+                    nuevoUsuarioData.setApellidos(registroData.getApellidos());
+                    nuevoUsuarioData.setTelefono(registroData.getTelefono());
+                    nuevoUsuarioData.setCiudad(registroData.getCiudad());
+                    nuevoUsuarioData.setDireccion(registroData.getDireccion());
+                    nuevoUsuarioData.setCodigoPostal(registroData.getCodigoPostal());
+                    nuevoUsuarioData.setDni(registroData.getDni());
+                    nuevoUsuarioData.setFechaCaducidadDni(registroData.getFechaCaducidadDni());
+                    nuevoUsuarioData.setFechaCarnetConducir(registroData.getFechaCarnetConducir());
+                    nuevoUsuarioData.setImagen(registroData.getImagen());
 
-                        // Redirigir al perfil del usuario
-                        return "redirect:/perfil/" + idUsuario;
-                    }
-                    else{
-                        model.addAttribute("errorActualizar", "Ho ocurrido un error al intentar actualizar.");
-                    }
+                    // Validar y actualizar los datos del usuario en el servicio
+                    usuarioService.actualizarUsuarioPorId(idUsuario, nuevoUsuarioData);
 
-                } catch (UsuarioServiceException e) {
-                    model.addAttribute("errorActualizar", e.getMessage());
+                    // Redirigir al perfil del usuario
+                    return "redirect:/perfil/" + idUsuario;
                 }
-            }
-            else {
-                throw new UsuarioNoLogeadoException();
+                else{
+                    model.addAttribute("errorActualizar", "Ho ocurrido un error al intentar actualizar.");
+                }
+
+            } catch (UsuarioServiceException e) {
+                model.addAttribute("errorActualizar", e.getMessage());
             }
         }
 
@@ -160,6 +164,7 @@ public class PerfilController {
         return "actualizarPerfil";
     }
 
+
     // COMENTARIOS DE USUARIO
 
     // Método para mostrar los comentarios de un usuario
@@ -167,18 +172,15 @@ public class PerfilController {
     public String mostrarListadoComentarios(@PathVariable(value = "id") Long idUsuario, Model model) {
         Long id = managerUserSession.usuarioLogeado();
 
-        if(id != null){
-            List<Usuario> usuarios = usuarioService.listadoCompleto();
-            Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, idUsuario);
-            model.addAttribute("usuario", usuario);
+        comprobarLogueado(id);
 
-            List<Comentario> comentarios = usuarioService.obtenerComentariosPorUsuarioId(idUsuario);
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, idUsuario);
+        model.addAttribute("usuario", usuario);
 
-            model.addAttribute("comentarios", comentarios);
-        }
-        else {
-            throw new UsuarioNoLogeadoException();
-        }
+        List<Comentario> comentarios = usuarioService.obtenerComentariosPorUsuarioId(idUsuario);
+
+        model.addAttribute("comentarios", comentarios);
 
         return "comentariosUsuario";
     }
@@ -191,26 +193,23 @@ public class PerfilController {
         Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, idUsuario);
         model.addAttribute("usuario", usuario);
 
-        if(id != null){
-            ComentarioData comentario = comentarioService.findById(comentarioId);
+        comprobarLogueado(id);
 
-            if (comentario != null) {
-                List<Comentario> comentarios = comentarioService.listadoCompleto();
-                Comentario comentarioBuscado = comentarioService.buscarComentarioPorId(comentarios, comentarioId);
-                model.addAttribute("comentario", comentarioBuscado);
+        ComentarioData comentario = comentarioService.findById(comentarioId);
 
-                ComentarioData comentarioData = new ComentarioData();
-                comentarioData.setDescripcion(comentarioBuscado.getDescripcion());
-                comentarioData.setFechaCreacion(comentarioBuscado.getFechaCreacion());
-                comentarioData.setIdVehiculo(comentarioBuscado.getVehiculo().getId());
-                comentarioData.setIdUsuario(comentarioBuscado.getUsuario().getId());
+        if (comentario != null) {
+            List<Comentario> comentarios = comentarioService.listadoCompleto();
+            Comentario comentarioBuscado = comentarioService.buscarComentarioPorId(comentarios, comentarioId);
+            model.addAttribute("comentario", comentarioBuscado);
 
-                model.addAttribute("comentarioData", comentarioData);
-                return "editarComentario";
-            }
-        }
-        else {
-            throw new UsuarioNoLogeadoException();
+            ComentarioData comentarioData = new ComentarioData();
+            comentarioData.setDescripcion(comentarioBuscado.getDescripcion());
+            comentarioData.setFechaCreacion(comentarioBuscado.getFechaCreacion());
+            comentarioData.setIdVehiculo(comentarioBuscado.getVehiculo().getId());
+            comentarioData.setIdUsuario(comentarioBuscado.getUsuario().getId());
+
+            model.addAttribute("comentarioData", comentarioData);
+            return "editarComentario";
         }
 
         return "redirect:/perfil/" + idUsuario + "/comentarios";
@@ -224,30 +223,27 @@ public class PerfilController {
             System.out.println("Ha ocurrido un error.");
         }
         else{
-            if(id != null){
-                try {
-                    ComentarioData nuevoComentarioData = comentarioService.findById(comentarioId);
+            comprobarLogueado(id);
 
-                    if(comentarioData.getDescripcion() != null) {
-                        nuevoComentarioData.setDescripcion(comentarioData.getDescripcion());
-                        nuevoComentarioData.setFechaCreacion(comentarioData.getFechaCreacion());
-                        nuevoComentarioData.setIdUsuario(comentarioData.getIdUsuario());
-                        nuevoComentarioData.setIdVehiculo(comentarioData.getIdVehiculo());
+            try {
+                ComentarioData nuevoComentarioData = comentarioService.findById(comentarioId);
 
-                        comentarioService.actualizarComentario(comentarioId, nuevoComentarioData);
+                if(comentarioData.getDescripcion() != null) {
+                    nuevoComentarioData.setDescripcion(comentarioData.getDescripcion());
+                    nuevoComentarioData.setFechaCreacion(comentarioData.getFechaCreacion());
+                    nuevoComentarioData.setIdUsuario(comentarioData.getIdUsuario());
+                    nuevoComentarioData.setIdVehiculo(comentarioData.getIdVehiculo());
 
-                        return "redirect:/perfil/" + id + "/comentarios";
-                    }
-                    else{
-                        model.addAttribute("errorActualizar", "Ho ocurrido un error al intentar actualizar.");
-                    }
+                    comentarioService.actualizarComentario(comentarioId, nuevoComentarioData);
 
-                } catch (UsuarioServiceException e) {
-                    model.addAttribute("errorActualizar", e.getMessage());
+                    return "redirect:/perfil/" + id + "/comentarios";
                 }
-            }
-            else {
-                throw new UsuarioNoLogeadoException();
+                else{
+                    model.addAttribute("errorActualizar", "Ho ocurrido un error al intentar actualizar.");
+                }
+
+            } catch (UsuarioServiceException e) {
+                model.addAttribute("errorActualizar", e.getMessage());
             }
         }
 
@@ -267,16 +263,11 @@ public class PerfilController {
     @PostMapping("/perfil/{id}/comentarios/eliminar/{comentarioId}")
     public String eliminarComentario(@PathVariable("id") Long idUsuario, @PathVariable("comentarioId") Long comentarioId) {
         Long id = managerUserSession.usuarioLogeado();
-
-        if(id != null){
-            comentarioService.eliminarComentario(comentarioId);
-        }
-        else {
-            throw new UsuarioNoLogeadoException();
-        }
-
+        comprobarLogueado(id);
+        comentarioService.eliminarComentario(comentarioId);
         return "redirect:/perfil/" + idUsuario + "/comentarios";
     }
+
 
     // ALQUILERES DE USUARIO
 
@@ -285,34 +276,112 @@ public class PerfilController {
     public String mostrarListadoAlquileres(@PathVariable(value = "id") Long idUsuario, Model model) {
         Long id = managerUserSession.usuarioLogeado();
 
-        if(id != null){
-            List<Usuario> usuarios = usuarioService.listadoCompleto();
-            Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, idUsuario);
-            model.addAttribute("usuario", usuario);
+        comprobarLogueado(id);
 
-            List<Pago> pagos = usuarioService.obtenerPagosPorUsuarioId(idUsuario);
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, idUsuario);
+        model.addAttribute("usuario", usuario);
 
-            model.addAttribute("pagos", pagos);
-        }
-        else {
-            throw new UsuarioNoLogeadoException();
-        }
+        List<Pago> pagos = usuarioService.obtenerPagosPorUsuarioId(idUsuario);
+
+        model.addAttribute("pagos", pagos);
 
         return "alquileresUsuario";
     }
 
-    //
     @PostMapping("/perfil/{id}/alquileres/eliminar/{alquilerId}")
     public String eliminarAlquiler(@PathVariable("id") Long idUsuario, @PathVariable("alquilerId") Long alquilerId) {
         Long id = managerUserSession.usuarioLogeado();
-
-        if(id != null){
-            alquilerService.eliminarAlquiler(alquilerId);
-        }
-        else {
-            throw new UsuarioNoLogeadoException();
-        }
-
+        comprobarLogueado(id);
+        alquilerService.eliminarAlquiler(alquilerId);
         return "redirect:/perfil/" + idUsuario + "/alquileres";
+    }
+
+
+    // VEHÍCULOS DE USUARIO
+
+    @GetMapping("/perfil/{id}/añadir-coche")
+    public String mostrarEditarVehiculo(@PathVariable("id") Long idUsuario, Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarLogueado(id);
+
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+        model.addAttribute("usuario", usuario);
+
+        VehiculoData vehiculoData = new VehiculoData();
+
+        model.addAttribute("vehiculoData", vehiculoData);
+
+        List<Marca> marcas = marcaService.listadoCompleto();
+        model.addAttribute("marcas", marcas);
+        List<Modelo> modelos = modeloService.listadoCompleto();
+        model.addAttribute("modelos", modelos);
+        List<Categoria> categorias = categoriaService.listadoCompleto();
+        model.addAttribute("categorias", categorias);
+        List<Color> colores = colorService.listadoCompleto();
+        model.addAttribute("colores", colores);
+        List<Transmision> transmisiones = transmisionService.listadoCompleto();
+        model.addAttribute("transmisiones", transmisiones);
+
+        return "añadirVehiculoUsuario";
+    }
+
+    @GetMapping("/modelosPorMarca/{marcaId}")
+    public @ResponseBody Map<Long, String> getModelosPorMarca(@PathVariable Long marcaId) {
+        List<ModeloData> modelos = modeloService.findByMarcaId(marcaId);
+        Map<Long, String> modeloMap = new HashMap<>();
+        for (ModeloData modelo : modelos) {
+            modeloMap.put(modelo.getId(), modelo.getNombre());
+        }
+        return modeloMap;
+    }
+
+    @PostMapping("/perfil/{usuarioId}/añadir-coche")
+    public String registrarVehiculo(@PathVariable("usuarioId") Long idUsuario, @Valid VehiculoData vehiculoData, BindingResult result, Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarLogueado(id);
+
+        model.addAttribute("vehiculoData", vehiculoData);
+
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+        model.addAttribute("usuario", usuario);
+
+        List<Marca> marcas = marcaService.listadoCompleto();
+        model.addAttribute("marcas", marcas);
+        List<Modelo> modelos = modeloService.listadoCompleto();
+        model.addAttribute("modelos", modelos);
+        List<Categoria> categorias = categoriaService.listadoCompleto();
+        model.addAttribute("categorias", categorias);
+        List<Color> colores = colorService.listadoCompleto();
+        model.addAttribute("colores", colores);
+        List<Transmision> transmisiones = transmisionService.listadoCompleto();
+        model.addAttribute("transmisiones", transmisiones);
+
+        if (result.hasErrors() || vehiculoData.getMatricula().trim().isEmpty() || vehiculoData.getDescripcion().trim().isEmpty() || vehiculoData.getImagen().trim().isEmpty() || vehiculoData.getKilometraje() == null || vehiculoData.getAnyoFabricacion() == null || vehiculoData.getCapacidadPasajeros() == null || vehiculoData.getCapacidadMaletero() == null || vehiculoData.getNumeroPuertas() == null || vehiculoData.getNumeroMarchas() == null || vehiculoData.getPrecioPorDia() == null || vehiculoData.getPrecioPorMedioDia() == null || vehiculoData.getPrecioCombustible() == null || vehiculoData.getIdMarca() == null || vehiculoData.getIdModelo() == null || vehiculoData.getIdCategoria() == null || vehiculoData.getIdTransmision() == null || vehiculoData.getIdColor() == null) {
+            model.addAttribute("errorActualizar", "Únicamente puede estar vacio el campo de la oferta. Todos los demás campos son obligatorios.");
+            return "añadirVehiculoUsuario";
+        }
+        else{
+            try {
+                if (vehiculoService.findByMatricula(vehiculoData.getMatricula()) != null) {
+                    model.addAttribute("errorActualizar", "El vehículo con matrícula (" + vehiculoData.getMatricula() + ") ya existe.");
+                    return "añadirVehiculoUsuario";
+                }
+
+                vehiculoData.setIdUsuario(idUsuario);
+
+                vehiculoService.registrarVehiculo(vehiculoData);
+
+                return "redirect:/perfil/" + idUsuario;
+            } catch (Exception e) {
+                model.addAttribute("errorActualizar", e.getMessage());
+            }
+        }
+
+        return "añadirVehiculoUsuario";
     }
 }

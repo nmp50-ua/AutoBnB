@@ -30,24 +30,24 @@
                 <table class="table table-striped">
                     <thead>
                     <tr>
-                        <th>Vehículo</th>
-                        <th>Fecha Creación</th>
-                        <th>Descripción</th>
+                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Vehículo</th>
+                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Fecha Creación</th>
+                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Descripción</th>
                         <th></th>
                         <th></th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr th:each="comentario: ${comentarios}">
-                        <td th:text="${comentario.vehiculo.marca.nombre} + ' ' + ${comentario.vehiculo.modelo.nombre}"></td>
-                        <td th:text="${comentario.fechaCreacion}"></td>
-                        <td th:text="${comentario.descripcion}"></td>
+                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${comentario.vehiculo.marca.nombre} + ' ' + ${comentario.vehiculo.modelo.nombre}"></td>
+                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${comentario.fechaCreacion}"></td>
+                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${comentario.descripcion}"></td>
                         <td>
                             <a class="btn btn-success btn-xs" th:href="@{/perfil/{id}/comentarios/editar/{comentarioId}(id=${usuario.id}, comentarioId=${comentario.id})}">Editar</a>
                         </td>
                         <td>
                             <form th:action="@{'/perfil/' + ${usuario.id} + '/comentarios/eliminar/' + ${comentario.id}}" method="post">
-                                <button type="submit" class="btn btn-danger btn-xs">Eliminar</button>
+                                <button type="submit" class="btn btn-danger btn-xs">X</button>
                             </form>
                         </td>
                     </tr>

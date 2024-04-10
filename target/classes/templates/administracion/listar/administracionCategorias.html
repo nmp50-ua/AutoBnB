@@ -30,18 +30,18 @@
                 <table class="table table-striped">
                     <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Descripción</th>
+                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">ID</th>
+                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Nombre</th>
+                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Descripción</th>
                         <th></th>
                         <th></th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr th:each="categoria: ${categorias}">
-                        <td th:text="${categoria.id}"></td>
-                        <td th:text="${categoria.nombre}"></td>
-                        <td th:text="${categoria.descripcion}"></td>
+                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${categoria.id}"></td>
+                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${categoria.nombre}"></td>
+                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${categoria.descripcion}"></td>
                         <td>
                             <a class="btn btn-success btn-xs" th:href="@{/administracion/categorias/editar/{categoriaId}(categoriaId=${categoria.id})}">Editar</a>
                         </td>

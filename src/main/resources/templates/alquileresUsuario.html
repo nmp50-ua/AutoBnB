@@ -30,26 +30,26 @@
                 <table class="table table-striped">
                     <thead>
                     <tr>
-                        <th>Vehículo</th>
-                        <th>Fecha Entrega</th>
-                        <th>Fecha Devolución</th>
-                        <th>Días Alquilado</th>
-                        <th>Litros Combustible</th>
-                        <th>Precio Final</th>
-                        <th></th>
+                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Vehículo</th>
+                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Fecha Entrega</th>
+                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Fecha Devolución</th>
+                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Días Alquilado</th>
+                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Litros Combustible</th>
+                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Precio Final</th>
+                        <th style="color: #333; font-family: 'Quicksand', sans-serif;"></th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr th:each="pago: ${pagos}">
-                        <td th:text="${pago.alquiler.vehiculo.marca.nombre} + ' ' + ${pago.alquiler.vehiculo.modelo.nombre}"></td>
-                        <td th:text="${pago.alquiler.fechaEntrega}"></td>
-                        <td th:text="${pago.alquiler.fechaDevolucion}"></td>
-                        <td th:text="${pago.alquiler.litrosCombustible == null} ? ${#dates.daysBetween(pago.alquiler.fechaEntrega, pago.alquiler.fechaDevolucion)} : '-'"></td>
-                        <td th:text="${pago.alquiler.litrosCombustible != null} ? ${pago.alquiler.litrosCombustible} : '-'"></td>
-                        <td th:text="${pago.alquiler.precioFinal} + ' €'"></td>
+                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${pago.alquiler.vehiculo.marca.nombre} + ' ' + ${pago.alquiler.vehiculo.modelo.nombre}"></td>
+                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${pago.alquiler.fechaEntrega}"></td>
+                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${pago.alquiler.fechaDevolucion}"></td>
+                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${pago.alquiler.litrosCombustible == null} ? ${#dates.daysBetween(pago.alquiler.fechaEntrega, pago.alquiler.fechaDevolucion)} : '-'"></td>
+                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${pago.alquiler.litrosCombustible != null} ? ${pago.alquiler.litrosCombustible} : '-'"></td>
+                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${pago.alquiler.precioFinal} + ' €'"></td>
                         <td>
                             <form th:action="@{'/perfil/' + ${usuario.id} + '/alquileres/eliminar/' + ${pago.alquiler.id}}" method="post">
-                                <button type="submit" class="btn btn-danger btn-xs">Eliminar</button>
+                                <button type="submit" class="btn btn-danger btn-xs">X</button>
                             </form>
                         </td>
                     </tr>

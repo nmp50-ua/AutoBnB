@@ -108,7 +108,7 @@ public class AutenticacionController {
    }
 
    @GetMapping("/logout")
-   public String logout(HttpSession session) {
+   public String logout() {
         managerUserSession.logout();
         return "redirect:/login";
    }

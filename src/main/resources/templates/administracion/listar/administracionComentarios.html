@@ -30,22 +30,22 @@
                 <table class="table table-striped">
                     <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Vehículo</th>
-                        <th>Usuario</th>
-                        <th>Fecha Creación</th>
-                        <th>Descripción</th>
+                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">ID</th>
+                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Vehículo</th>
+                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Usuario</th>
+                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Fecha Creación</th>
+                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Descripción</th>
                         <th></th>
                         <th></th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr th:each="comentario: ${comentarios}">
-                        <td th:text="${comentario.id}"></td>
-                        <td th:text="${comentario.vehiculo.marca.nombre} + ' ' + ${comentario.vehiculo.modelo.nombre}"></td>
-                        <td th:text="${comentario.usuario.nombre}"></td>
-                        <td th:text="${comentario.fechaCreacion}"></td>
-                        <td th:text="${comentario.descripcion}"></td>
+                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${comentario.id}"></td>
+                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${comentario.vehiculo.marca.nombre} + ' ' + ${comentario.vehiculo.modelo.nombre}"></td>
+                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${comentario.usuario.nombre}"></td>
+                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${comentario.fechaCreacion}"></td>
+                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${comentario.descripcion}"></td>
                         <td>
                             <a class="btn btn-success btn-xs" th:href="@{/administracion/comentarios/editar/{comentarioId}(comentarioId=${comentario.id})}">Editar</a>
                         </td>

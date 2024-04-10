@@ -30,16 +30,16 @@
                 <table class="table table-striped">
                     <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
+                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">ID</th>
+                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Nombre</th>
                         <th></th>
                         <th></th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr th:each="color: ${colores}">
-                        <td th:text="${color.id}"></td>
-                        <td th:text="${color.nombre}"></td>
+                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${color.id}"></td>
+                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${color.nombre}"></td>
                         <td>
                             <a class="btn btn-success btn-xs" th:href="@{/administracion/colores/editar/{colorId}(colorId=${color.id})}">Editar</a>
                         </td>

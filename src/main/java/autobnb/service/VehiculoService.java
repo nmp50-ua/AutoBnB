@@ -1,8 +1,11 @@
 package autobnb.service;
 
+import autobnb.dto.UsuarioData;
 import autobnb.dto.VehiculoData;
 import autobnb.model.*;
 import autobnb.repository.*;
+import autobnb.service.exception.UsuarioServiceException;
+import autobnb.service.exception.VehiculoServiceException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class VehiculoService {
@@ -156,6 +160,32 @@ public class VehiculoService {
         if (vehiculo == null) return null;
         else {
             return modelMapper.map(vehiculo, VehiculoData.class);
+        }
+    }
+
+    @Transactional
+    public VehiculoData registrarVehiculo(VehiculoData vehiculoData) {
+        Optional<Vehiculo> vehiculoBD = vehiculoRepository.findByMatricula(vehiculoData.getMatricula());
+
+        if (vehiculoBD.isPresent())
+            throw new VehiculoServiceException("El vehiculo con matrícula (" + vehiculoData.getMatricula() + ") ya está registrado");
+        else {
+            Optional<Marca> marca = marcaRepository.findById(vehiculoData.getIdMarca());
+            Optional<Categoria> categoria = categoriaRepository.findById(vehiculoData.getIdCategoria());
+            Optional<Modelo> modelo = modeloRepository.findById(vehiculoData.getIdModelo());
+            Optional<Color> color = colorRepository.findById(vehiculoData.getIdColor());
+            Optional<Transmision> transmision = transmisionRepository.findById(vehiculoData.getIdTransmision());
+            Optional<Usuario> usuario = usuarioRepository.findById(vehiculoData.getIdUsuario());
+
+            Vehiculo vehiculoNuevo = modelMapper.map(vehiculoData, Vehiculo.class);
+            vehiculoNuevo.setMarca(marca.orElseThrow(() -> new VehiculoServiceException("No se encontró la marca con ID: " + vehiculoData.getIdMarca())));
+            vehiculoNuevo.setCategoria(categoria.orElseThrow(() -> new VehiculoServiceException("No se encontró la categoría con ID: " + vehiculoData.getIdCategoria())));
+            vehiculoNuevo.setModelo(modelo.orElseThrow(() -> new VehiculoServiceException("No se encontró el modelo con ID: " + vehiculoData.getIdModelo())));
+            vehiculoNuevo.setColor(color.orElseThrow(() -> new VehiculoServiceException("No se encontró el color con ID: " + vehiculoData.getIdColor())));
+            vehiculoNuevo.setTransmision(transmision.orElseThrow(() -> new VehiculoServiceException("No se encontró la transmisión con ID: " + vehiculoData.getIdTransmision())));
+            vehiculoNuevo.setUsuario(usuario.orElseThrow(() -> new UsuarioServiceException("No se encontró el usuario con ID: " + vehiculoData.getIdUsuario())));
+            vehiculoNuevo = vehiculoRepository.save(vehiculoNuevo);
+            return modelMapper.map(vehiculoNuevo, VehiculoData.class);
         }
     }
 }

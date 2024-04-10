@@ -30,18 +30,18 @@
                 <table class="table table-striped">
                     <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Marca</th>
-                        <th>Nombre</th>
+                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">ID</th>
+                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Marca</th>
+                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Nombre</th>
                         <th></th>
                         <th></th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr th:each="modelo: ${modelos}">
-                        <td th:text="${modelo.id}"></td>
-                        <td th:text="${modelo.marca.nombre}"></td>
-                        <td th:text="${modelo.nombre}"></td>
+                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${modelo.id}"></td>
+                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${modelo.marca.nombre}"></td>
+                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${modelo.nombre}"></td>
                         <td>
                             <a class="btn btn-success btn-xs" th:href="@{/administracion/modelos/editar/{modeloId}(modeloId=${modelo.id})}">Editar</a>
                         </td>

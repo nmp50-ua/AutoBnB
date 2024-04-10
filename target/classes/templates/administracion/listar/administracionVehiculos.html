@@ -30,17 +30,17 @@
                 <table class="table table-striped">
                     <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Matrícula</th>
-                        <th>Kilometraje</th>
-                        <th>Fabricación</th>
-                        <th>Pasajeros</th>
-                        <th>Maletero</th>
-                        <th>Puertas</th>
-                        <th>Marchas</th>
-                        <th>€ día</th>
-                        <th>€ medio día</th>
-                        <th>€ combustible</th>
+                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">ID</th>
+                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Matrícula</th>
+                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Kilometraje</th>
+                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Fabricación</th>
+                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Pasajeros</th>
+                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Maletero</th>
+                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Puertas</th>
+                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Marchas</th>
+                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">€ día</th>
+                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">€ medio día</th>
+                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">€ combustible</th>
                         <th></th>
                         <th></th>
                         <th></th>
@@ -48,17 +48,17 @@
                     </thead>
                     <tbody>
                     <tr th:each="vehiculo: ${vehiculos}">
-                        <td th:text="${vehiculo.id}"></td>
-                        <td th:text="${vehiculo.matricula}"></td>
-                        <td th:text="${vehiculo.kilometraje}"></td>
-                        <td th:text="${vehiculo.anyoFabricacion}"></td>
-                        <td th:text="${vehiculo.capacidadPasajeros}"></td>
-                        <td th:text="${vehiculo.capacidadMaletero}"></td>
-                        <td th:text="${vehiculo.numeroPuertas}"></td>
-                        <td th:text="${vehiculo.numeroMarchas}"></td>
-                        <td th:text="${vehiculo.precioPorDia}"></td>
-                        <td th:text="${vehiculo.precioPorMedioDia}"></td>
-                        <td th:text="${vehiculo.precioCombustible}"></td>
+                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${vehiculo.id}"></td>
+                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${vehiculo.matricula}"></td>
+                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${vehiculo.kilometraje}"></td>
+                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${vehiculo.anyoFabricacion}"></td>
+                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${vehiculo.capacidadPasajeros}"></td>
+                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${vehiculo.capacidadMaletero}"></td>
+                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${vehiculo.numeroPuertas}"></td>
+                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${vehiculo.numeroMarchas}"></td>
+                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${vehiculo.precioPorDia}"></td>
+                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${vehiculo.precioPorMedioDia}"></td>
+                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${vehiculo.precioCombustible}"></td>
                         <td>
                             <a class="btn btn-success btn-xs" th:href="@{/administracion/vehiculos/editar/{vehiculoId}(vehiculoId=${vehiculo.id})}">Editar</a>
                         </td>
