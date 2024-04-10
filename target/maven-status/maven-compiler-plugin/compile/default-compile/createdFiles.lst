@@ -34,6 +34,7 @@ autobnb\dto\MarcaData.class
 autobnb\authentication\ManagerUserSession.class
 autobnb\service\UsuarioService$LoginStatus.class
 autobnb\repository\TransmisionRepository.class
+autobnb\service\VehiculoService.class
 autobnb\model\Alquiler.class
 autobnb\controller\exception\UsuarioNoLogeadoException.class
 autobnb\dto\TransmisionData.class
@@ -41,6 +42,7 @@ autobnb\service\exception\UsuarioServiceException.class
 autobnb\dto\VehiculoData.class
 autobnb\model\Modelo.class
 autobnb\model\Vehiculo.class
+autobnb\service\exception\VehiculoServiceException.class
 autobnb\dto\CategoriaData.class
 autobnb\service\ComentarioService.class
 autobnb\repository\ComentarioRepository.class

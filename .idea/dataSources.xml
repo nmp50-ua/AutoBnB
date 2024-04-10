@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="AutoBnB" uuid="39436c4d-f9fd-490d-951f-6fdc55c54ce9">
+    <data-source source="LOCAL" name="AutoBnB" uuid="fc5505cf-8b07-4cb3-a15a-2dfc14ee74de">
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>

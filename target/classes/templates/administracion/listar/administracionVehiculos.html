@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="fragments :: head (titulo='Administración Marcas')"></head>
+<head th:replace="fragments :: head (titulo='Administración Vehículos')"></head>
 
 <body>
 <!-- Si el usuario está logueado, incluye el Navbar normal -->
@@ -21,7 +21,7 @@
     <div class="container-fluid">
         <div class="row mt-3">
             <div class="col">
-                <h2>Administración Marcas</h2>
+                <h2>Administración Vehículos</h2>
             </div>
         </div>
 
@@ -31,33 +31,53 @@
                     <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Nombre</th>
+                        <th>Matrícula</th>
+                        <th>Kilometraje</th>
+                        <th>Fabricación</th>
+                        <th>Pasajeros</th>
+                        <th>Maletero</th>
+                        <th>Puertas</th>
+                        <th>Marchas</th>
+                        <th>€ día</th>
+                        <th>€ medio día</th>
+                        <th>€ combustible</th>
+                        <th>Aire acondicionado</th>
+                        <th></th>
                         <th></th>
                         <th></th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="marca: ${marcas}">
-                        <td th:text="${marca.id}"></td>
-                        <td th:text="${marca.nombre}"></td>
+                    <tr th:each="vehiculo: ${vehiculos}">
+                        <td th:text="${vehiculo.id}"></td>
+                        <td th:text="${vehiculo.matricula}"></td>
+                        <td th:text="${vehiculo.kilometraje}"></td>
+                        <td th:text="${vehiculo.anyoFabricacion}"></td>
+                        <td th:text="${vehiculo.capacidadPasajeros}"></td>
+                        <td th:text="${vehiculo.capacidadMaletero}"></td>
+                        <td th:text="${vehiculo.numeroPuertas}"></td>
+                        <td th:text="${vehiculo.numeroMarchas}"></td>
+                        <td th:text="${vehiculo.precioPorDia}"></td>
+                        <td th:text="${vehiculo.precioPorMedioDia}"></td>
+                        <td th:text="${vehiculo.precioCombustible}"></td>
+                        <td th:text="${vehiculo.aireAcondicionado}"></td>
                         <td>
-                            <a class="btn btn-success btn-xs" th:href="@{/administracion/marcas/editar/{marcaId}(marcaId=${marca.id})}">Editar</a>
+                            <a class="btn btn-success btn-xs" th:href="@{/administracion/vehiculos/editar/{vehiculoId}(vehiculoId=${vehiculo.id})}">Editar</a>
                         </td>
                         <td>
-                            <form th:action="@{'/administracion/marcas/eliminar/' + ${marca.id}}" method="post">
+                            <form th:action="@{'/administracion/vehiculos/eliminar/' + ${vehiculo.id}}" method="post">
                                 <button type="submit" class="btn btn-danger btn-xs">Eliminar</button>
                             </form>
+                        </td>
+                        <td>
+                            <a class="btn btn-success btn-xs" th:href="@{/administracion/vehiculos/detalles/{vehiculoId}(vehiculoId=${vehiculo.id})}">Detalles</a>
                         </td>
                     </tr>
                     </tbody>
                 </table>
             </div>
         </div>
-        <div class="row mt-3">
-            <div class="col text-end">
-                <a href="/administracion/marcas/crear" class="btn btn-primary">Crear Marca</a>
-            </div>
-        </div>
+
         <p class="text-center mt-3"><a href="/administracion" class="btn btn-link" style="color: #171a1d;">Volver al Panel</a></p>
 
         <div th:if="${success != null}" class="alert alert-success">

@@ -14,9 +14,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Controller
@@ -42,6 +45,8 @@ public class AdministracionController {
     TransmisionService transmisionService;
     @Autowired
     CategoriaService categoriaService;
+    @Autowired
+    VehiculoService vehiculoService;
 
     private void comprobarAdmin(Long idUsuario) {
         if (idUsuario != null) {
@@ -1067,5 +1072,186 @@ public class AdministracionController {
         }
 
         return "administracion/crear/crearCategoria";
+    }
+
+
+    // VEHICULOS
+
+    @GetMapping("/administracion/vehiculos")
+    public String mostrarListadoVehiculos(Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarAdmin(id);
+
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+        model.addAttribute("usuario", usuario);
+
+        List<Vehiculo> vehiculos = vehiculoService.listadoCompleto();
+        model.addAttribute("vehiculos", vehiculos);
+
+        return "administracion/listar/administracionVehiculos";
+    }
+
+    // Manda un JSON con los modelos de una marca concreta (la que elige el usuario en el listado de marcas)
+    @GetMapping("/administracion/modelosPorMarca/{marcaId}")
+    public @ResponseBody Map<Long, String> getModelosPorMarca(@PathVariable Long marcaId) {
+        List<ModeloData> modelos = modeloService.findByMarcaId(marcaId);
+        Map<Long, String> modeloMap = new HashMap<>();
+        for (ModeloData modelo : modelos) {
+            modeloMap.put(modelo.getId(), modelo.getNombre());
+        }
+        return modeloMap;
+    }
+
+    @GetMapping("/administracion/vehiculos/editar/{vehiculoId}")
+    public String mostrarEditarVehiculo(@PathVariable(value = "vehiculoId") Long vehiculoId, Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarAdmin(id);
+
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+        model.addAttribute("usuario", usuario);
+
+        VehiculoData vehiculo = vehiculoService.findById(vehiculoId);
+
+        if (vehiculo != null) {
+            List<Vehiculo> vehiculos = vehiculoService.listadoCompleto();
+            Vehiculo vehiculoBuscado = vehiculoService.buscarVehiculoPorId(vehiculos, vehiculoId);
+            model.addAttribute("vehiculo", vehiculoBuscado);
+
+            VehiculoData vehiculoData = new VehiculoData();
+            vehiculoData.setMatricula(vehiculoBuscado.getMatricula());
+            vehiculoData.setDescripcion(vehiculoBuscado.getDescripcion());
+            vehiculoData.setImagen(vehiculoBuscado.getImagen());
+            vehiculoData.setKilometraje(vehiculoBuscado.getKilometraje());
+            vehiculoData.setAnyoFabricacion(vehiculoBuscado.getAnyoFabricacion());
+            vehiculoData.setCapacidadPasajeros(vehiculoBuscado.getCapacidadPasajeros());
+            vehiculoData.setCapacidadMaletero(vehiculoBuscado.getCapacidadMaletero());
+            vehiculoData.setNumeroPuertas(vehiculoBuscado.getNumeroPuertas());
+            vehiculoData.setNumeroMarchas(vehiculoBuscado.getNumeroMarchas());
+            vehiculoData.setAireAcondicionado(vehiculoBuscado.isAireAcondicionado());
+            vehiculoData.setEnMantenimiento(vehiculoBuscado.isEnMantenimiento());
+            vehiculoData.setOferta(vehiculoBuscado.getOferta());
+            vehiculoData.setPrecioPorDia(vehiculoBuscado.getPrecioPorDia());
+            vehiculoData.setPrecioPorMedioDia(vehiculoBuscado.getPrecioPorMedioDia());
+            vehiculoData.setPrecioCombustible(vehiculoBuscado.getPrecioCombustible());
+            vehiculoData.setIdMarca(vehiculoBuscado.getMarca().getId());
+            vehiculoData.setIdModelo(vehiculoBuscado.getModelo().getId());
+            vehiculoData.setIdCategoria(vehiculoBuscado.getCategoria().getId());
+            vehiculoData.setIdTransmision(vehiculoBuscado.getTransmision().getId());
+            vehiculoData.setIdColor(vehiculoBuscado.getColor().getId());
+
+            model.addAttribute("vehiculoData", vehiculoData);
+
+            List<Marca> marcas = marcaService.listadoCompleto();
+            model.addAttribute("marcas", marcas);
+            List<Modelo> modelos = modeloService.listadoCompleto();
+            model.addAttribute("modelos", modelos);
+            List<Categoria> categorias = categoriaService.listadoCompleto();
+            model.addAttribute("categorias", categorias);
+            List<Color> colores = colorService.listadoCompleto();
+            model.addAttribute("colores", colores);
+            List<Transmision> transmisiones = transmisionService.listadoCompleto();
+            model.addAttribute("transmisiones", transmisiones);
+
+            return "administracion/editar/editarVehiculoAdministrador";
+        }
+
+        return "redirect:/administracion/vehiculos";
+    }
+
+    @PostMapping("/administracion/vehiculos/editar/{vehiculoId}")
+    public String actualizarVehiculo(@PathVariable Long vehiculoId, @Valid VehiculoData vehiculoData, BindingResult result, Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarAdmin(id);
+
+        model.addAttribute("vehiculoData", vehiculoData);
+
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+        model.addAttribute("usuario", usuario);
+
+        List<Marca> marcas = marcaService.listadoCompleto();
+        model.addAttribute("marcas", marcas);
+        List<Modelo> modelos = modeloService.listadoCompleto();
+        model.addAttribute("modelos", modelos);
+        List<Categoria> categorias = categoriaService.listadoCompleto();
+        model.addAttribute("categorias", categorias);
+        List<Color> colores = colorService.listadoCompleto();
+        model.addAttribute("colores", colores);
+        List<Transmision> transmisiones = transmisionService.listadoCompleto();
+        model.addAttribute("transmisiones", transmisiones);
+
+        List<Vehiculo> vehiculos = vehiculoService.listadoCompleto();
+        Vehiculo vehiculoBuscado = vehiculoService.buscarVehiculoPorId(vehiculos, vehiculoId);
+        model.addAttribute("vehiculo", vehiculoBuscado);
+
+        if (result.hasErrors() || vehiculoData.getMatricula().trim().isEmpty() || vehiculoData.getDescripcion().trim().isEmpty() || vehiculoData.getImagen().trim().isEmpty() || vehiculoData.getKilometraje() == null || vehiculoData.getAnyoFabricacion() == null || vehiculoData.getCapacidadPasajeros() == null || vehiculoData.getCapacidadMaletero() == null || vehiculoData.getNumeroPuertas() == null || vehiculoData.getNumeroMarchas() == null || vehiculoData.getPrecioPorDia() == null || vehiculoData.getPrecioPorMedioDia() == null || vehiculoData.getPrecioCombustible() == null || vehiculoData.getIdMarca() == null || vehiculoData.getIdModelo() == null || vehiculoData.getIdCategoria() == null || vehiculoData.getIdTransmision() == null || vehiculoData.getIdColor() == null) {
+            model.addAttribute("errorActualizar", "Unicamente puede estar vacio el campo de la oferta. Todos los demás campos son obligatorios.");
+            return "administracion/editar/editarVehiculoAdministrador";
+        }
+        else{
+            try {
+                VehiculoData nuevoVehiculoData = vehiculoService.findById(vehiculoId);
+
+                if(nuevoVehiculoData.getMatricula() != null) {
+                    if ((vehiculoService.findByMatricula(vehiculoData.getMatricula()) != null) && !vehiculoData.getMatricula().equals(nuevoVehiculoData.getMatricula())) {
+                        model.addAttribute("errorActualizar", "El vehículo con matrícula (" + vehiculoData.getMatricula() + ") ya existe.");
+                        return "administracion/editar/editarVehiculoAdministrador";
+                    }
+
+                    nuevoVehiculoData.setMatricula(vehiculoData.getMatricula());
+                    nuevoVehiculoData.setDescripcion(vehiculoData.getDescripcion());
+                    nuevoVehiculoData.setImagen(vehiculoData.getImagen());
+                    nuevoVehiculoData.setKilometraje(vehiculoData.getKilometraje());
+                    nuevoVehiculoData.setAnyoFabricacion(vehiculoData.getAnyoFabricacion());
+                    nuevoVehiculoData.setCapacidadPasajeros(vehiculoData.getCapacidadPasajeros());
+                    nuevoVehiculoData.setCapacidadMaletero(vehiculoData.getCapacidadMaletero());
+                    nuevoVehiculoData.setNumeroPuertas(vehiculoData.getNumeroPuertas());
+                    nuevoVehiculoData.setNumeroMarchas(vehiculoData.getNumeroMarchas());
+                    nuevoVehiculoData.setAireAcondicionado(vehiculoData.isAireAcondicionado());
+                    nuevoVehiculoData.setEnMantenimiento(vehiculoData.isEnMantenimiento());
+                    nuevoVehiculoData.setOferta(vehiculoData.getOferta());
+                    nuevoVehiculoData.setPrecioPorDia(vehiculoData.getPrecioPorDia());
+                    nuevoVehiculoData.setPrecioPorMedioDia(vehiculoData.getPrecioPorMedioDia());
+                    nuevoVehiculoData.setPrecioCombustible(vehiculoData.getPrecioCombustible());
+                    nuevoVehiculoData.setIdMarca(vehiculoData.getIdMarca());
+                    nuevoVehiculoData.setIdModelo(vehiculoData.getIdModelo());
+                    nuevoVehiculoData.setIdCategoria(vehiculoData.getIdCategoria());
+                    nuevoVehiculoData.setIdTransmision(vehiculoData.getIdTransmision());
+                    nuevoVehiculoData.setIdColor(vehiculoData.getIdColor());
+
+                    vehiculoService.actualizarVehiculo(vehiculoId, nuevoVehiculoData);
+
+                    return "redirect:/administracion/vehiculos";
+                }
+                else{
+                    model.addAttribute("errorActualizar", "Ha ocurrido un error al intentar actualizar.");
+                }
+            } catch (Exception e) {
+                model.addAttribute("errorActualizar", e.getMessage());
+            }
+        }
+
+        return "administracion/editar/editarVehiculoAdministrador";
+    }
+
+    @PostMapping("/administracion/vehiculos/eliminar/{vehiculoId}")
+    public String eliminarVehiculo(@PathVariable("vehiculoId") Long vehiculoId, Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarAdmin(id);
+
+        try {
+            vehiculoService.eliminarVehiculo(vehiculoId);
+            model.addAttribute("success", "Vehículo eliminado con éxito.");
+        } catch (Exception e) {
+            model.addAttribute("error", "No se puede eliminar el vehículo debido a: " + e.getMessage());
+        }
+
+        return "redirect:/administracion/vehiculos";
     }
 }

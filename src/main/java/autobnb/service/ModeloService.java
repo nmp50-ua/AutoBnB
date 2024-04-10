@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ModeloService {
@@ -105,5 +106,12 @@ public class ModeloService {
             modeloNuevo = modeloRepository.save(modeloNuevo);
             return modelMapper.map(modeloNuevo, ModeloData.class);
         }
+    }
+
+    // Método para buscar modelos por ID de marca
+    @Transactional(readOnly = true)
+    public List<ModeloData> findByMarcaId(Long marcaId) {
+        List<Modelo> modelos = modeloRepository.findByMarcaId(marcaId);
+        return modelos.stream().map(modelo -> modelMapper.map(modelo, ModeloData.class)).collect(Collectors.toList());
     }
 }

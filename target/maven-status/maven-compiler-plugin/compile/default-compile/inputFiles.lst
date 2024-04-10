@@ -9,6 +9,7 @@ C:\Users\Usuario\Downloads\segundo cuatrimestre\TFG\AutoBnB\src\main\java\autobn
 C:\Users\Usuario\Downloads\segundo cuatrimestre\TFG\AutoBnB\src\main\java\autobnb\repository\MarcaRepository.java
 C:\Users\Usuario\Downloads\segundo cuatrimestre\TFG\AutoBnB\src\main\java\autobnb\model\Transmision.java
 C:\Users\Usuario\Downloads\segundo cuatrimestre\TFG\AutoBnB\src\main\java\autobnb\dto\PagoData.java
+C:\Users\Usuario\Downloads\segundo cuatrimestre\TFG\AutoBnB\src\main\java\autobnb\service\VehiculoService.java
 C:\Users\Usuario\Downloads\segundo cuatrimestre\TFG\AutoBnB\src\main\java\autobnb\dto\CuentaData.java
 C:\Users\Usuario\Downloads\segundo cuatrimestre\TFG\AutoBnB\src\main\java\autobnb\service\exception\UsuarioServiceException.java
 C:\Users\Usuario\Downloads\segundo cuatrimestre\TFG\AutoBnB\src\main\java\autobnb\service\ModeloService.java
@@ -19,10 +20,12 @@ C:\Users\Usuario\Downloads\segundo cuatrimestre\TFG\AutoBnB\src\main\java\autobn
 C:\Users\Usuario\Downloads\segundo cuatrimestre\TFG\AutoBnB\src\main\java\autobnb\service\AlquilerService.java
 C:\Users\Usuario\Downloads\segundo cuatrimestre\TFG\AutoBnB\src\main\java\autobnb\model\Comentario.java
 C:\Users\Usuario\Downloads\segundo cuatrimestre\TFG\AutoBnB\src\main\java\autobnb\repository\UsuarioRepository.java
+C:\Users\Usuario\Downloads\segundo cuatrimestre\TFG\AutoBnB\src\main\java\autobnb\service\exception\CategoriaServiceException.java
 C:\Users\Usuario\Downloads\segundo cuatrimestre\TFG\AutoBnB\src\main\java\autobnb\repository\CuentaRepository.java
 C:\Users\Usuario\Downloads\segundo cuatrimestre\TFG\AutoBnB\src\main\java\autobnb\service\ComentarioService.java
 C:\Users\Usuario\Downloads\segundo cuatrimestre\TFG\AutoBnB\src\main\java\autobnb\dto\ColorData.java
 C:\Users\Usuario\Downloads\segundo cuatrimestre\TFG\AutoBnB\src\main\java\autobnb\service\exception\MarcaServiceException.java
+C:\Users\Usuario\Downloads\segundo cuatrimestre\TFG\AutoBnB\src\main\java\autobnb\service\exception\VehiculoServiceException.java
 C:\Users\Usuario\Downloads\segundo cuatrimestre\TFG\AutoBnB\src\main\java\autobnb\service\exception\ColorServiceException.java
 C:\Users\Usuario\Downloads\segundo cuatrimestre\TFG\AutoBnB\src\main\java\autobnb\repository\ComentarioRepository.java
 C:\Users\Usuario\Downloads\segundo cuatrimestre\TFG\AutoBnB\src\main\java\autobnb\dto\LoginData.java
@@ -40,6 +43,7 @@ C:\Users\Usuario\Downloads\segundo cuatrimestre\TFG\AutoBnB\src\main\java\autobn
 C:\Users\Usuario\Downloads\segundo cuatrimestre\TFG\AutoBnB\src\main\java\autobnb\repository\PagoRepository.java
 C:\Users\Usuario\Downloads\segundo cuatrimestre\TFG\AutoBnB\src\main\java\autobnb\service\exception\ModeloServiceException.java
 C:\Users\Usuario\Downloads\segundo cuatrimestre\TFG\AutoBnB\src\main\java\autobnb\config\ModelMapperConfig.java
+C:\Users\Usuario\Downloads\segundo cuatrimestre\TFG\AutoBnB\src\main\java\autobnb\service\CategoriaService.java
 C:\Users\Usuario\Downloads\segundo cuatrimestre\TFG\AutoBnB\src\main\java\autobnb\repository\ModeloRepository.java
 C:\Users\Usuario\Downloads\segundo cuatrimestre\TFG\AutoBnB\src\main\java\autobnb\controller\PerfilController.java
 C:\Users\Usuario\Downloads\segundo cuatrimestre\TFG\AutoBnB\src\main\java\autobnb\service\CuentaService.java

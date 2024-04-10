@@ -1,25 +1,40 @@
 package autobnb.dto;
 
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Objects;
 
 public class VehiculoData {
 
     private Long id;
+    @NotNull
     private String descripcion;
+    @NotNull
     private String imagen;
+    @NotNull
     private String matricula;
+    @NotNull
     private Integer kilometraje;
+    @NotNull
     private Integer anyoFabricacion;
+    @NotNull
     private Integer capacidadPasajeros;
+    @NotNull
     private Integer capacidadMaletero;
+    @NotNull
     private Integer numeroPuertas;
+    @NotNull
     private Integer numeroMarchas;
+    @NotNull
     private boolean aireAcondicionado;
+    @NotNull
     private boolean enMantenimiento;
     private Integer oferta;
+    @NotNull
     private BigDecimal precioPorDia;
+    @NotNull
     private BigDecimal precioPorMedioDia;
+    @NotNull
     private BigDecimal precioCombustible;
     private Long idUsuario;
     private Long idMarca;
