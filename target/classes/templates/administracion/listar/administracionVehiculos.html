@@ -41,7 +41,6 @@
                         <th>€ día</th>
                         <th>€ medio día</th>
                         <th>€ combustible</th>
-                        <th>Aire acondicionado</th>
                         <th></th>
                         <th></th>
                         <th></th>
@@ -60,17 +59,16 @@
                         <td th:text="${vehiculo.precioPorDia}"></td>
                         <td th:text="${vehiculo.precioPorMedioDia}"></td>
                         <td th:text="${vehiculo.precioCombustible}"></td>
-                        <td th:text="${vehiculo.aireAcondicionado}"></td>
                         <td>
                             <a class="btn btn-success btn-xs" th:href="@{/administracion/vehiculos/editar/{vehiculoId}(vehiculoId=${vehiculo.id})}">Editar</a>
                         </td>
                         <td>
                             <form th:action="@{'/administracion/vehiculos/eliminar/' + ${vehiculo.id}}" method="post">
-                                <button type="submit" class="btn btn-danger btn-xs">Eliminar</button>
+                                <button type="submit" class="btn btn-danger btn-xs">X</button>
                             </form>
                         </td>
                         <td>
-                            <a class="btn btn-success btn-xs" th:href="@{/administracion/vehiculos/detalles/{vehiculoId}(vehiculoId=${vehiculo.id})}">Detalles</a>
+                            <a class="btn btn-success btn-xs" th:href="@{/administracion/vehiculos/detalles/{vehiculoId}(vehiculoId=${vehiculo.id})}">...</a>
                         </td>
                     </tr>
                     </tbody>

@@ -1254,4 +1254,27 @@ public class AdministracionController {
 
         return "redirect:/administracion/vehiculos";
     }
+
+    @GetMapping("/administracion/vehiculos/detalles/{vehiculoId}")
+    public String mostrarDetallesVehiculo(@PathVariable(value = "vehiculoId") Long vehiculoId, Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarAdmin(id);
+
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+        model.addAttribute("usuario", usuario);
+
+        VehiculoData vehiculo = vehiculoService.findById(vehiculoId);
+
+        if (vehiculo != null) {
+            List<Vehiculo> vehiculos = vehiculoService.listadoCompleto();
+            Vehiculo vehiculoBuscado = vehiculoService.buscarVehiculoPorId(vehiculos, vehiculoId);
+            model.addAttribute("vehiculo", vehiculoBuscado);
+
+            return "administracion/detalles/detallesVehiculoAdministrador";
+        }
+
+        return "redirect:/administracion/vehiculos";
+    }
 }
