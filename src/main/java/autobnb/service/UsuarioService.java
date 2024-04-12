@@ -1,20 +1,15 @@
 package autobnb.service;
 
 import autobnb.dto.UsuarioData;
-import autobnb.model.Comentario;
-import autobnb.model.Cuenta;
-import autobnb.model.Pago;
-import autobnb.model.Usuario;
-import autobnb.repository.ComentarioRepository;
-import autobnb.repository.CuentaRepository;
-import autobnb.repository.PagoRepository;
-import autobnb.repository.UsuarioRepository;
+import autobnb.model.*;
+import autobnb.repository.*;
 import autobnb.service.exception.UsuarioServiceException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +25,10 @@ public class UsuarioService {
     private ComentarioRepository comentarioRepository;
     @Autowired
     private PagoRepository pagoRepository;
+    @Autowired
+    private VehiculoRepository vehiculoRepository;
+    @Autowired
+    private AlquilerRepository alquilerRepository;
     @Autowired
     private ModelMapper modelMapper;
 
@@ -234,5 +233,27 @@ public class UsuarioService {
     @Transactional(readOnly = true)
     public List<Pago> obtenerPagosPorUsuarioId(Long usuarioId) {
         return pagoRepository.findByUsuarioId(usuarioId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Vehiculo> obtenerVehiculosPorUsuarioId(Long usuarioId) {
+        return vehiculoRepository.findByUsuarioId(usuarioId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Alquiler> obtenerAlquileresPorVehiculoId(Long vehiculoId) {
+        return alquilerRepository.findByVehiculoId(vehiculoId);
+    }
+
+    @Transactional
+    public Usuario añadirSaldo(Long usuarioId, BigDecimal cantidad) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new UsuarioServiceException("El usuario con ID " + usuarioId + " no se encuentra."));
+
+        Cuenta cuenta = usuario.getCuenta();
+        cuenta.setSaldo(cuenta.getSaldo().add(cantidad));
+        cuentaRepository.save(cuenta);
+
+        return usuario;
     }
 }

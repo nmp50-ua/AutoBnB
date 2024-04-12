@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.validation.Valid;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -383,5 +385,42 @@ public class PerfilController {
         }
 
         return "añadirVehiculoUsuario";
+    }
+
+
+    // CUENTA DE USUARIO
+
+    @GetMapping("/perfil/{id}/cuenta")
+    public String mostrarCuenta(@PathVariable(value = "id") Long idUsuario, Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarLogueado(id);
+
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, idUsuario);
+        List<Vehiculo> vehiculos = usuarioService.obtenerVehiculosPorUsuarioId(idUsuario);
+        model.addAttribute("vehiculos", vehiculos);
+        model.addAttribute("usuario", usuario);
+
+        List<Pago> pagos = usuarioService.obtenerPagosPorUsuarioId(idUsuario);
+        model.addAttribute("pagos", pagos);
+
+        List<Alquiler> alquileres = new ArrayList<>();
+
+        // Recorrer cada vehículo y obtener sus alquileres
+        for (Vehiculo vehiculo : vehiculos) {
+            List<Alquiler> alquileresDeVehiculo = usuarioService.obtenerAlquileresPorVehiculoId(vehiculo.getId());
+            alquileres.addAll(alquileresDeVehiculo);
+        }
+
+        model.addAttribute("alquileres", alquileres);
+
+        return "cuentaUsuario";
+    }
+
+    @PostMapping("/perfil/{id}/añadirSaldo")
+    public String añadirSaldo(@PathVariable(value = "id") Long idUsuario, Model model) {
+        Usuario usuario = usuarioService.añadirSaldo(idUsuario, BigDecimal.valueOf(100));
+        return "redirect:/perfil/" + idUsuario + "/cuenta";
     }
 }
