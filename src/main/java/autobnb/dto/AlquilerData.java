@@ -1,5 +1,7 @@
 package autobnb.dto;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Objects;
@@ -7,8 +9,11 @@ import java.util.Objects;
 public class AlquilerData {
 
     private Long id;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date fechaCreacion;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date fechaEntrega;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date fechaDevolucion;
     private BigDecimal precioFinal;
     private BigDecimal litrosCombustible;

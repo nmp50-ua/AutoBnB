@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CuentaService {
@@ -36,7 +38,10 @@ public class CuentaService {
     }
 
     @Transactional(readOnly = true)
-    public List<Cuenta> listadoCompleto(){
-        return (List<Cuenta>) cuentaRepository.findAll();
+    public List<Cuenta> listadoCompleto() {
+        return ((List<Cuenta>) cuentaRepository.findAll())
+                .stream()
+                .sorted(Comparator.comparingLong(Cuenta::getId))
+                .collect(Collectors.toList());
     }
 }

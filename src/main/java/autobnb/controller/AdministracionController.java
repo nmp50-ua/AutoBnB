@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.validation.Valid;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -1276,5 +1277,217 @@ public class AdministracionController {
         }
 
         return "redirect:/administracion/vehiculos";
+    }
+
+
+    // USUARIOS
+
+    @GetMapping("/administracion/usuarios")
+    public String mostrarListadoUsuarios(Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarAdmin(id);
+
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+        model.addAttribute("usuario", usuario);
+        model.addAttribute("usuarios", usuarios);
+
+        return "administracion/listar/administracionUsuarios";
+    }
+
+    @GetMapping("/administracion/usuarios/editar/{usuarioId}")
+    public String mostrarEditarUsuario(@PathVariable(value = "usuarioId") Long usuarioId, Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarAdmin(id);
+
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+        model.addAttribute("usuario", usuario);
+
+        UsuarioData usuarioBD = usuarioService.findById(usuarioId);
+
+        if (usuarioBD != null) {
+            Usuario usuarioBuscado = usuarioService.buscarUsuarioPorId(usuarios, usuarioId);
+            model.addAttribute("usuarioBuscado", usuarioBuscado);
+
+            UsuarioData usuarioData = new UsuarioData();
+
+            usuarioData.setNombre(usuarioBuscado.getNombre());
+            usuarioData.setApellidos(usuarioBuscado.getApellidos());
+            usuarioData.setEmail(usuarioBuscado.getEmail());
+            usuarioData.setPassword(usuarioBuscado.getPassword());
+            usuarioData.setTelefono(usuarioBuscado.getTelefono());
+            usuarioData.setDireccion(usuarioBuscado.getDireccion());
+            usuarioData.setCiudad(usuarioBuscado.getCiudad());
+            usuarioData.setCodigoPostal(usuarioBuscado.getCodigoPostal());
+            usuarioData.setDni(usuarioBuscado.getDni());
+            usuarioData.setFechaCaducidadDni(usuarioBuscado.getFechaCaducidadDni());
+            usuarioData.setFechaCarnetConducir(usuarioBuscado.getFechaCarnetConducir());
+            usuarioData.setAdministrador(usuarioBuscado.isAdministrador());
+            usuarioData.setEsArrendador(usuarioBuscado.isEsArrendador());
+            usuarioData.setEsArrendatario(usuarioBuscado.isEsArrendatario());
+            usuarioData.setImagen(usuarioBuscado.getImagen());
+            usuarioData.setIdCuenta(usuarioBuscado.getCuenta().getId());
+
+            model.addAttribute("usuarioData", usuarioData);
+
+            return "administracion/editar/editarUsuarioAdministrador";
+        }
+
+        return "redirect:/administracion/usuarios";
+    }
+
+    @PostMapping("/administracion/usuarios/editar/{usuarioId}")
+    public String actualizarUsuario(@PathVariable Long usuarioId, @Valid UsuarioData usuarioData, BindingResult result, Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarAdmin(id);
+
+        model.addAttribute("usuarioData", usuarioData);
+
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+        model.addAttribute("usuario", usuario);
+
+        Usuario usuarioBuscado = usuarioService.buscarUsuarioPorId(usuarios, usuarioId);
+        model.addAttribute("usuarioBuscado", usuarioBuscado);
+
+        if (result.hasErrors() || usuarioData.getNombre().trim().isEmpty() || usuarioData.getEmail().trim().isEmpty() || usuarioData.getTelefono() == null || usuarioData.getDireccion().trim().isEmpty() || usuarioData.getCiudad().trim().isEmpty() || usuarioData.getCodigoPostal() == null || usuarioData.getDni().trim().isEmpty() || usuarioData.getFechaCaducidadDni() == null || usuarioData.getFechaCarnetConducir() == null || usuarioData.getImagen().trim().isEmpty()) {
+            model.addAttribute("errorActualizar", "Unicamente puede estar vacio el campo de los apellidos. Todos los demás campos son obligatorios.");
+            return "administracion/editar/editarUsuarioAdministrador";
+        }
+        else{
+            try {
+                UsuarioData nuevoUsuarioData = usuarioService.findById(usuarioId);
+
+                if(nuevoUsuarioData.getEmail() != null) {
+                    if ((usuarioService.findByEmail(usuarioData.getEmail()) != null) && !usuarioData.getEmail().equals(nuevoUsuarioData.getEmail())) {
+                        model.addAttribute("errorActualizar", "El vehículo con email (" + usuarioData.getEmail() + ") ya existe.");
+                        return "administracion/editar/editarUsuarioAdministrador";
+                    }
+
+                    nuevoUsuarioData.setNombre(usuarioData.getNombre());
+                    nuevoUsuarioData.setApellidos(usuarioData.getApellidos());
+                    nuevoUsuarioData.setEmail(usuarioData.getEmail());
+                    nuevoUsuarioData.setTelefono(usuarioData.getTelefono());
+                    nuevoUsuarioData.setDni(usuarioData.getDni());
+                    nuevoUsuarioData.setFechaCaducidadDni(usuarioData.getFechaCaducidadDni());
+                    nuevoUsuarioData.setAdministrador(usuarioData.isAdministrador());
+                    nuevoUsuarioData.setDireccion(usuarioData.getDireccion());
+                    nuevoUsuarioData.setCiudad(usuarioData.getCiudad());
+                    nuevoUsuarioData.setCodigoPostal(usuarioData.getCodigoPostal());
+                    nuevoUsuarioData.setFechaCarnetConducir(usuarioData.getFechaCarnetConducir());
+                    nuevoUsuarioData.setImagen(usuarioData.getImagen());
+
+                    nuevoUsuarioData.setEsArrendador(usuarioBuscado.isEsArrendador());
+                    nuevoUsuarioData.setEsArrendatario(usuarioBuscado.isEsArrendatario());
+                    nuevoUsuarioData.setPassword(usuarioBuscado.getPassword());
+                    nuevoUsuarioData.setIdCuenta(usuarioBuscado.getCuenta().getId());
+
+                    usuarioService.actualizarUsuarioPorId(usuarioId, nuevoUsuarioData);
+
+                    return "redirect:/administracion/usuarios";
+                }
+                else{
+                    model.addAttribute("errorActualizar", "Ha ocurrido un error al intentar actualizar.");
+                }
+            } catch (Exception e) {
+                model.addAttribute("errorActualizar", e.getMessage());
+            }
+        }
+
+        return "administracion/editar/editarUsuarioAdministrador";
+    }
+
+    @PostMapping("/administracion/usuarios/eliminar/{usuarioId}")
+    public String eliminarUsuario(@PathVariable("usuarioId") Long usuarioId, Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarAdmin(id);
+
+        try {
+            usuarioService.eliminarUsuario(usuarioId);
+            model.addAttribute("success", "Usuario eliminado con éxito.");
+        } catch (Exception e) {
+            model.addAttribute("error", "No se puede eliminar el usuario debido a: " + e.getMessage());
+        }
+
+        return "redirect:/administracion/usuarios";
+    }
+
+    @GetMapping("/administracion/usuarios/crear")
+    public String mostrarCrearUsuario(Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarAdmin(id);
+
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+        model.addAttribute("usuario", usuario);
+
+        model.addAttribute("registroData", new RegistroData());
+
+        return "administracion/crear/crearUsuario";
+    }
+
+    @PostMapping("/administracion/usuarios/crear")
+    public String crearUsuario(@Valid RegistroData registroData, BindingResult result, Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarAdmin(id);
+
+        model.addAttribute("registroData", registroData);
+
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+        model.addAttribute("usuario", usuario);
+
+        if (result.hasErrors()) {
+            return "administracion/crear/crearUsuario";
+        }
+        else{
+            try {
+                if (usuarioService.findByEmail(registroData.getEmail()) != null) {
+                    model.addAttribute("errorCrear", "El usuario con email (" + registroData.getEmail() + ") ya existe.");
+                    return "administracion/crear/crearCategoria";
+                }
+
+                UsuarioData usuarioNuevo = new UsuarioData();
+                usuarioNuevo.setEmail(registroData.getEmail());
+                usuarioNuevo.setPassword(registroData.getPassword());
+                usuarioNuevo.setNombre(registroData.getNombre());
+                usuarioNuevo.setApellidos(registroData.getApellidos());
+                usuarioNuevo.setTelefono(registroData.getTelefono());
+                usuarioNuevo.setDireccion(registroData.getDireccion());
+                usuarioNuevo.setDni(registroData.getDni());
+                usuarioNuevo.setFechaCaducidadDni(registroData.getFechaCaducidadDni());
+                usuarioNuevo.setCiudad(registroData.getCiudad());
+                usuarioNuevo.setCodigoPostal(registroData.getCodigoPostal());
+                usuarioNuevo.setFechaCarnetConducir(registroData.getFechaCarnetConducir());
+                usuarioNuevo.setImagen("cara.jpg");
+                usuarioNuevo.setEsArrendatario(true);
+
+                UsuarioData nuevoUsuario = usuarioService.registrar(usuarioNuevo);
+
+                CuentaData cuenta = new CuentaData();
+                cuenta.setSaldo(BigDecimal.valueOf(100.0));
+                cuenta.setIdUsuario(nuevoUsuario.getId());
+                cuenta.setNumeroCuenta("ES" + registroData.getNumeroCuenta());
+
+                CuentaData nuevaCuenta = cuentaService.crearCuenta(cuenta);
+
+                nuevoUsuario.setIdCuenta(nuevaCuenta.getId());
+                usuarioService.añadirCuenta(nuevoUsuario.getId(), nuevoUsuario);
+
+                return "redirect:/administracion/usuarios";
+
+            } catch (UsuarioServiceException e) {
+                model.addAttribute("errorCrear", e.getMessage());
+            }
+        }
+
+        return "administracion/crear/crearUsuario";
     }
 }

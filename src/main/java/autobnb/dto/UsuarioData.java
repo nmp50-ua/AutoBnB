@@ -1,5 +1,7 @@
 package autobnb.dto;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.util.Date;
 import java.util.Objects;
 
@@ -16,7 +18,9 @@ public class UsuarioData {
     private String ciudad;
     private Integer codigoPostal;
     private String dni;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date fechaCaducidadDni;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date fechaCarnetConducir;
     private boolean administrador;
     private boolean esArrendador;

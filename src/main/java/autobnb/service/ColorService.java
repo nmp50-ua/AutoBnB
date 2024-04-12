@@ -10,8 +10,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ColorService {
@@ -21,7 +23,12 @@ public class ColorService {
     private ModelMapper modelMapper;
 
     @Transactional(readOnly = true)
-    public List<Color> listadoCompleto(){ return (List<Color>) colorRepository.findAll(); }
+    public List<Color> listadoCompleto() {
+        List<Color> coloresSinOrdenar = (List<Color>) colorRepository.findAll();
+        return coloresSinOrdenar.stream()
+                .sorted(Comparator.comparingLong(Color::getId))
+                .collect(Collectors.toList());
+    }
 
     @Transactional(readOnly = true)
     public ColorData findById(Long colorId) {

@@ -1,5 +1,7 @@
 package autobnb.dto;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.util.Date;
 import java.util.Objects;
 
@@ -7,6 +9,7 @@ public class ComentarioData {
 
     private Long id;
     private String descripcion;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date fechaCreacion;
     private Long idVehiculo;
     private Long idUsuario;

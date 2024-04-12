@@ -9,9 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UsuarioService {
@@ -29,6 +32,12 @@ public class UsuarioService {
     private VehiculoRepository vehiculoRepository;
     @Autowired
     private AlquilerRepository alquilerRepository;
+    @Autowired
+    private ComentarioService comentarioService;
+    @Autowired
+    private AlquilerService alquilerService;
+    @Autowired
+    private VehiculoService vehiculoService;
     @Autowired
     private ModelMapper modelMapper;
 
@@ -79,8 +88,11 @@ public class UsuarioService {
 
     // Método que devuelve el listado completo de objetos Usuario que hay en la base de datos.
     @Transactional(readOnly = true)
-    public List<Usuario> listadoCompleto(){
-        return (List<Usuario>) usuarioRepository.findAll();
+    public List<Usuario> listadoCompleto() {
+        return ((List<Usuario>) usuarioRepository.findAll())
+                .stream()
+                .sorted(Comparator.comparingLong(Usuario::getId))
+                .collect(Collectors.toList());
     }
 
     // Método que busca un Usuario en una lista de Usuarios pasado por parámetro y un id concreto a buscar
@@ -216,6 +228,10 @@ public class UsuarioService {
             throw new UsuarioServiceException("Se ha recibido una fecha de carnet de conducir NULL");
         }
 
+        if (nuevosDatos.isAdministrador()) {
+            usuarioActualizado.setAdministrador(nuevosDatos.isAdministrador());
+        }
+
         usuarioActualizado.setApellidos(nuevosDatos.getApellidos());
         usuarioActualizado.setImagen(nuevosDatos.getImagen());
 
@@ -255,5 +271,23 @@ public class UsuarioService {
         cuentaRepository.save(cuenta);
 
         return usuario;
+    }
+
+    @Transactional
+    public void eliminarUsuario(Long usuarioId) {
+        Usuario usuario = usuarioRepository.findById(usuarioId).orElse(null);
+
+        if (usuario != null) {
+            for (Vehiculo vehiculo : usuario.getVehiculos()) {
+                vehiculoService.eliminarVehiculo(vehiculo.getId());
+            }
+
+            usuario.getComentarios().forEach(comentario -> comentarioService.eliminarComentario(comentario.getId()));
+            usuario.getPagos().forEach(pago -> alquilerService.eliminarAlquiler(pago.getAlquiler().getId()));
+
+            usuarioRepository.delete(usuario);
+        } else {
+            throw new EntityNotFoundException("No se encontró el usuario con ID: " + usuario);
+        }
     }
 }

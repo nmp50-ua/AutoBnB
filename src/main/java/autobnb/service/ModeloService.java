@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,8 +26,11 @@ public class ModeloService {
     @Autowired
     private ModelMapper modelMapper;
     @Transactional(readOnly = true)
-    public List<Modelo> listadoCompleto(){
-        return (List<Modelo>) modeloRepository.findAll();
+    public List<Modelo> listadoCompleto() {
+        return ((List<Modelo>) modeloRepository.findAll())
+                .stream()
+                .sorted(Comparator.comparingLong(Modelo::getId))
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)

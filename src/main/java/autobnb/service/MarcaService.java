@@ -13,8 +13,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class MarcaService {
@@ -23,8 +25,11 @@ public class MarcaService {
     @Autowired
     private ModelMapper modelMapper;
     @Transactional(readOnly = true)
-    public List<Marca> listadoCompleto(){
-        return (List<Marca>) marcaRepository.findAll();
+    public List<Marca> listadoCompleto() {
+        return ((List<Marca>) marcaRepository.findAll())
+                .stream()
+                .sorted(Comparator.comparingLong(Marca::getId))
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)

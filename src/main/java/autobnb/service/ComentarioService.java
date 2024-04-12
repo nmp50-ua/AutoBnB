@@ -13,7 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ComentarioService {
@@ -76,7 +78,10 @@ public class ComentarioService {
     }
 
     @Transactional(readOnly = true)
-    public List<Comentario> listadoCompleto(){
-        return (List<Comentario>) comentarioRepository.findAll();
+    public List<Comentario> listadoCompleto() {
+        return ((List<Comentario>) comentarioRepository.findAll())
+                .stream()
+                .sorted(Comparator.comparingLong(Comentario::getId))
+                .collect(Collectors.toList());
     }
 }

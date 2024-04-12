@@ -10,8 +10,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class TransmisionService {
@@ -21,7 +23,12 @@ public class TransmisionService {
     private ModelMapper modelMapper;
 
     @Transactional(readOnly = true)
-    public List<Transmision> listadoCompleto(){ return (List<Transmision>) transmisionRepository.findAll(); }
+    public List<Transmision> listadoCompleto() {
+        return ((List<Transmision>) transmisionRepository.findAll())
+                .stream()
+                .sorted(Comparator.comparingLong(Transmision::getId))
+                .collect(Collectors.toList());
+    }
 
     @Transactional(readOnly = true)
     public TransmisionData findById(Long transmisionId) {

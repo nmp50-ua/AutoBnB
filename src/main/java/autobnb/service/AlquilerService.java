@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AlquilerService {
@@ -44,7 +46,10 @@ public class AlquilerService {
     }
 
     @Transactional(readOnly = true)
-    public List<Alquiler> listadoCompleto(){
-        return (List<Alquiler>) alquilerRepository.findAll();
+    public List<Alquiler> listadoCompleto() {
+        return ((List<Alquiler>) alquilerRepository.findAll())
+                .stream()
+                .sorted(Comparator.comparingLong(Alquiler::getId))
+                .collect(Collectors.toList());
     }
 }
