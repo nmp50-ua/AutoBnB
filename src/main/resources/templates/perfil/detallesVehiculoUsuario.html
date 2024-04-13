@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments :: head (titulo='Detalles Vehículo Usuario')"></head>
+
+<body>
+<!-- Si el usuario está logueado, incluye el Navbar normal -->
+<div th:if="${usuario != null}">
+    <!-- Recuperamos el objeto "usuarios" que nos pasa el Controller y usamos sus atributos, pasandolos al NavBar -->
+    <div th:replace="fragments :: navbar(userName=${usuario} ? ${usuario.getNombre()} : '',
+                         userId=${usuario} ? ${usuario.getId()} : '',
+                         admin=${usuario} ? ${usuario.isAdministrador()} : '')"></div>
+</div>
+
+<!-- Si el usuario no está logueado, incluye el Navbar para no logueados -->
+<div th:if="${usuario == null}">
+    <div th:replace="fragments :: navbar_noLogueado"></div>
+</div>
+
+<main style="padding: 50px; background-color: #f5f5f5;">
+    <div class="container" style="max-width: 800px; background: white; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h1 th:text="${vehiculo.marca.nombre + ' ' + vehiculo.modelo.nombre}" style="font-size: 24px; color: #333;"></h1>
+            <span th:text="'por ' + ${vehiculo.precioPorDia} + '€ al día'" style="font-size: 18px; color: #555;"></span>
+        </div>
+        <div style="margin-bottom: 30px;">
+            <img th:src="@{/assets/{productoImg}(productoImg=${vehiculo.imagen})}" alt="Imagen del Vehículo" style="width: 100%; height: auto; display: block; margin-bottom: 30px;">
+        </div>
+        <div style="text-align: center; margin-bottom: 30px;">
+            <span th:text="${vehiculo.descripcion}" style="font-size: 18px; color: #555;"></span>
+        </div>
+        <div style="border-top: 1px solid #eee; padding-top: 20px;">
+            <p style="font-size: 18px; color: #666; font-family: 'Quicksand', sans-serif;"><strong>Detalles del vehículo</strong></p>
+            <p style="color: #333; font-family: 'Quicksand', sans-serif;">
+                <strong>Matrícula:</strong> <span th:text="${vehiculo.matricula}"></span>&nbsp;&nbsp;&nbsp;
+                <strong>Marca:</strong> <span th:text="${vehiculo.marca.nombre}"></span>&nbsp;&nbsp;&nbsp;
+                <strong>Modelo:</strong> <span th:text="${vehiculo.modelo.nombre}"></span>
+            </p>
+            <p style="color: #333; font-family: 'Quicksand', sans-serif;">
+                <strong>Transmisión:</strong> <span th:text="${vehiculo.transmision.nombre}"></span>&nbsp;&nbsp;&nbsp;
+                <strong>Color:</strong> <span th:text="${vehiculo.color.nombre}"></span>&nbsp;&nbsp;&nbsp;
+                <strong>Categoria:</strong> <span th:text="${vehiculo.categoria.nombre}"></span>
+            </p>
+            <p style="color: #333; font-family: 'Quicksand', sans-serif;">
+                <strong>Año de Fabricación:</strong> <span th:text="${vehiculo.anyoFabricacion}"></span>&nbsp;&nbsp;&nbsp;
+                <strong>Kilometraje:</strong> <span th:text="${vehiculo.kilometraje} + ' Km'"></span>
+            </p>
+            <p style="color: #333; font-family: 'Quicksand', sans-serif;">
+                <strong>Capacidad del Maletero:</strong> <span th:text="${vehiculo.capacidadMaletero} + ' litros'"></span>&nbsp;&nbsp;&nbsp;
+                <strong>Capacidad de Pasajeros:</strong> <span th:text="${vehiculo.capacidadPasajeros}"></span>
+            </p>
+            <p style="color: #333; font-family: 'Quicksand', sans-serif;">
+                <strong>Número de marchas:</strong> <span th:text="${vehiculo.numeroMarchas}"></span>&nbsp;&nbsp;&nbsp;
+                <strong>Número de puertas:</strong> <span th:text="${vehiculo.numeroPuertas}"></span>
+            </p>
+            <br/>
+            <p style="font-size: 18px; color: #666; font-family: 'Quicksand', sans-serif;"><strong>Precio y disponibilidad</strong></p>
+            <p style="color: #333; font-family: 'Quicksand', sans-serif;">
+                <strong>Precio por día:</strong> <span th:text="${vehiculo.precioPorDia} + ' €'"></span>&nbsp;&nbsp;&nbsp;
+                <strong>Precio por Medio Día:</strong> <span th:text="${vehiculo.precioPorMedioDia} + ' €'"></span>&nbsp;&nbsp;&nbsp;
+                <strong>Precio del Combustible:</strong> <span th:text="${vehiculo.precioCombustible} + ' €'"></span>
+            </p>
+            <p style="color: #333; font-family: 'Quicksand', sans-serif;">
+                <strong>Estado:</strong> <span th:text="${vehiculo.enMantenimiento ? 'En mantenimiento' : 'Disponible'}"></span>&nbsp;&nbsp;&nbsp;
+                <strong>Aire Acondicionado:</strong> <span th:text="${vehiculo.aireAcondicionado ? 'Instalado' : 'No disponible'}"></span>
+            </p>
+        </div>
+    </div>
+    <p class="text-center mt-3">
+        <a th:href="@{'/perfil/' + ${usuario.id} + '/vehiculos'}" class="btn btn-link" style="color: #171a1d;">Volver al listado</a>
+    </p>
+</main>
+
+<div th:replace="fragments :: footer"></div>
+<div th:replace="fragments::javascript"/>
+</body>
+</html>

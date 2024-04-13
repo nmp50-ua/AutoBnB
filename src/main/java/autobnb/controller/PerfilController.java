@@ -1,7 +1,6 @@
 package autobnb.controller;
 
 import autobnb.authentication.ManagerUserSession;
-import autobnb.controller.exception.UsuarioNoAutorizadoException;
 import autobnb.controller.exception.UsuarioNoLogeadoException;
 import autobnb.dto.*;
 import autobnb.model.*;
@@ -68,7 +67,7 @@ public class PerfilController {
 
         model.addAttribute("usuario", usuario);
 
-        return "perfil";
+        return "perfil/perfil";
     }
 
     @PostMapping("/perfil/cambiarRol/{id}")
@@ -104,7 +103,7 @@ public class PerfilController {
 
         model.addAttribute("registroData", nuevo);
 
-        return "actualizarPerfil";
+        return "perfil/actualizarPerfil";
     }
 
     // Método para manejar la actualización del perfil
@@ -163,7 +162,7 @@ public class PerfilController {
 
         model.addAttribute("usuario", usuario);
 
-        return "actualizarPerfil";
+        return "perfil/actualizarPerfil";
     }
 
 
@@ -184,7 +183,7 @@ public class PerfilController {
 
         model.addAttribute("comentarios", comentarios);
 
-        return "comentariosUsuario";
+        return "perfil/comentariosUsuario";
     }
 
     @GetMapping("/perfil/{id}/comentarios/editar/{comentarioId}")
@@ -211,7 +210,7 @@ public class PerfilController {
             comentarioData.setIdUsuario(comentarioBuscado.getUsuario().getId());
 
             model.addAttribute("comentarioData", comentarioData);
-            return "editarComentario";
+            return "perfil/editarComentario";
         }
 
         return "redirect:/perfil/" + idUsuario + "/comentarios";
@@ -259,7 +258,7 @@ public class PerfilController {
         Comentario comentarioBuscado = comentarioService.buscarComentarioPorId(comentarios, comentarioId);
         model.addAttribute("comentario", comentarioBuscado);
 
-        return "editarComentario";
+        return "perfil/editarComentario";
     }
 
     @PostMapping("/perfil/{id}/comentarios/eliminar/{comentarioId}")
@@ -288,7 +287,7 @@ public class PerfilController {
 
         model.addAttribute("pagos", pagos);
 
-        return "alquileresUsuario";
+        return "perfil/alquileresUsuario";
     }
 
     @PostMapping("/perfil/{id}/alquileres/eliminar/{alquilerId}")
@@ -302,8 +301,8 @@ public class PerfilController {
 
     // VEHÍCULOS DE USUARIO
 
-    @GetMapping("/perfil/{id}/añadir-coche")
-    public String mostrarEditarVehiculo(@PathVariable("id") Long idUsuario, Model model) {
+    @GetMapping("/perfil/{id}/añadir-vehiculo")
+    public String mostrarAñadirVehiculo(Model model) {
         Long id = managerUserSession.usuarioLogeado();
 
         comprobarLogueado(id);
@@ -327,7 +326,7 @@ public class PerfilController {
         List<Transmision> transmisiones = transmisionService.listadoCompleto();
         model.addAttribute("transmisiones", transmisiones);
 
-        return "añadirVehiculoUsuario";
+        return "perfil/añadirVehiculoUsuario";
     }
 
     @GetMapping("/modelosPorMarca/{marcaId}")
@@ -340,7 +339,7 @@ public class PerfilController {
         return modeloMap;
     }
 
-    @PostMapping("/perfil/{usuarioId}/añadir-coche")
+    @PostMapping("/perfil/{usuarioId}/añadir-vehiculo")
     public String registrarVehiculo(@PathVariable("usuarioId") Long idUsuario, @Valid VehiculoData vehiculoData, BindingResult result, Model model) {
         Long id = managerUserSession.usuarioLogeado();
 
@@ -365,13 +364,13 @@ public class PerfilController {
 
         if (result.hasErrors() || vehiculoData.getMatricula().trim().isEmpty() || vehiculoData.getDescripcion().trim().isEmpty() || vehiculoData.getImagen().trim().isEmpty() || vehiculoData.getKilometraje() == null || vehiculoData.getAnyoFabricacion() == null || vehiculoData.getCapacidadPasajeros() == null || vehiculoData.getCapacidadMaletero() == null || vehiculoData.getNumeroPuertas() == null || vehiculoData.getNumeroMarchas() == null || vehiculoData.getPrecioPorDia() == null || vehiculoData.getPrecioPorMedioDia() == null || vehiculoData.getPrecioCombustible() == null || vehiculoData.getIdMarca() == null || vehiculoData.getIdModelo() == null || vehiculoData.getIdCategoria() == null || vehiculoData.getIdTransmision() == null || vehiculoData.getIdColor() == null) {
             model.addAttribute("errorActualizar", "Únicamente puede estar vacio el campo de la oferta. Todos los demás campos son obligatorios.");
-            return "añadirVehiculoUsuario";
+            return "perfil/añadirVehiculoUsuario";
         }
         else{
             try {
                 if (vehiculoService.findByMatricula(vehiculoData.getMatricula()) != null) {
                     model.addAttribute("errorActualizar", "El vehículo con matrícula (" + vehiculoData.getMatricula() + ") ya existe.");
-                    return "añadirVehiculoUsuario";
+                    return "perfil/añadirVehiculoUsuario";
                 }
 
                 vehiculoData.setIdUsuario(idUsuario);
@@ -384,7 +383,188 @@ public class PerfilController {
             }
         }
 
-        return "añadirVehiculoUsuario";
+        return "perfil/añadirVehiculoUsuario";
+    }
+
+    @GetMapping("/perfil/{id}/vehiculos")
+    public String mostrarListadoVehiculos(@PathVariable(value = "id") Long idUsuario, Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarLogueado(id);
+
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, idUsuario);
+        model.addAttribute("usuario", usuario);
+
+        List<Vehiculo> vehiculos = usuarioService.obtenerVehiculosPorUsuarioId(idUsuario);
+
+        model.addAttribute("vehiculos", vehiculos);
+
+        return "perfil/vehiculosUsuario";
+    }
+
+    @GetMapping("/perfil/{usuarioId}/vehiculos/editar/{vehiculoId}")
+    public String mostrarEditarVehiculo(@PathVariable(value = "usuarioId") Long idUsuario, @PathVariable(value = "vehiculoId") Long vehiculoId, Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarLogueado(id);
+
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+        model.addAttribute("usuario", usuario);
+
+        VehiculoData vehiculo = vehiculoService.findById(vehiculoId);
+
+        if (vehiculo != null) {
+            List<Vehiculo> vehiculos = vehiculoService.listadoCompleto();
+            Vehiculo vehiculoBuscado = vehiculoService.buscarVehiculoPorId(vehiculos, vehiculoId);
+            model.addAttribute("vehiculo", vehiculoBuscado);
+
+            VehiculoData vehiculoData = new VehiculoData();
+            vehiculoData.setMatricula(vehiculoBuscado.getMatricula());
+            vehiculoData.setDescripcion(vehiculoBuscado.getDescripcion());
+            vehiculoData.setImagen(vehiculoBuscado.getImagen());
+            vehiculoData.setKilometraje(vehiculoBuscado.getKilometraje());
+            vehiculoData.setAnyoFabricacion(vehiculoBuscado.getAnyoFabricacion());
+            vehiculoData.setCapacidadPasajeros(vehiculoBuscado.getCapacidadPasajeros());
+            vehiculoData.setCapacidadMaletero(vehiculoBuscado.getCapacidadMaletero());
+            vehiculoData.setNumeroPuertas(vehiculoBuscado.getNumeroPuertas());
+            vehiculoData.setNumeroMarchas(vehiculoBuscado.getNumeroMarchas());
+            vehiculoData.setAireAcondicionado(vehiculoBuscado.isAireAcondicionado());
+            vehiculoData.setEnMantenimiento(vehiculoBuscado.isEnMantenimiento());
+            vehiculoData.setOferta(vehiculoBuscado.getOferta());
+            vehiculoData.setPrecioPorDia(vehiculoBuscado.getPrecioPorDia());
+            vehiculoData.setPrecioPorMedioDia(vehiculoBuscado.getPrecioPorMedioDia());
+            vehiculoData.setPrecioCombustible(vehiculoBuscado.getPrecioCombustible());
+            vehiculoData.setIdMarca(vehiculoBuscado.getMarca().getId());
+            vehiculoData.setIdModelo(vehiculoBuscado.getModelo().getId());
+            vehiculoData.setIdCategoria(vehiculoBuscado.getCategoria().getId());
+            vehiculoData.setIdTransmision(vehiculoBuscado.getTransmision().getId());
+            vehiculoData.setIdColor(vehiculoBuscado.getColor().getId());
+
+            model.addAttribute("vehiculoData", vehiculoData);
+
+            model.addAttribute("marcas", marcaService.listadoCompleto());
+            model.addAttribute("modelos", modeloService.listadoCompleto());
+            model.addAttribute("categorias", categoriaService.listadoCompleto());
+            model.addAttribute("colores", colorService.listadoCompleto());
+            model.addAttribute("transmisiones", transmisionService.listadoCompleto());
+
+            return "perfil/editarVehiculoUsuario";
+        }
+
+        return "redirect:/perfil/" + idUsuario + "/vehiculos";
+    }
+
+    @PostMapping("/perfil/{usuarioId}/vehiculos/editar/{vehiculoId}")
+    public String actualizarVehiculo(@PathVariable(value = "usuarioId") Long idUsuario, @PathVariable Long vehiculoId, @Valid VehiculoData vehiculoData, BindingResult result, Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarLogueado(id);
+
+        model.addAttribute("vehiculoData", vehiculoData);
+
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+        model.addAttribute("usuario", usuario);
+
+        model.addAttribute("marcas", marcaService.listadoCompleto());
+        model.addAttribute("modelos", modeloService.listadoCompleto());
+        model.addAttribute("categorias", categoriaService.listadoCompleto());
+        model.addAttribute("colores", colorService.listadoCompleto());
+        model.addAttribute("transmisiones", transmisionService.listadoCompleto());
+
+        List<Vehiculo> vehiculos = vehiculoService.listadoCompleto();
+        Vehiculo vehiculoBuscado = vehiculoService.buscarVehiculoPorId(vehiculos, vehiculoId);
+        model.addAttribute("vehiculo", vehiculoBuscado);
+
+        if (result.hasErrors() || vehiculoData.getMatricula().trim().isEmpty() || vehiculoData.getDescripcion().trim().isEmpty() || vehiculoData.getImagen().trim().isEmpty() || vehiculoData.getKilometraje() == null || vehiculoData.getAnyoFabricacion() == null || vehiculoData.getCapacidadPasajeros() == null || vehiculoData.getCapacidadMaletero() == null || vehiculoData.getNumeroPuertas() == null || vehiculoData.getNumeroMarchas() == null || vehiculoData.getPrecioPorDia() == null || vehiculoData.getPrecioPorMedioDia() == null || vehiculoData.getPrecioCombustible() == null || vehiculoData.getIdMarca() == null || vehiculoData.getIdModelo() == null || vehiculoData.getIdCategoria() == null || vehiculoData.getIdTransmision() == null || vehiculoData.getIdColor() == null) {
+            model.addAttribute("errorActualizar", "Unicamente puede estar vacio el campo de la oferta. Todos los demás campos son obligatorios.");
+            return "perfil/editarVehiculoUsuario";
+        }
+        else{
+            try {
+                VehiculoData nuevoVehiculoData = vehiculoService.findById(vehiculoId);
+
+                if(nuevoVehiculoData.getMatricula() != null) {
+                    if ((vehiculoService.findByMatricula(vehiculoData.getMatricula()) != null) && !vehiculoData.getMatricula().equals(nuevoVehiculoData.getMatricula())) {
+                        model.addAttribute("errorActualizar", "El vehículo con matrícula (" + vehiculoData.getMatricula() + ") ya existe.");
+                        return "perfil/editarVehiculoUsuario";
+                    }
+
+                    nuevoVehiculoData.setMatricula(vehiculoData.getMatricula());
+                    nuevoVehiculoData.setDescripcion(vehiculoData.getDescripcion());
+                    nuevoVehiculoData.setImagen(vehiculoData.getImagen());
+                    nuevoVehiculoData.setKilometraje(vehiculoData.getKilometraje());
+                    nuevoVehiculoData.setAnyoFabricacion(vehiculoData.getAnyoFabricacion());
+                    nuevoVehiculoData.setCapacidadPasajeros(vehiculoData.getCapacidadPasajeros());
+                    nuevoVehiculoData.setCapacidadMaletero(vehiculoData.getCapacidadMaletero());
+                    nuevoVehiculoData.setNumeroPuertas(vehiculoData.getNumeroPuertas());
+                    nuevoVehiculoData.setNumeroMarchas(vehiculoData.getNumeroMarchas());
+                    nuevoVehiculoData.setAireAcondicionado(vehiculoData.isAireAcondicionado());
+                    nuevoVehiculoData.setEnMantenimiento(vehiculoData.isEnMantenimiento());
+                    nuevoVehiculoData.setOferta(vehiculoData.getOferta());
+                    nuevoVehiculoData.setPrecioPorDia(vehiculoData.getPrecioPorDia());
+                    nuevoVehiculoData.setPrecioPorMedioDia(vehiculoData.getPrecioPorMedioDia());
+                    nuevoVehiculoData.setPrecioCombustible(vehiculoData.getPrecioCombustible());
+                    nuevoVehiculoData.setIdMarca(vehiculoData.getIdMarca());
+                    nuevoVehiculoData.setIdModelo(vehiculoData.getIdModelo());
+                    nuevoVehiculoData.setIdCategoria(vehiculoData.getIdCategoria());
+                    nuevoVehiculoData.setIdTransmision(vehiculoData.getIdTransmision());
+                    nuevoVehiculoData.setIdColor(vehiculoData.getIdColor());
+
+                    vehiculoService.actualizarVehiculo(vehiculoId, nuevoVehiculoData);
+
+                    return "redirect:/perfil/" + idUsuario + "/vehiculos";
+                }
+                else{
+                    model.addAttribute("errorActualizar", "Ha ocurrido un error al intentar actualizar.");
+                }
+            } catch (Exception e) {
+                model.addAttribute("errorActualizar", e.getMessage());
+            }
+        }
+
+        return "perfil/editarVehiculoUsuario";
+    }
+
+    @PostMapping("/perfil/{usuarioId}/vehiculos/eliminar/{vehiculoId}")
+    public String eliminarVehiculo(@PathVariable(value = "usuarioId") Long idUsuario, @PathVariable("vehiculoId") Long vehiculoId, Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarLogueado(id);
+
+        try {
+            vehiculoService.eliminarVehiculo(vehiculoId);
+            model.addAttribute("success", "Vehículo eliminado con éxito.");
+        } catch (Exception e) {
+            model.addAttribute("error", "No se puede eliminar el vehículo debido a: " + e.getMessage());
+        }
+
+        return "redirect:/perfil/" + idUsuario + "/vehiculos";
+    }
+
+    @GetMapping("/perfil/{usuarioId}/vehiculos/detalles/{vehiculoId}")
+    public String mostrarDetallesVehiculo(@PathVariable(value = "usuarioId") Long idUsuario, @PathVariable(value = "vehiculoId") Long vehiculoId, Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarLogueado(id);
+
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+        model.addAttribute("usuario", usuario);
+
+        VehiculoData vehiculo = vehiculoService.findById(vehiculoId);
+
+        if (vehiculo != null) {
+            List<Vehiculo> vehiculos = vehiculoService.listadoCompleto();
+            Vehiculo vehiculoBuscado = vehiculoService.buscarVehiculoPorId(vehiculos, vehiculoId);
+            model.addAttribute("vehiculo", vehiculoBuscado);
+
+            return "perfil/detallesVehiculoUsuario";
+        }
+
+        return "redirect:/perfil/" + idUsuario + "/vehiculos";
     }
 
 
@@ -415,7 +595,7 @@ public class PerfilController {
 
         model.addAttribute("alquileres", alquileres);
 
-        return "cuentaUsuario";
+        return "perfil/cuentaUsuario";
     }
 
     @PostMapping("/perfil/{id}/añadirSaldo")
