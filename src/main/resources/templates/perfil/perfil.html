@@ -70,44 +70,36 @@
             <div class="row mt-4">
                 <div class="col">
                     <div class="text-center">
-                        <a th:href="@{'/perfil/' + ${logueado.getId()} + '/actualizar'}" class="btn btn-primary">Actualizar Perfil</a>
+                        <a th:href="@{'/perfil/' + ${logueado.getId()} + '/actualizar'}" style="background-color: #81c784; color: #fbfcfc;" class="btn">Actualizar Perfil</a>
                     </div>
                 </div>
                 <div th:if="${usuario.esArrendador}" class="col">
                     <div class="text-center">
-                        <a href="" class="btn btn-primary" th:href="@{'/perfil/' + ${logueado.getId()} + '/vehiculos'}">Ver Vehiculos</a>
+                        <a href="" class="btn" style="background-color: #81c784; color: #fbfcfc;" th:href="@{'/perfil/' + ${logueado.getId()} + '/vehiculos'}">Ver Vehiculos</a>
                     </div>
                 </div>
                 <div th:if="${usuario.esArrendador}" class="col">
                     <div class="text-center">
-                        <a href="" class="btn btn-primary" th:href="@{'/perfil/' + ${logueado.getId()} + '/añadir-vehiculo'}">Añadir Vehiculo</a>
+                        <a href="" class="btn" style="background-color: #81c784; color: #fbfcfc;" th:href="@{'/perfil/' + ${logueado.getId()} + '/añadir-vehiculo'}">Añadir Vehiculo</a>
                     </div>
                 </div>
                 <div th:if="${usuario.esArrendatario}" class="col">
                     <div class="text-center">
-                        <a href="" class="btn btn-primary" th:href="@{'/perfil/' + ${logueado.getId()} + '/comentarios'}">Ver Comentarios</a>
+                        <a href="" class="btn" style="background-color: #81c784; color: #fbfcfc;" th:href="@{'/perfil/' + ${logueado.getId()} + '/comentarios'}">Ver Comentarios</a>
                     </div>
                 </div>
                 <div th:if="${usuario.esArrendatario}" class="col">
                     <div class="text-center">
-                        <a href="" class="btn btn-primary" th:href="@{'/perfil/' + ${logueado.getId()} + '/alquileres'}">Ver Alquileres</a>
+                        <a href="" class="btn" style="background-color: #81c784; color: #fbfcfc;" th:href="@{'/perfil/' + ${logueado.getId()} + '/alquileres'}">Ver Alquileres</a>
                     </div>
                 </div>
                 <div class="col">
                     <div class="text-center">
-                        <a href="" class="btn btn-primary" th:href="@{'/perfil/' + ${logueado.getId()} + '/cuenta'}">Ver Cuenta</a>
+                        <a href="" class="btn" style="background-color: #81c784; color: #fbfcfc;" th:href="@{'/perfil/' + ${logueado.getId()} + '/cuenta'}">Ver Cuenta</a>
                     </div>
                 </div>
             </div>
-
-            <div th:if="${usuario.administrador}" class="row mt-4">
-                <div class="col">
-                    <div class="text-center">
-                        <span>Eres el administrador del sistema.</span>
-                    </div>
-                </div>
-            </div>
-
+            <br/>
         </div>
     </main>
 

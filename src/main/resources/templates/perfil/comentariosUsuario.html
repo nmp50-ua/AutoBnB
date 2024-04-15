@@ -43,7 +43,7 @@
                         <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${comentario.fechaCreacion}"></td>
                         <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${comentario.descripcion}"></td>
                         <td>
-                            <a class="btn btn-success btn-xs" th:href="@{/perfil/{id}/comentarios/editar/{comentarioId}(id=${usuario.id}, comentarioId=${comentario.id})}">Editar</a>
+                            <a class="btn btn-xs" style="background-color: #81c784; color: #fbfcfc;" th:href="@{/perfil/{id}/comentarios/editar/{comentarioId}(id=${usuario.id}, comentarioId=${comentario.id})}">Editar</a>
                         </td>
                         <td>
                             <form th:action="@{'/perfil/' + ${usuario.id} + '/comentarios/eliminar/' + ${comentario.id}}" method="post">

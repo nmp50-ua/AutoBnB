@@ -21,7 +21,13 @@
     <div class="container-fluid">
         <div class="row mt-3">
             <div class="col">
-                <h2 style="color: #171a1d; text-align: center; margin-bottom: 30px;">Administración Modelos</h2>
+                <h2 style="color: #171a1d; text-align: center; margin-bottom: 10px; margin-top: 30px; font-family: 'Quicksand', sans-serif;">Administración Modelos</h2>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col text-end">
+                <a href="/administracion/modelos/crear" style="background-color: #005cbf;  color: #fbfcfc;" class="btn">Crear Modelo</a>
             </div>
         </div>
 
@@ -43,7 +49,7 @@
                         <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${modelo.marca.nombre}"></td>
                         <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${modelo.nombre}"></td>
                         <td>
-                            <a class="btn btn-success btn-xs" th:href="@{/administracion/modelos/editar/{modeloId}(modeloId=${modelo.id})}">Editar</a>
+                            <a class="btn btn-xs" style="background-color: #81c784;  color: #fbfcfc;" th:href="@{/administracion/modelos/editar/{modeloId}(modeloId=${modelo.id})}">Editar</a>
                         </td>
                         <td>
                             <form th:action="@{'/administracion/modelos/eliminar/' + ${modelo.id}}" method="post">
@@ -53,11 +59,6 @@
                     </tr>
                     </tbody>
                 </table>
-            </div>
-        </div>
-        <div class="row mt-3">
-            <div class="col text-end">
-                <a href="/administracion/modelos/crear" class="btn btn-primary">Crear Modelo</a>
             </div>
         </div>
         <p class="text-center mt-3"><a href="/administracion" class="btn btn-link" style="color: #171a1d;">Volver al Panel</a></p>

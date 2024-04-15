@@ -21,7 +21,13 @@
     <div class="container-fluid">
         <div class="row mt-3">
             <div class="col">
-                <h2 style="color: #171a1d; text-align: center; margin-bottom: 30px;">Administración Usuarios</h2>
+                <h2 style="color: #171a1d; text-align: center; margin-bottom: 10px; margin-top: 30px; font-family: 'Quicksand', sans-serif;">Administración Usuarios</h2>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col text-end">
+                <a href="/administracion/usuarios/crear" style="background-color: #005cbf;  color: #fbfcfc;" class="btn">Crear Usuario</a>
             </div>
         </div>
 
@@ -59,7 +65,7 @@
                         <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${user.fechaCaducidadDni}"></td>
                         <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${user.fechaCarnetConducir}"></td>
                         <td>
-                            <a class="btn btn-success btn-xs" th:href="@{/administracion/usuarios/editar/{usuarioId}(usuarioId=${user.id})}">Editar</a>
+                            <a class="btn btn-xs" style="background-color: #81c784; color: #fbfcfc;" th:href="@{/administracion/usuarios/editar/{usuarioId}(usuarioId=${user.id})}">Editar</a>
                         </td>
                         <td>
                             <form th:action="@{'/administracion/usuarios/eliminar/' + ${user.id}}" method="post">
@@ -69,12 +75,6 @@
                     </tr>
                     </tbody>
                 </table>
-            </div>
-        </div>
-
-        <div class="row mt-3">
-            <div class="col text-end">
-                <a href="/administracion/usuarios/crear" class="btn btn-primary">Crear Usuario</a>
             </div>
         </div>
 
