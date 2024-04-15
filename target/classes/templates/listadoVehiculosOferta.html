@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments :: head (titulo='Catálogo Vehículos Oferta')"></head>
+
+<body>
+<!-- Si el usuario está logueado, incluye el Navbar normal -->
+<div th:if="${usuario != null}">
+    <!-- Recuperamos el objeto "usuarios" que nos pasa el Controller y usamos sus atributos, pasandolos al NavBar -->
+    <div th:replace="fragments :: navbar(userName=${usuario} ? ${usuario.getNombre()} : '',
+                         userId=${usuario} ? ${usuario.getId()} : '',
+                         admin=${usuario} ? ${usuario.isAdministrador()} : '')"></div>
+</div>
+
+<!-- Si el usuario no está logueado, incluye el Navbar para no logueados -->
+<div th:if="${usuario == null}">
+    <div th:replace="fragments :: navbar_noLogueado"></div>
+</div>
+
+<main style="flex: 1;">
+    <section class="banner">
+        <h1 style="color: #171a1d; text-align: center; margin-bottom: 10px; margin-top: 30px; font-family: 'Quicksand', sans-serif;">Ofertas</h1>
+    </section>
+
+    <!-- Sección de búsqueda -->
+    <section class="search-section py-4" style="border-top: 1px solid #eee; padding-top: 30px;">
+        <div class="container" style="display: flex; justify-content: center; align-items: center;">
+            <form action="/buscar-vehiculos" method="get" class="search-form" style="display: flex; align-items: center; margin-right: 10px;">
+                <input type="text" id="marca" name="marca" class="form-control" placeholder="Marca" style="border-radius: 0.25rem; border: 1px solid #ced4da; max-width: 250px;">
+                <button type="submit" class="btn" style="background-color: #007bff; color: white; border-radius: 0.25rem; padding: 0.5rem 1rem; border: none; cursor: pointer; margin-left: 10px;">Buscar</button>
+            </form>
+
+            <form action="/filtrar-categoria" method="get" class="filter-form" style="display: flex; align-items: center; margin-left: 10px;">
+                <select id="categoria" name="categoria" class="form-control" style="border-radius: 0.25rem; border: 1px solid #ced4da; max-width: 250px;">
+                    <option value="">--Selecciona una categoría--</option>
+                    <option th:each="categoria : ${categorias}"
+                            th:value="${categoria.nombre}"
+                            th:text="${categoria.nombre}">Categoría</option>
+                </select>
+                <button type="submit" class="btn btn-primary" style="background-color: #007bff; color: white; border-radius: 0.25rem; padding: 0.5rem 1rem; border: none; cursor: pointer; margin-left: 10px;">Filtrar</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Listado de vehículos -->
+    <div class="container-fluid" style="margin-top: 30px;">
+        <div class="row mt-3" style="display: flex; justify-content: center;">
+            <div th:each="vehiculo : ${vehiculos}" class="col-md-4 mb-3">
+                <div class="card" style="background-color: transparent; box-shadow: 0 1px 1px 0 rgba(0,0,0,0.2);">
+                    <a th:href="@{/listado-vehiculos/detalles-vehiculo/oferta/{vehiculoId}(vehiculoId=${vehiculo.id})}">
+                        <img class="card-img-top" th:src="@{/assets/{productoImg}(productoImg=${vehiculo.imagen})}" alt="Imagen del vehículo" style="width: 100%; max-width: 200px; height: auto;">
+                    </a>
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${vehiculo.marca.nombre} + ' ' + ${vehiculo.modelo.nombre}"></h5>
+                        <span th:if="${vehiculo.oferta == null}" th:text="'por ' + ${vehiculo.precioPorDia} + '€ al día'" style="font-size: 18px; color: #555;"></span>
+                        <div th:if="${vehiculo.oferta != null}" class="price">
+                            <span style="text-decoration: line-through; color: red;" th:text="${vehiculo.precioPorDia} + '€'"></span>
+                            <span style="font-size: 18px; color: #555; margin-left: 10px;" th:text="${preciosOferta[vehiculo.id]} + '€'"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- <div class="row">
+        <div class="col-12 text-center">
+            <button id="cargarMas" class="btn btn-primary">Cargar más vehículos</button>
+        </div>
+    </div> -->
+</main>
+
+<!-- <script th:inline="javascript">
+    /*<![CDATA[*/
+    $(document).ready(function() {
+        $('#cargarMas').on('click', function() {
+            var offset = $('.card').length;
+            $.ajax({
+                url: '/cargar-mas-vehiculos',
+                type: 'GET',
+                data: { offset: offset },
+                timeout: 10000,  // Aumenta el timeout si es necesario
+                success: function(response) {
+                    if (response.length === 0) {
+                        $('#cargarMas').hide(); // Esconde el botón si no hay más vehículos
+                    } else {
+                        response.forEach(function(vehiculo) {
+                            var cardHtml = '<div class="col-md-4 mb-3"><div class="card" style="background-color: transparent; box-shadow: 0 1px 1px 0 rgba(0,0,0,0.2);"><a href="/detalles-vehiculo/' + vehiculo.id + '"><img class="card-img-top" src="/assets/' + vehiculo.imagen + '" alt="Imagen del vehículo" style="width: 100%; max-width: 200px; height: auto;"></a><div class="card-body"><h5 class="card-title">' + vehiculo.marca.nombre + ' ' + vehiculo.modelo.nombre + '</h5></div></div></div>';
+                            $('.row.mt-3').append(cardHtml);
+                        });
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log('Error:', status, error);
+                    alert("Error al cargar más vehículos: " + status + " " + error);
+                }
+            });
+        });
+    });
+    /*]]>*/
+</script> -->
+
+<div th:replace="fragments :: footer"></div>
+<div th:replace="fragments::javascript"/>
+</body>
+</html>

@@ -46,7 +46,7 @@ public class AutenticacionController {
 
             managerUserSession.logearUsuario(usuario.getId());
 
-            return "redirect:/about";
+            return "redirect:/home";
         } else if (loginStatus == UsuarioService.LoginStatus.USER_NOT_FOUND) {
             model.addAttribute("error", "No existe el usuario introducido.");
             return "formLogin";

@@ -10,4 +10,6 @@ import java.util.Optional;
 public interface VehiculoRepository extends CrudRepository<Vehiculo, Long> {
     Optional<Vehiculo> findByMatricula(String matricula);
     List<Vehiculo> findByUsuarioId(Long usuarioId);
+    List<Vehiculo> findByMarcaNombre(String marca);
+    List<Vehiculo> findByCategoriaNombre(String categoria);
 }

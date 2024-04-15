@@ -17,11 +17,24 @@
     <div th:replace="fragments :: navbar_noLogueado"></div>
 </div>
 
-<main style="padding: 50px; background-color: #f5f5f5;">
-    <div class="container" style="max-width: 800px; background: white; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+<!-- Detalles de Usuario para logueados -->
+<main th:if="${usuario != null}" style="padding: 50px; background-color: #f5f5f5;">
+    <div class="container" style="max-width: 1000px; background: white; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
         <div style="text-align: center; margin-bottom: 30px;">
             <h1 th:text="${vehiculo.marca.nombre + ' ' + vehiculo.modelo.nombre}" style="font-size: 24px; color: #333;"></h1>
-            <span th:text="'por ' + ${vehiculo.precioPorDia} + '€ al día'" style="font-size: 18px; color: #555;"></span>
+            <span th:if="${vehiculo.oferta == null}" th:text="'por ' + ${vehiculo.precioPorDia} + '€ al día'" style="font-size: 18px; color: #555;"></span>
+            <div th:if="${vehiculo.oferta != null}" class="price">
+                <span style="text-decoration: line-through; color: red;" th:text="${vehiculo.precioPorDia} + '€'"></span>
+                <span style="font-weight: bold; color: green; margin-left: 10px;" th:text="${precioOferta} + '€'"></span>
+            </div>
+            <!-- Condición para mostrar el número de comentarios si existen -->
+            <div th:if="${comentarios != null and cantidadComentarios != null}" style="font-size: 18px; color: #555;">
+                <span th:text="${cantidadComentarios} + ' comentarios en este producto.'"></span>
+            </div>
+            <!-- Si no hay comentarios, no se muestra nada o se puede mostrar un mensaje predeterminado -->
+            <div th:if="${cantidadComentarios == null}" style="font-size: 18px; color: #555;">
+                <span>No hay comentarios en este producto.</span>
+            </div>
         </div>
         <div style="margin-bottom: 30px;">
             <img th:src="@{/assets/{productoImg}(productoImg=${vehiculo.imagen})}" alt="Imagen del Vehículo" style="width: 100%; height: auto; display: block; margin-bottom: 30px;">
@@ -54,7 +67,7 @@
                 <strong>Número de puertas:</strong> <span th:text="${vehiculo.numeroPuertas}"></span>
             </p>
             <br/>
-            <p style="font-size: 18px; color: #666; font-family: 'Quicksand', sans-serif;"><strong>Precio y disponibilidad</strong></p>
+            <p style="font-size: 18px; color: #666; font-family: 'Quicksand', sans-serif;"><strong>Precios sin oferta y disponibilidad</strong></p>
             <p style="color: #333; font-family: 'Quicksand', sans-serif;">
                 <strong>Precio por día:</strong> <span th:text="${vehiculo.precioPorDia} + ' €'"></span>&nbsp;&nbsp;&nbsp;
                 <strong>Precio por Medio Día:</strong> <span th:text="${vehiculo.precioPorMedioDia} + ' €'"></span>&nbsp;&nbsp;&nbsp;
@@ -64,6 +77,27 @@
                 <strong>Estado:</strong> <span th:text="${vehiculo.enMantenimiento ? 'En mantenimiento' : 'Disponible'}"></span>&nbsp;&nbsp;&nbsp;
                 <strong>Aire Acondicionado:</strong> <span th:text="${vehiculo.aireAcondicionado ? 'Instalado' : 'No disponible'}"></span>
             </p>
+        </div>
+
+        <div class="container" style="max-width: 1200px; margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px;">
+            <p th:if="${comentarios != null and cantidadComentarios != null}" style="font-size: 18px; color: #666; font-family: 'Quicksand', sans-serif;"><strong>Comentarios <span th:text="'(' + ${cantidadComentarios} + ')'"></span></strong></p>
+            <p th:if="${cantidadComentarios == null}" style="font-size: 18px; color: #666; font-family: 'Quicksand', sans-serif;"><strong>Comentarios <span th:text="'(0)'"></span></strong></p>
+
+            <br/>
+
+            <div class="row">
+                <div th:if="${comentarios != null}" th:each="comentario : ${comentarios}" class="col-md-4 mb-4 d-flex justify-content-center">
+                    <div class="card" style="background-color: transparent; box-shadow: 0 1px 1px 0 rgba(0,0,0,0.2); width: auto; margin: 0 auto;">
+                        <div class="card-body">
+                            <h5 style="font-family: 'Quicksand', sans-serif;" class="card-title" th:text="${comentario.descripcion}"></h5>
+                            <p class="card-text">
+                                <small class="text-muted" th:text="${comentario.fechaCreacion}"></small>
+                            </p>
+                            <p class="card-text" th:text="${comentario.usuario.nombre}"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <p class="text-center mt-3">

@@ -12,7 +12,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -21,6 +25,8 @@ import java.util.stream.Collectors;
 public class VehiculoService {
     @Autowired
     private VehiculoRepository vehiculoRepository;
+    @Autowired
+    private ComentarioRepository comentarioRepository;
     @Autowired
     private MarcaRepository marcaRepository;
     @Autowired
@@ -54,6 +60,25 @@ public class VehiculoService {
     public List<Vehiculo> listadoCompleto() {
         return ((List<Vehiculo>) vehiculoRepository.findAll())
                 .stream()
+                .sorted(Comparator.comparingLong(Vehiculo::getId))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<Vehiculo> listadoVehiculosConOferta() {
+        return ((List<Vehiculo>) vehiculoRepository.findAll())
+                .stream()
+                .filter(vehiculo -> vehiculo.getOferta() != null)
+                .sorted(Comparator.comparingLong(Vehiculo::getId))
+                .limit(3) // Limita la cantidad de vehículos a 3
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<Vehiculo> listadoVehiculosConOfertaCompleto() {
+        return ((List<Vehiculo>) vehiculoRepository.findAll())
+                .stream()
+                .filter(vehiculo -> vehiculo.getOferta() != null)
                 .sorted(Comparator.comparingLong(Vehiculo::getId))
                 .collect(Collectors.toList());
     }
@@ -194,5 +219,39 @@ public class VehiculoService {
             vehiculoNuevo = vehiculoRepository.save(vehiculoNuevo);
             return modelMapper.map(vehiculoNuevo, VehiculoData.class);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<Comentario> obtenerComentariosPorVehiculoId(Long vehiculoId) {
+        return comentarioRepository.findByVehiculoId(vehiculoId);
+    }
+
+    @Transactional
+    public Comentario agregarComentarioAVehiculo(Long vehiculoId, Long usuarioId, String descripcion) {
+        Vehiculo vehiculo = vehiculoRepository.findById(vehiculoId)
+                .orElseThrow(() -> new EntityNotFoundException("Vehículo no encontrado con ID: " + vehiculoId));
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con ID: " + usuarioId));
+
+        Comentario nuevoComentario = new Comentario();
+        nuevoComentario.setVehiculo(vehiculo);
+        nuevoComentario.setUsuario(usuario);
+        nuevoComentario.setDescripcion(descripcion);
+
+        LocalDate hoy = LocalDate.now();
+        Date fechaHoy = Date.from(hoy.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        nuevoComentario.setFechaCreacion(fechaHoy);
+
+        comentarioRepository.save(nuevoComentario);
+
+        return nuevoComentario;
+    }
+
+    public List<Vehiculo> buscarPorMarca(String marca) {
+        return vehiculoRepository.findByMarcaNombre(marca);
+    }
+
+    public List<Vehiculo> filtrarPorCategoria(String categoria) {
+        return vehiculoRepository.findByCategoriaNombre(categoria);
     }
 }

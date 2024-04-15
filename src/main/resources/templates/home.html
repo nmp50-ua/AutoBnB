@@ -18,7 +18,97 @@
     </div>
 
     <main style="flex: 1;">
-        <h1 style="color: #171a1d; text-align: center; margin-bottom: 30px;">Home</h1>
+        <!-- Banner principal -->
+        <section class="banner">
+            <h1 style="color: #171a1d; text-align: center; margin-bottom: 10px; margin-top: 30px; font-family: 'Quicksand', sans-serif;">Explora, Comparte, Conduce</h1>
+            <p class="text-center" style="font-family: 'Quicksand', sans-serif;">Tu Aventura Empieza Aquí</p>
+        </section>
+
+        <!-- Sección de búsqueda -->
+        <section class="search-section py-4">
+            <div class="container">
+                <form action="/buscar-vehiculos" method="get" class="search-form">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <select id="idMarca" class="form-control" name="idMarca" required>
+                                <option value="">Seleccione una Marca...</option>
+                                <option th:each="marca : ${marcas}" th:value="${marca.id}" th:text="${marca.nombre}"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select id="idCategoria" class="form-control" name="idCategoria" required>
+                                <option value="">Seleccione una Categoria...</option>
+                                <option th:each="categoria : ${categorias}" th:value="${categoria.id}" th:text="${categoria.nombre}"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="date" name="fechaInicial" class="form-control">
+                        </div>
+                        <div class="col-md-2">
+                            <input type="date" name="fechaFinal" class="form-control">
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-success w-100">Buscar</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <h2 style="color: #171a1d; text-align: center; margin-bottom: 10px; margin-top: 30px; font-family: 'Quicksand', sans-serif; border-top: 1px solid #eee; padding-top: 30px;">¡Vehículos en oferta!</h2>
+        <div class="container-fluid" style="display: flex; justify-content: center; margin-top: 30px;">
+            <div class="row mt-3">
+                <div th:each="vehiculo : ${vehiculos}" class="col-md-4 mb-3">
+                    <div class="card" style="background-color: transparent; box-shadow: 0 1px 1px 0 rgba(0,0,0,0.2);">
+                        <a th:href="@{/home/detalles-vehiculo/{vehiculoId}(vehiculoId=${vehiculo.id})}">
+                            <img class="card-img-top" th:src="@{/assets/{productoImg}(productoImg=${vehiculo.imagen})}" alt="Imagen del vehículo" style="width: 100%; max-width: 200px; height: auto;">
+                        </a>
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${vehiculo.marca.nombre} + ' ' + ${vehiculo.modelo.nombre}"></h5>
+                            <div class="price">
+                                <span style="text-decoration: line-through; color: red;" th:text="${vehiculo.precioPorDia} + '€'"></span>
+                                <span style="font-size: 18px; color: #555; margin-left: 10px;" th:text="${preciosOferta[vehiculo.id]} + '€'"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="text-center">
+            <a style="color: #171a1d" href="/listado-vehiculos/ofertas">VER TODOS LOS VEHÍCULOS EN OFERTA</a>
+        </div>
+
+        <br>
+
+        <!-- Sección 'Explora oportunidades' -->
+        <h2 style="color: #171a1d; text-align: center; margin-bottom: 10px; margin-top: 30px; font-family: 'Quicksand', sans-serif; border-top: 1px solid #eee; padding-top: 30px;">Explora oportunidades y encuentra la opción perfecta</h2>
+        <section class="features py-5">
+            <div class="container">
+                <div class="row text-center">
+                    <div class="col-md-4 mb-3">
+                        <div class="feature-card">
+                            <i class="icon fa fa-tag fa-2x"></i>
+                            <h4>Ofertas</h4>
+                            <p>Descubre nuestras irresistibles ofertas en alquiler de vehículos. Encuentra la mejor manera de moverte al mejor precio.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="feature-card">
+                            <i class="icon fa fa-calendar-check-o fa-2x"></i>
+                            <h4>Disponibilidad</h4>
+                            <p>Consulta nuestra amplia disponibilidad de vehículos en múltiples ubicaciones. Encuentra el vehículo perfecto para satisfacer tus necesidades de movilidad.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="feature-card">
+                            <i class="icon fa fa-leaf fa-2x"></i>
+                            <h4>Vehículos Eco-Amigables</h4>
+                            <p>Explora nuestra selección de vehículos eco-amigables, diseñados para reducir tu huella ambiental sin comprometer la comodidad y el estilo.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
 
     <div th:replace="fragments :: footer"></div>

@@ -12,4 +12,5 @@ public interface ComentarioRepository extends CrudRepository<Comentario, Long> {
     Optional<Comentario> findByUsuario(Usuario usuario);
     Optional<Comentario> findByVehiculo(Vehiculo vehiculo);
     List<Comentario> findByUsuarioId(Long usuarioId);
+    List<Comentario> findByVehiculoId(Long vehiculoId);
 }

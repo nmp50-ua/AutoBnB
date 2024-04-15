@@ -282,3 +282,10 @@ input:checked + .slider:before {
         background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
     }
 }
+
+.separator-line {
+    border: none; /* Remueve el borde predeterminado */
+    height: 2px; /* Establece la altura de la línea */
+    background-color: #000; /* El color de la línea, cambia según tu diseño */
+    margin: 20px 0; /* Espaciado antes y después de la línea */
+}

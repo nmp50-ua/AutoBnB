@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.validation.Valid;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -560,6 +561,26 @@ public class PerfilController {
             List<Vehiculo> vehiculos = vehiculoService.listadoCompleto();
             Vehiculo vehiculoBuscado = vehiculoService.buscarVehiculoPorId(vehiculos, vehiculoId);
             model.addAttribute("vehiculo", vehiculoBuscado);
+
+            if (vehiculoBuscado.getOferta() != null) {
+                BigDecimal precioOriginal = vehiculoBuscado.getPrecioPorDia();
+                BigDecimal porcentajeOferta = BigDecimal.valueOf(vehiculoBuscado.getOferta());
+                BigDecimal descuento = porcentajeOferta.divide(new BigDecimal(100), 2, RoundingMode.HALF_UP);
+                BigDecimal precioOferta = precioOriginal.multiply(BigDecimal.ONE.subtract(descuento));
+                precioOferta = precioOferta.setScale(2, RoundingMode.HALF_UP);
+                model.addAttribute("precioOferta", precioOferta);
+            }
+
+            if (vehiculoBuscado.getComentarios() != null) {
+                model.addAttribute("comentarios", vehiculoService.obtenerComentariosPorVehiculoId(vehiculoBuscado.getId()));
+
+                if (!vehiculoService.obtenerComentariosPorVehiculoId(vehiculoBuscado.getId()).isEmpty()) {
+                    model.addAttribute("cantidadComentarios", vehiculoService.obtenerComentariosPorVehiculoId(vehiculoBuscado.getId()).size());
+                }
+                else {
+                    model.addAttribute("cantidadComentarios", null);
+                }
+            }
 
             return "perfil/detallesVehiculoUsuario";
         }

@@ -14,6 +14,7 @@ autobnb\repository\ModeloRepository.class
 autobnb\controller\PerfilController.class
 autobnb\model\Color.class
 autobnb\model\Cuenta.class
+autobnb\controller\VehiculoController.class
 autobnb\repository\CategoriaRepository.class
 autobnb\dto\UsuarioData.class
 autobnb\model\Transmision.class
@@ -30,6 +31,7 @@ autobnb\service\exception\MarcaServiceException.class
 autobnb\model\Marca.class
 autobnb\repository\MarcaRepository.class
 autobnb\service\ColorService.class
+autobnb\dto\BusquedaHomeData.class
 autobnb\dto\MarcaData.class
 autobnb\authentication\ManagerUserSession.class
 autobnb\service\UsuarioService$LoginStatus.class
