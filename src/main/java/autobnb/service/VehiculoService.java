@@ -1,6 +1,5 @@
 package autobnb.service;
 
-import autobnb.dto.UsuarioData;
 import autobnb.dto.VehiculoData;
 import autobnb.model.*;
 import autobnb.repository.*;
@@ -8,17 +7,17 @@ import autobnb.service.exception.UsuarioServiceException;
 import autobnb.service.exception.VehiculoServiceException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.criteria.Predicate;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -80,32 +79,6 @@ public class VehiculoService {
                 .stream()
                 .filter(vehiculo -> vehiculo.getOferta() != null)
                 .sorted(Comparator.comparingLong(Vehiculo::getId))
-                .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
-    public List<Vehiculo> buscarVehiculosPorMarca(String marca) {
-        return vehiculoRepository.findByMarcaNombre(marca);
-    }
-
-    @Transactional(readOnly = true)
-    public List<Vehiculo> buscarVehiculosPorMarcaYModelo(String marca, String modelo) {
-        return vehiculoRepository.findByMarcaNombreAndModeloNombre(marca, modelo);
-    }
-
-    @Transactional(readOnly = true)
-    public List<Vehiculo> buscarVehiculosPorMarcaConOferta(String marca) {
-        return vehiculoRepository.findByMarcaNombre(marca)
-                .stream()
-                .filter(vehiculo -> vehiculo.getOferta() != null)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
-    public List<Vehiculo> buscarVehiculosPorMarcaYModeloConOferta(String marca, String modelo) {
-        return vehiculoRepository.findByMarcaNombreAndModeloNombre(marca, modelo)
-                .stream()
-                .filter(vehiculo -> vehiculo.getOferta() != null)
                 .collect(Collectors.toList());
     }
 
@@ -273,19 +246,86 @@ public class VehiculoService {
         return nuevoComentario;
     }
 
-    public List<Vehiculo> buscarPorMarca(String marca) {
-        return vehiculoRepository.findByMarcaNombre(marca);
-    }
 
-    public List<Vehiculo> filtrarPorCategoria(String categoria) {
-        return vehiculoRepository.findByCategoriaNombre(categoria);
+    // Métodos para la paginación de vehículos
+
+    @Transactional(readOnly = true)
+    public Page<Vehiculo> listadoPaginado(Pageable pageable) {
+        return vehiculoRepository.findAll(pageable);
     }
 
     @Transactional(readOnly = true)
-    public List<Vehiculo> filtrarVehiculosPorCategoriaConOferta(String categoriaNombre) {
-        return vehiculoRepository.findByCategoriaNombre(categoriaNombre)
-                .stream()
-                .filter(vehiculo -> vehiculo.getOferta() != null)
-                .collect(Collectors.toList());
+    public Page<Vehiculo> listadoPaginadoPorMarca(String marca, Pageable pageable) {
+        return vehiculoRepository.findByMarcaNombre(marca, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Vehiculo> listadoPaginadoPorMarcaYModelo(String marca, String modelo, Pageable pageable) {
+        return vehiculoRepository.findByMarcaNombreAndModeloNombre(marca, modelo, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Vehiculo> listadoPaginadoVehiculosConOfertaCompleto(Pageable pageable) {
+        return vehiculoRepository.findAllWithOferta(pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Vehiculo> filtrarVehiculosConPaginacion(String categoria, String color, String marca, String transmision, Pageable pageable) {
+        Specification<Vehiculo> spec = (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (categoria != null && !categoria.isEmpty() && !categoria.equals("Categoria")) {
+                predicates.add(criteriaBuilder.equal(root.get("categoria").get("nombre"), categoria));
+            }
+            if (color != null && !color.isEmpty() && !color.equals("Color")) {
+                predicates.add(criteriaBuilder.equal(root.get("color").get("nombre"), color));
+            }
+            if (marca != null && !marca.isEmpty() && !marca.equals("Marca")) {
+                predicates.add(criteriaBuilder.equal(root.get("marca").get("nombre"), marca));
+            }
+            if (transmision != null && !transmision.isEmpty() && !transmision.equals("Transmision")) {
+                predicates.add(criteriaBuilder.equal(root.get("transmision").get("nombre"), transmision));
+            }
+
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+
+        return vehiculoRepository.findAll(spec, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Vehiculo> buscarVehiculosPorMarcaConOferta(String marca, Pageable pageable) {
+        return vehiculoRepository.findByMarcaNombreAndOfertaIsNotNull(marca, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Vehiculo> buscarVehiculosPorMarcaYModeloConOferta(String marca, String modelo, Pageable pageable) {
+        return vehiculoRepository.findByMarcaNombreAndModeloNombreAndOfertaIsNotNull(marca, modelo, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Vehiculo> filtrarVehiculosEnOfertaPaginados(String categoria, String color, String marca, String transmision, Pageable pageable) {
+        Specification<Vehiculo> spec = (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(criteriaBuilder.isNotNull(root.get("oferta")));
+            predicates.add(criteriaBuilder.gt(root.get("oferta"), 0));
+
+            if (categoria != null && !categoria.isEmpty() && !categoria.equals("Categoria")) {
+                predicates.add(criteriaBuilder.equal(root.get("categoria").get("nombre"), categoria));
+            }
+            if (color != null && !color.isEmpty() && !color.equals("Color")) {
+                predicates.add(criteriaBuilder.equal(root.get("color").get("nombre"), color));
+            }
+            if (marca != null && !marca.isEmpty() && !marca.equals("Marca")) {
+                predicates.add(criteriaBuilder.equal(root.get("marca").get("nombre"), marca));
+            }
+            if (transmision != null && !transmision.isEmpty() && !transmision.equals("Transmision")) {
+                predicates.add(criteriaBuilder.equal(root.get("transmision").get("nombre"), transmision));
+            }
+
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+
+        return vehiculoRepository.findAll(spec, pageable);
     }
 }
