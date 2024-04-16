@@ -14,8 +14,8 @@
 <nav class="navbar navbar-expand-lg navbar-light" style="font-family: 'Quicksand', sans-serif; background-color: #81c784; padding-top: 1rem; padding-bottom: 1rem;" th:fragment="navbar">
     <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
         <!-- Sección izquierda: Logo y enlaces -->
-        <div style="display: flex; align-items: center;">
-            <a class="navbar-brand" href="/home" style="color: white; margin-right: 2rem;">AutoBnB</a>
+        <div style="display: flex; align-items: center; flex-grow: 1;">
+            <a class="navbar-brand" href="/home" style="color: white; margin-right: 4rem; font-size: 1.7em; flex-grow: 1; text-align: left;">AutoBnB</a>
             <ul class="navbar-nav" style="flex-direction: row; align-items: center;">
                 <li class="nav-item active">
                     <a class="nav-link" href="/listado-vehiculos" style="color: white; margin-right: 1rem;">Vehículos</a>
@@ -34,8 +34,8 @@
         </div>
 
         <!-- Campo de búsqueda en el centro -->
-        <form class="form-inline my-2 my-lg-0" style="flex-grow: 1; justify-content: center; max-width: 600px;">
-            <input class="form-control mr-sm-2" type="search" placeholder="Busca tu vehículo ideal..." aria-label="Search" style="width: 100%; border-radius: 20px; padding: 0.5rem 1rem;">
+        <form th:action="@{'/listado-vehiculos/busqueda'}" method="get" th:object="${busquedaData}" class="form-inline my-2 my-lg-0" style="flex-grow: 1; justify-content: center; max-width: 600px;">
+            <input id="busqueda" name="busqueda" class="form-control mr-sm-2" type="search" placeholder="Busca tu vehículo ideal..." aria-label="Search" style="width: 100%; border-radius: 20px; padding: 0.5rem 1rem;">
         </form>
 
         <!-- Sección derecha: Perfil y sesión -->
@@ -57,11 +57,11 @@
 </nav>
 
 <!-- NavBar para usuarios no logueados -->
-<nav class="navbar navbar-expand-lg navbar-light" style="font-family: 'Quicksand', sans-serif; background-color: #81c784; padding: 1rem 0;" th:fragment="navbar_noLogueado">
-    <div class="container" style="display: flex; justify-content: space-between; align-items: center; height: 100%;">
+<nav class="navbar navbar-expand-lg navbar-light" style="font-family: 'Quicksand', sans-serif; background-color: #81c784; padding-top: 1rem; padding-bottom: 1rem;" th:fragment="navbar_noLogueado">
+    <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
         <!-- Logo y enlaces a la izquierda -->
-        <div style="display: flex; align-items: center;">
-            <a class="navbar-brand" href="/home" style="color: white; margin-right: 2rem;">AutoBnB</a>
+        <div style="display: flex; align-items: center; flex-grow: 1;">
+            <a class="navbar-brand" href="/home" style="color: white; margin-right: 4rem; font-size: 1.7em; flex-grow: 1; text-align: left;">AutoBnB</a>
             <ul class="navbar-nav" style="flex-direction: row; align-items: center;">
                 <li class="nav-item active">
                     <a class="nav-link" href="/listado-vehiculos" style="color: white; margin-right: 1rem;">Vehículos</a>
@@ -76,8 +76,8 @@
         </div>
 
         <!-- Campo de búsqueda en el centro -->
-        <form class="form-inline my-2 my-lg-0" style="flex-grow: 1; justify-content: center; max-width: 600px;">
-            <input class="form-control mr-sm-2" type="search" placeholder="Busca tu vehículo ideal..." aria-label="Search" style="width: 100%; border-radius: 20px; padding: 0.5rem 1rem;">
+        <form th:action="@{'/listado-vehiculos/busqueda'}" method="get" th:object="${busquedaData}" class="form-inline my-2 my-lg-0" style="flex-grow: 1; justify-content: center; max-width: 600px;">
+            <input id="busqueda" name="busqueda" class="form-control mr-sm-2" type="search" placeholder="Busca tu vehículo ideal..." aria-label="Search" style="width: 100%; border-radius: 20px; padding: 0.5rem 1rem;">
         </form>
 
         <!-- Enlaces de login y registro a la derecha -->

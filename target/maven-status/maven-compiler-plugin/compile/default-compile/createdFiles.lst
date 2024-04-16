@@ -12,6 +12,7 @@ autobnb\model\Pago.class
 autobnb\dto\ModeloData.class
 autobnb\repository\ModeloRepository.class
 autobnb\controller\PerfilController.class
+autobnb\dto\BusquedaData.class
 autobnb\model\Color.class
 autobnb\model\Cuenta.class
 autobnb\controller\VehiculoController.class

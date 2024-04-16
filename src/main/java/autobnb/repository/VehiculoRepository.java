@@ -12,4 +12,5 @@ public interface VehiculoRepository extends CrudRepository<Vehiculo, Long> {
     List<Vehiculo> findByUsuarioId(Long usuarioId);
     List<Vehiculo> findByMarcaNombre(String marca);
     List<Vehiculo> findByCategoriaNombre(String categoria);
+    List<Vehiculo> findByMarcaNombreAndModeloNombre(String marca, String modelo);
 }

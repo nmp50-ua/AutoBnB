@@ -174,7 +174,7 @@
 
             <!-- Formulario para nuevo comentario -->
             <div th:if="${usuario != null}" style="margin-bottom: 20px;">
-                <form th:action="@{/comentarios/agregar/{vehiculoId}(vehiculoId=${vehiculo.id})}" method="post">
+                <form th:action="@{/comentarios/home/agregar/{vehiculoId}(vehiculoId=${vehiculo.id})}" method="post">
                     <input type="text" class="form-control" name="descripcion" placeholder="Deja un comentario" required style="width: 50%; margin-bottom: 10px;">
                     <input type="hidden" th:value="${usuario.id}" name="usuarioId">
                     <button type="submit" style="margin-top: 10px; width: 50%; padding: 10px; background-color: #171a1d; color: white; border: none; cursor: pointer;">Publicar</button>

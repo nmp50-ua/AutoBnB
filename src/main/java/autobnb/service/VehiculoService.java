@@ -84,6 +84,32 @@ public class VehiculoService {
     }
 
     @Transactional(readOnly = true)
+    public List<Vehiculo> buscarVehiculosPorMarca(String marca) {
+        return vehiculoRepository.findByMarcaNombre(marca);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Vehiculo> buscarVehiculosPorMarcaYModelo(String marca, String modelo) {
+        return vehiculoRepository.findByMarcaNombreAndModeloNombre(marca, modelo);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Vehiculo> buscarVehiculosPorMarcaConOferta(String marca) {
+        return vehiculoRepository.findByMarcaNombre(marca)
+                .stream()
+                .filter(vehiculo -> vehiculo.getOferta() != null)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<Vehiculo> buscarVehiculosPorMarcaYModeloConOferta(String marca, String modelo) {
+        return vehiculoRepository.findByMarcaNombreAndModeloNombre(marca, modelo)
+                .stream()
+                .filter(vehiculo -> vehiculo.getOferta() != null)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
     public VehiculoData findById(Long vehiculoId) {
         Vehiculo vehiculo = vehiculoRepository.findById(vehiculoId).orElse(null);
 
@@ -253,5 +279,13 @@ public class VehiculoService {
 
     public List<Vehiculo> filtrarPorCategoria(String categoria) {
         return vehiculoRepository.findByCategoriaNombre(categoria);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Vehiculo> filtrarVehiculosPorCategoriaConOferta(String categoriaNombre) {
+        return vehiculoRepository.findByCategoriaNombre(categoriaNombre)
+                .stream()
+                .filter(vehiculo -> vehiculo.getOferta() != null)
+                .collect(Collectors.toList());
     }
 }

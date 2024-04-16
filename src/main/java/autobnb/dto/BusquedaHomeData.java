@@ -8,7 +8,6 @@ import java.util.Date;
 import java.util.Objects;
 
 public class BusquedaHomeData {
-    private Long id;
     private Long idMarca;
     private Long idCategoria;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
@@ -17,14 +16,6 @@ public class BusquedaHomeData {
     private Date fechaFinal;
 
     // Getters y setters
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public Long getIdMarca() {
         return idMarca;
@@ -56,18 +47,5 @@ public class BusquedaHomeData {
 
     public void setFechaFinal(Date fechaFinal) {
         this.fechaFinal = fechaFinal;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof BusquedaHomeData)) return false;
-        BusquedaHomeData that = (BusquedaHomeData) o;
-        return Objects.equals(getId(), that.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId());
     }
 }

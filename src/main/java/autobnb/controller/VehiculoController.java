@@ -2,24 +2,22 @@ package autobnb.controller;
 
 import autobnb.authentication.ManagerUserSession;
 import autobnb.controller.exception.UsuarioNoLogeadoException;
+import autobnb.dto.BusquedaData;
 import autobnb.dto.UsuarioData;
 import autobnb.dto.VehiculoData;
 import autobnb.model.Usuario;
 import autobnb.model.Vehiculo;
 import autobnb.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpSession;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Controller
 public class VehiculoController {
@@ -32,12 +30,24 @@ public class VehiculoController {
     @Autowired
     ColorService colorService;
     @Autowired
+    TransmisionService transmisionService;
+    @Autowired
     CategoriaService categoriaService;
     @Autowired
     ManagerUserSession managerUserSession;
 
+    // Método para capitalizar la primera letra de cada palabra en una cadena de texto.
+    public static String capitalizeFirstLetter(String input) {
+        if (input == null || input.isEmpty()) {
+            return input;
+        }
+        return Arrays.stream(input.split("\\s+"))
+                .map(word -> word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase())
+                .collect(Collectors.joining(" "));
+    }
+
     @PostMapping("/comentarios/agregar/{vehiculoId}")
-    public String agregarComentario(@PathVariable Long vehiculoId, @RequestParam String descripcion, HttpSession session, Model model) {
+    public String agregarComentarioListado(@PathVariable Long vehiculoId, @RequestParam String descripcion) {
         Long id = managerUserSession.usuarioLogeado();
 
         if(id != null) {
@@ -47,19 +57,47 @@ public class VehiculoController {
             throw new UsuarioNoLogeadoException();
         }
 
-        return "redirect:/detalles-vehiculo/" + vehiculoId;
+        return "redirect:/listado-vehiculos/detalles-vehiculo/" + vehiculoId;
+    }
+
+    @PostMapping("/comentarios/ofertas/agregar/{vehiculoId}")
+    public String agregarComentarioOfertas(@PathVariable Long vehiculoId, @RequestParam String descripcion) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        if(id != null) {
+            vehiculoService.agregarComentarioAVehiculo(vehiculoId, id, descripcion);
+        }
+        else {
+            throw new UsuarioNoLogeadoException();
+        }
+
+        return "redirect:/listado-vehiculos/detalles-vehiculo/oferta/" + vehiculoId;
+    }
+
+    @PostMapping("/comentarios/home/agregar/{vehiculoId}")
+    public String agregarComentarioHome(@PathVariable Long vehiculoId, @RequestParam String descripcion) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        if(id != null) {
+            vehiculoService.agregarComentarioAVehiculo(vehiculoId, id, descripcion);
+        }
+        else {
+            throw new UsuarioNoLogeadoException();
+        }
+
+        return "redirect:/home/detalles-vehiculo/" + vehiculoId;
     }
 
     @GetMapping("/listado-vehiculos")
     public String mostrarListadoVehiculos(Model model) {
         List<Vehiculo> vehiculos = vehiculoService.listadoCompleto();
 
-        //model.addAttribute("vehiculos", vehiculos.subList(0, Math.min(5, vehiculos.size())));
         model.addAttribute("marcas", marcaService.listadoCompleto());
         model.addAttribute("categorias", categoriaService.listadoCompleto());
         model.addAttribute("colores", colorService.listadoCompleto());
+        model.addAttribute("marcas", marcaService.listadoCompleto());
+        model.addAttribute("transmisiones", transmisionService.listadoCompleto());
         model.addAttribute("vehiculos", vehiculos);
-        //model.addAttribute("hayMasVehiculos", vehiculos.size() > 10); // Para saber si hay más vehículos que cargar
 
         Map<Long, BigDecimal> preciosOferta = new HashMap<>();
 
@@ -141,6 +179,8 @@ public class VehiculoController {
         model.addAttribute("marcas", marcaService.listadoCompleto());
         model.addAttribute("categorias", categoriaService.listadoCompleto());
         model.addAttribute("colores", colorService.listadoCompleto());
+        model.addAttribute("marcas", marcaService.listadoCompleto());
+        model.addAttribute("transmisiones", transmisionService.listadoCompleto());
         model.addAttribute("vehiculos", vehiculos);
 
         Map<Long, BigDecimal> preciosOferta = new HashMap<>();
@@ -216,13 +256,209 @@ public class VehiculoController {
         return "redirect:/listado-vehiculos/ofertas";
     }
 
-    /*@GetMapping("/buscar-vehiculos")
-    public String buscarVehiculosPorMarca(@RequestParam String marca, Model model) {
-        List<Vehiculo> vehiculosFiltrados = vehiculoService.buscarPorMarca(marca);
+    @GetMapping("/listado-vehiculos/busqueda")
+    public String buscarVehiculo(@ModelAttribute BusquedaData busquedaData, Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        if (id != null) {
+            List<Usuario> usuarios = usuarioService.listadoCompleto();
+            Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+            model.addAttribute("usuario", usuario);
+        } else {
+            model.addAttribute("usuario", null);
+        }
+
+        String busqueda = busquedaData.getBusqueda();
+        String[] partes = busqueda.trim().split("\\s+"); // Usa "\\s+" para dividir por uno o más espacios.
+
+        List<Vehiculo> vehiculos;
+        if (partes.length == 1) {
+            if (Objects.equals(partes[0], "BMW")) {
+                vehiculos = vehiculoService.buscarVehiculosPorMarca(partes[0]);
+            }
+            else {
+                String marca = capitalizeFirstLetter(partes[0]);
+                vehiculos = vehiculoService.buscarVehiculosPorMarca(marca);
+            }
+        } else {
+            if (Objects.equals(partes[0], "BMW")) {
+                if (Objects.equals(partes[1], "A4") || Objects.equals(partes[1], "RAV4") ||
+                        Objects.equals(partes[1], "F-150") || Objects.equals(partes[1], "CR-V")
+                        || Objects.equals(partes[1], "X3") || Objects.equals(partes[1], "X5")
+                        || Objects.equals(partes[1], "M4") || Objects.equals(partes[1], "Q5")
+                        || Objects.equals(partes[1], "Q7") || Objects.equals(partes[1], "A6")
+                        || Objects.equals(partes[1], "TT") || Objects.equals(partes[1], "R8")) {
+                    vehiculos = vehiculoService.buscarVehiculosPorMarcaYModelo(partes[0], partes[1]);
+                }
+                else {
+                    String modelo = capitalizeFirstLetter(partes[1]);
+                    vehiculos = vehiculoService.buscarVehiculosPorMarcaYModelo(partes[0], modelo);
+                }
+            }
+            else {
+                if (Objects.equals(partes[1], "A4") || Objects.equals(partes[1], "RAV4") ||
+                        Objects.equals(partes[1], "F-150") || Objects.equals(partes[1], "CR-V")
+                        || Objects.equals(partes[1], "X3") || Objects.equals(partes[1], "X5")
+                        || Objects.equals(partes[1], "M4") || Objects.equals(partes[1], "Q5")
+                        || Objects.equals(partes[1], "Q7") || Objects.equals(partes[1], "A6")
+                        || Objects.equals(partes[1], "TT") || Objects.equals(partes[1], "R8")) {
+                    String marca = capitalizeFirstLetter(partes[0]);
+                    vehiculos = vehiculoService.buscarVehiculosPorMarcaYModelo(marca, partes[1]);
+                }
+                else {
+                    String marca = capitalizeFirstLetter(partes[0]);
+                    String modelo = capitalizeFirstLetter(partes[1]);
+                    vehiculos = vehiculoService.buscarVehiculosPorMarcaYModelo(marca, modelo);
+                }
+            }
+        }
+
+        model.addAttribute("vehiculos", vehiculos);
+
+        Map<Long, BigDecimal> preciosOferta = new HashMap<>();
+
+        for (Vehiculo vehiculo : vehiculos) {
+            if (vehiculo.getOferta() != null && vehiculo.getOferta() > 0) {
+                BigDecimal precioOriginal = vehiculo.getPrecioPorDia();
+                BigDecimal porcentajeOferta = BigDecimal.valueOf(vehiculo.getOferta());
+                BigDecimal descuento = porcentajeOferta.divide(new BigDecimal(100), 2, RoundingMode.HALF_UP);
+                BigDecimal precioOferta = precioOriginal.multiply(BigDecimal.ONE.subtract(descuento));
+                precioOferta = precioOferta.setScale(2, RoundingMode.HALF_UP);
+                preciosOferta.put(vehiculo.getId(), precioOferta);
+            }
+        }
+
+        model.addAttribute("preciosOferta", preciosOferta);
+
+        model.addAttribute("marcas", marcaService.listadoCompleto());
+        model.addAttribute("categorias", categoriaService.listadoCompleto());
+        model.addAttribute("colores", colorService.listadoCompleto());
+        model.addAttribute("marcas", marcaService.listadoCompleto());
+        model.addAttribute("transmisiones", transmisionService.listadoCompleto());
+
+        return "listadoVehiculos";
+    }
+
+    @GetMapping("/listado-vehiculos/ofertas/busqueda")
+    public String buscarVehiculoOfertas(@ModelAttribute BusquedaData busquedaData, Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        if (id != null) {
+            List<Usuario> usuarios = usuarioService.listadoCompleto();
+            Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+            model.addAttribute("usuario", usuario);
+        } else {
+            model.addAttribute("usuario", null);
+        }
+
+        String busqueda = busquedaData.getBusqueda();
+        String[] partes = busqueda.trim().split("\\s+"); // Usa "\\s+" para dividir por uno o más espacios.
+
+        List<Vehiculo> vehiculos;
+        if (partes.length == 1) {
+            if (Objects.equals(partes[0], "BMW")) {
+                vehiculos = vehiculoService.buscarVehiculosPorMarcaConOferta(partes[0]);
+            }
+            else {
+                String marca = capitalizeFirstLetter(partes[0]);
+                vehiculos = vehiculoService.buscarVehiculosPorMarcaConOferta(marca);
+            }
+        } else {
+            if (Objects.equals(partes[0], "BMW")) {
+                if (Objects.equals(partes[1], "A4") || Objects.equals(partes[1], "RAV4") ||
+                        Objects.equals(partes[1], "F-150") || Objects.equals(partes[1], "CR-V")
+                        || Objects.equals(partes[1], "X3") || Objects.equals(partes[1], "X5")
+                        || Objects.equals(partes[1], "M4") || Objects.equals(partes[1], "Q5")
+                        || Objects.equals(partes[1], "Q7") || Objects.equals(partes[1], "A6")
+                        || Objects.equals(partes[1], "TT") || Objects.equals(partes[1], "R8")) {
+                    vehiculos = vehiculoService.buscarVehiculosPorMarcaYModeloConOferta(partes[0], partes[1]);
+                }
+                else {
+                    String modelo = capitalizeFirstLetter(partes[1]);
+                    vehiculos = vehiculoService.buscarVehiculosPorMarcaYModeloConOferta(partes[0], modelo);
+                }
+            }
+            else {
+                if (Objects.equals(partes[1], "A4") || Objects.equals(partes[1], "RAV4") ||
+                        Objects.equals(partes[1], "F-150") || Objects.equals(partes[1], "CR-V")
+                        || Objects.equals(partes[1], "X3") || Objects.equals(partes[1], "X5")
+                        || Objects.equals(partes[1], "M4") || Objects.equals(partes[1], "Q5")
+                        || Objects.equals(partes[1], "Q7") || Objects.equals(partes[1], "A6")
+                        || Objects.equals(partes[1], "TT") || Objects.equals(partes[1], "R8")) {
+                    String marca = capitalizeFirstLetter(partes[0]);
+                    vehiculos = vehiculoService.buscarVehiculosPorMarcaYModeloConOferta(marca, partes[1]);
+                }
+                else {
+                    String marca = capitalizeFirstLetter(partes[0]);
+                    String modelo = capitalizeFirstLetter(partes[1]);
+                    vehiculos = vehiculoService.buscarVehiculosPorMarcaYModeloConOferta(marca, modelo);
+                }
+            }
+        }
+
+        model.addAttribute("vehiculos", vehiculos);
+
+        Map<Long, BigDecimal> preciosOferta = new HashMap<>();
+
+        for (Vehiculo vehiculo : vehiculos) {
+            if (vehiculo.getOferta() != null && vehiculo.getOferta() > 0) {
+                BigDecimal precioOriginal = vehiculo.getPrecioPorDia();
+                BigDecimal porcentajeOferta = BigDecimal.valueOf(vehiculo.getOferta());
+                BigDecimal descuento = porcentajeOferta.divide(new BigDecimal(100), 2, RoundingMode.HALF_UP);
+                BigDecimal precioOferta = precioOriginal.multiply(BigDecimal.ONE.subtract(descuento));
+                precioOferta = precioOferta.setScale(2, RoundingMode.HALF_UP);
+                preciosOferta.put(vehiculo.getId(), precioOferta);
+            }
+        }
+
+        model.addAttribute("preciosOferta", preciosOferta);
+
+        model.addAttribute("marcas", marcaService.listadoCompleto());
+        model.addAttribute("categorias", categoriaService.listadoCompleto());
+        model.addAttribute("colores", colorService.listadoCompleto());
+        model.addAttribute("marcas", marcaService.listadoCompleto());
+        model.addAttribute("transmisiones", transmisionService.listadoCompleto());
+
+        return "listadoVehiculosOferta";
+    }
+
+    @GetMapping("/listado-vehiculos/filtrar-categoria")
+    public String filtrarVehiculos(@RequestParam Optional<String> categoria,
+                                   @RequestParam Optional<String> color,
+                                   @RequestParam Optional<String> marca,
+                                   @RequestParam Optional<String> transmision,
+                                   Model model) {
+        if ((!categoria.isPresent() || categoria.get().equals("Categoria")) || (!color.isPresent() || color.get().equals("Color")) ||
+                (!marca.isPresent() || marca.get().equals("Marca")) || (!transmision.isPresent() || transmision.get().equals("Transmision"))) {
+            return "redirect:/listado-vehiculos";
+        }
+
+        Stream<Vehiculo> vehiculosStream = vehiculoService.listadoCompleto().stream();
+
+        if (!categoria.get().isEmpty()) {
+            vehiculosStream = vehiculosStream.filter(vehiculo -> vehiculo.getCategoria().getNombre().equals(categoria.get()));
+        }
+
+        if (!color.get().isEmpty()) {
+            vehiculosStream = vehiculosStream.filter(vehiculo -> vehiculo.getColor().getNombre().equals(color.get()));
+        }
+
+        if (!marca.get().isEmpty()) {
+            vehiculosStream = vehiculosStream.filter(vehiculo -> vehiculo.getMarca().getNombre().equals(marca.get()));
+        }
+
+        if (!transmision.get().isEmpty()) {
+            vehiculosStream = vehiculosStream.filter(vehiculo -> vehiculo.getTransmision().getNombre().equals(transmision.get()));
+        }
+
+        List<Vehiculo> vehiculosFiltrados = vehiculosStream.collect(Collectors.toList());
 
         model.addAttribute("vehiculos", vehiculosFiltrados);
         model.addAttribute("marcas", marcaService.listadoCompleto());
         model.addAttribute("categorias", categoriaService.listadoCompleto());
+        model.addAttribute("colores", colorService.listadoCompleto());
+        model.addAttribute("marcas", marcaService.listadoCompleto());
+        model.addAttribute("transmisiones", transmisionService.listadoCompleto());
 
         Map<Long, BigDecimal> preciosOferta = new HashMap<>();
 
@@ -240,8 +476,7 @@ public class VehiculoController {
         model.addAttribute("preciosOferta", preciosOferta);
 
         Long id = managerUserSession.usuarioLogeado();
-
-        if(id != null){
+        if (id != null) {
             UsuarioData user = usuarioService.findById(id);
             model.addAttribute("usuario", user);
         } else {
@@ -249,60 +484,5 @@ public class VehiculoController {
         }
 
         return "listadoVehiculos";
-    }*/
-
-    /*@GetMapping("/filtrar-categoria")
-    public String filtrarVehiculosPorCategoria(@RequestParam String categoria, Model model) {
-        List<Vehiculo> vehiculosFiltrados = vehiculoService.filtrarPorCategoria(categoria);
-
-        model.addAttribute("vehiculos", vehiculosFiltrados);
-        model.addAttribute("marcas", marcaService.listadoCompleto());
-        model.addAttribute("categorias", categoriaService.listadoCompleto());
-
-        model.addAttribute("filtroCategoria", categoria);
-
-        Map<Long, BigDecimal> preciosOferta = new HashMap<>();
-
-        for (Vehiculo vehiculo : vehiculosFiltrados) {
-            if (vehiculo.getOferta() != null && vehiculo.getOferta() > 0) {
-                BigDecimal precioOriginal = vehiculo.getPrecioPorDia();
-                BigDecimal porcentajeOferta = BigDecimal.valueOf(vehiculo.getOferta());
-                BigDecimal descuento = porcentajeOferta.divide(new BigDecimal(100), 2, RoundingMode.HALF_UP);
-                BigDecimal precioOferta = precioOriginal.multiply(BigDecimal.ONE.subtract(descuento));
-                precioOferta = precioOferta.setScale(2, RoundingMode.HALF_UP);
-                preciosOferta.put(vehiculo.getId(), precioOferta);
-            }
-        }
-
-        model.addAttribute("preciosOferta", preciosOferta);
-
-        Long id = managerUserSession.usuarioLogeado();
-
-        if(id != null){
-            UsuarioData user = usuarioService.findById(id);
-            model.addAttribute("usuario", user);
-        } else {
-            model.addAttribute("usuario", null);
-        }
-
-        return "listadoVehiculos";
-    }*/
-
-    /* @RequestMapping(value = "/cargar-mas-vehiculos", method = RequestMethod.GET)
-    @ResponseBody
-    public ResponseEntity<List<Vehiculo>> cargarMasVehiculos(@RequestParam("offset") int offset) {
-        final int pageSize = 5;
-        List<Vehiculo> vehiculos = vehiculoService
-                .listadoCompleto()
-                .stream()
-                .skip(offset)
-                .limit(pageSize)
-                .collect(Collectors.toList());
-
-        if (vehiculos.isEmpty()) {
-            return ResponseEntity.noContent().build();  // Retorna 204 No Content cuando no hay más vehículos.
-        }
-
-        return ResponseEntity.ok(vehiculos);
-    }*/
+    }
 }
