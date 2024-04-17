@@ -1,22 +1,25 @@
 package autobnb.controller;
 
 import autobnb.authentication.ManagerUserSession;
+import autobnb.dto.BusquedaData;
 import autobnb.dto.BusquedaHomeData;
 import autobnb.dto.UsuarioData;
 import autobnb.dto.VehiculoData;
 import autobnb.model.Usuario;
 import autobnb.model.Vehiculo;
-import autobnb.service.CategoriaService;
-import autobnb.service.MarcaService;
-import autobnb.service.UsuarioService;
-import autobnb.service.VehiculoService;
+import autobnb.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.HttpSession;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.HashMap;
@@ -33,6 +36,10 @@ public class HomeController {
     MarcaService marcaService;
     @Autowired
     CategoriaService categoriaService;
+    @Autowired
+    TransmisionService transmisionService;
+    @Autowired
+    ColorService colorService;
     @Autowired
     ManagerUserSession managerUserSession;
 
@@ -91,13 +98,6 @@ public class HomeController {
         return "about";
     }
 
-    /*@GetMapping("/buscar-vehiculos")
-    public String buscarVehiculosEnHome(BusquedaHomeData busqueda, Model model) {
-        List<Vehiculo> vehiculos = vehiculoService.buscarPorCriterios(busqueda);
-        model.addAttribute("vehiculos", vehiculos);
-        return "listadoVehiculos";
-    }*/
-
     @GetMapping("/home/detalles-vehiculo/{vehiculoId}")
     public String mostrarDetallesVehiculo(@PathVariable(value = "vehiculoId") Long vehiculoId, Model model) {
         Long id = managerUserSession.usuarioLogeado();
@@ -142,5 +142,63 @@ public class HomeController {
         }
 
         return "redirect:/home";
+    }
+
+    @GetMapping("/listado-vehiculos/home/busqueda")
+    public String buscarVehiculo(@ModelAttribute BusquedaHomeData busquedaHomeData, Model model, @RequestParam(defaultValue = "0") int page) {
+        if (busquedaHomeData.getIdMarca() == null || busquedaHomeData.getIdCategoria() == null || busquedaHomeData.getFechaInicial() == null || busquedaHomeData.getFechaFinal() == null){
+            return "redirect:/home";
+        }
+
+        Long id = managerUserSession.usuarioLogeado();
+
+        if (id != null) {
+            List<Usuario> usuarios = usuarioService.listadoCompleto();
+            Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+            model.addAttribute("usuario", usuario);
+        } else {
+            model.addAttribute("usuario", null);
+        }
+
+        Pageable pageable = PageRequest.of(page, 6, Sort.by("id").ascending());
+
+        Page<Vehiculo> vehiculosPage = vehiculoService.buscarVehiculosDisponibles(
+                busquedaHomeData.getIdMarca(),
+                busquedaHomeData.getIdCategoria(),
+                busquedaHomeData.getFechaInicial(),
+                busquedaHomeData.getFechaFinal(),
+                pageable);
+
+        Map<Long, BigDecimal> preciosOferta = new HashMap<>();
+
+        for (Vehiculo vehiculo : vehiculoService.listadoCompleto()) {
+            if (vehiculo.getOferta() != null && vehiculo.getOferta() > 0) {
+                BigDecimal precioOriginal = vehiculo.getPrecioPorDia();
+                BigDecimal porcentajeOferta = BigDecimal.valueOf(vehiculo.getOferta());
+                BigDecimal descuento = porcentajeOferta.divide(new BigDecimal(100), 2, RoundingMode.HALF_UP);
+                BigDecimal precioOferta = precioOriginal.multiply(BigDecimal.ONE.subtract(descuento));
+                precioOferta = precioOferta.setScale(2, RoundingMode.HALF_UP);
+                preciosOferta.put(vehiculo.getId(), precioOferta);
+            }
+        }
+
+        model.addAttribute("preciosOferta", preciosOferta);
+
+        model.addAttribute("marcas", marcaService.listadoCompleto());
+        model.addAttribute("categorias", categoriaService.listadoCompleto());
+        model.addAttribute("colores", colorService.listadoCompleto());
+        model.addAttribute("marcas", marcaService.listadoCompleto());
+        model.addAttribute("transmisiones", transmisionService.listadoCompleto());
+
+        model.addAttribute("vehiculosPage", vehiculosPage);
+
+        if (vehiculosPage.getContent().isEmpty()) {
+            model.addAttribute("cantidad", null);
+        }
+        else {
+            model.addAttribute("cantidad", vehiculosPage.getContent().size());
+        }
+
+        return "listadoVehiculos";
     }
 }

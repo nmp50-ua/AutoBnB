@@ -15,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
@@ -327,5 +329,41 @@ public class VehiculoService {
         };
 
         return vehiculoRepository.findAll(spec, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Vehiculo> buscarVehiculosDisponibles(Long idMarca, Long idCategoria, Date fechaInicial, Date fechaFinal, Pageable pageable) {
+        // Crear una especificación que combine la búsqueda por marca, categoría y disponibilidad en fechas
+        Specification<Vehiculo> specification = (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            // Filtro por marca
+            if (idMarca != null) {
+                predicates.add(criteriaBuilder.equal(root.get("marca").get("id"), idMarca));
+            }
+
+            // Filtro por categoría
+            if (idCategoria != null) {
+                predicates.add(criteriaBuilder.equal(root.get("categoria").get("id"), idCategoria));
+            }
+
+            // Subconsulta para excluir vehículos alquilados en el rango de fechas
+            Subquery<Long> alquilerSubquery = query.subquery(Long.class);
+            Root<Alquiler> alquilerRoot = alquilerSubquery.from(Alquiler.class);
+            alquilerSubquery.select(alquilerRoot.get("vehiculo").get("id"));
+            Predicate overlap = criteriaBuilder.or(
+                    criteriaBuilder.between(alquilerRoot.get("fechaEntrega"), fechaInicial, fechaFinal),
+                    criteriaBuilder.between(alquilerRoot.get("fechaDevolucion"), fechaInicial, fechaFinal)
+            );
+            alquilerSubquery.where(criteriaBuilder.and(
+                    criteriaBuilder.equal(alquilerRoot.get("vehiculo"), root), // Relación entre las tablas
+                    overlap
+            ));
+            predicates.add(criteriaBuilder.not(criteriaBuilder.exists(alquilerSubquery)));
+
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+
+        return vehiculoRepository.findAll(specification, pageable);
     }
 }

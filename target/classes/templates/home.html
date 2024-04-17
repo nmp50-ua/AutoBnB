@@ -27,7 +27,7 @@
         <!-- Sección de búsqueda -->
         <section class="search-section py-4">
             <div class="container">
-                <form action="/buscar-vehiculos" method="get" class="search-form">
+                <form th:action="@{'/listado-vehiculos/home/busqueda'}" method="get" th:object="${busquedaHomeData}" class="search-form">
                     <div class="row">
                         <div class="col-md-3">
                             <select id="idMarca" class="form-control" name="idMarca" required>
