@@ -1,3 +1,4 @@
+autobnb\controller\AlquilerController.class
 autobnb\service\UsuarioService.class
 autobnb\controller\AutenticacionController.class
 autobnb\dto\LoginData.class

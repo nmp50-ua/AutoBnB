@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments :: head (titulo='Eleccion Fecha Inicio')"></head>
+
+<body>
+<div th:if="${usuario != null}">
+    <div th:replace="fragments :: navbar(userName=${usuario} ? ${usuario.getNombre()} : '',
+                         userId=${usuario} ? ${usuario.getId()} : '',
+                         admin=${usuario} ? ${usuario.isAdministrador()} : '')"></div>
+</div>
+
+<div th:if="${usuario == null}">
+    <div th:replace="fragments :: navbar_noLogueado"></div>
+</div>
+
+<main style="margin: 10px;">
+    <div class="container">
+        <div id='calendar' class="table-responsive" th:data-vehiculo-id="${vehiculo.id}"></div>
+    </div>
+</main>
+
+<div th:replace="fragments :: footer"></div>
+<div th:replace="fragments::javascript"/>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var calendarEl = document.getElementById('calendar');
+        var vehiculoId = calendarEl.getAttribute('data-vehiculo-id'); // Obtiene el ID del vehículo
+
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            timeZone: 'UTC',
+            themeSystem: 'bootstrap5',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth'
+            },
+            weekNumbers: false,
+            dayMaxEvents: true, // allow "more" link when too many events
+            events: '/api/alquileres/' + vehiculoId  // Usa el ID del vehículo en la URL
+        });
+
+        calendar.render();
+    });
+</script>
+
+</body>
+</html>

@@ -33,6 +33,8 @@ public class VehiculoService {
     @Autowired
     private CategoriaRepository categoriaRepository;
     @Autowired
+    private AlquilerRepository alquilerRepository;
+    @Autowired
     private ModeloRepository modeloRepository;
     @Autowired
     private ColorRepository colorRepository;
@@ -225,6 +227,11 @@ public class VehiculoService {
     @Transactional(readOnly = true)
     public List<Comentario> obtenerComentariosPorVehiculoId(Long vehiculoId) {
         return comentarioRepository.findByVehiculoId(vehiculoId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Alquiler> obtenerAlquileresPorVehiculoId(Long vehiculoId) {
+        return alquilerRepository.findByVehiculoId(vehiculoId);
     }
 
     @Transactional
