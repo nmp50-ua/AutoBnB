@@ -66,26 +66,6 @@
         </div>
     </section>
 
-    <!-- Listado de vehículos -->
-    <!--<div class="container-fluid" style="margin-top: 30px;">
-        <div class="row mt-3" style="display: flex; justify-content: center;">
-            <div th:each="vehiculo : ${vehiculosPage.content}" class="col-md-4 mb-3">
-                <div class="card" style="background-color: transparent; box-shadow: 0 1px 1px 0 rgba(0,0,0,0.2);">
-                    <a th:href="@{/listado-vehiculos/detalles-vehiculo/{vehiculoId}(vehiculoId=${vehiculo.id})}">
-                        <img class="card-img-top" th:src="@{/assets/{productoImg}(productoImg=${vehiculo.imagen})}" alt="Imagen del vehículo" style="width: 100%; max-width: 200px; height: auto;">
-                    </a>
-                    <div class="card-body">
-                        <h5 class="card-title" th:text="${vehiculo.marca.nombre} + ' ' + ${vehiculo.modelo.nombre}"></h5>
-                        <span th:if="${vehiculo.oferta == null}" th:text="'por ' + ${vehiculo.precioPorDia} + '€ al día'" style="font-size: 18px; color: #555;"></span>
-                        <div th:if="${vehiculo.oferta != null}" class="price">
-                            <span style="text-decoration: line-through; color: red;" th:text="${vehiculo.precioPorDia} + '€'"></span>
-                            <span style="font-size: 18px; color: #555; margin-left: 10px;" th:text="${preciosOferta[vehiculo.id]} + '€'"></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>-->
     <div class="container-fluid" style="margin-top: 30px;">
         <div class="row mt-3" style="display: flex; flex-wrap: wrap; justify-content: space-around;">
             <div th:each="vehiculo : ${vehiculosPage.content}" style="width: 18rem; margin: 1rem; box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);">

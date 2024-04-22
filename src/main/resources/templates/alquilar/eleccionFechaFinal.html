@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="fragments :: head (titulo='Eleccion Fecha Inicio')"></head>
+<head th:replace="fragments :: head (titulo='Eleccion Fecha Final')"></head>
 
 <body>
 <div th:if="${usuario != null}">
@@ -16,18 +16,19 @@
 
 <main style="margin: 10px;">
     <p class="text-center mt-3">
-        <a href="#" th:href="${referer != null ? referer : '/home'}" class="btn btn-link" style="color: #171a1d;">Volver</a>
+        <a href="/home" class="btn btn-link" style="color: #171a1d;">Volver</a>
     </p>
     <div th:if="${error != null}" class="alert alert-danger" style="max-width: 500px; margin-left: auto; margin-right: auto; display: block;">
         <p th:text="${error}"></p>
     </div>
     <div class="container">
-        <div id='calendar' class="table-responsive" th:data-vehiculo-id="${vehiculo.id}"></div>
+        <div id='calendar' class="table-responsive" th:data-vehiculo-id="${vehiculo.id}" th:data-fechaInicial="${fechaInicioSeleccionada}"></div>
     </div>
     <div style="text-align: center;">
-        <form id="fechaInicioForm" th:action="@{/alquilar/{vehiculoId}/guardarFechaInicial (vehiculoId=${vehiculo.id})}" method="get">
-            <input type="hidden" id="fechaInicial" name="fechaInicial"/>
-            <input type="submit" value="Seleccionar" style="margin-top: 10px; width: 20%; padding: 10px; background-color: #171a1d; color: white; border: none; cursor: pointer;"/>
+        <form id="fechaFinalForm" th:action="@{/alquilar/{vehiculoId}/metodoDePago (vehiculoId=${vehiculo.id})}" method="get">
+            <input type="hidden" id="fechaFinal" name="fechaFinal"/>
+            <input type="hidden" id="fechaInicial" name="fechaInicial" th:value="${fechaInicioSeleccionada}"/>
+            <input type="submit" value="Ir al Pago" style="margin-top: 10px; width: 20%; padding: 10px; background-color: #171a1d; color: white; border: none; cursor: pointer;"/>
         </form>
     </div>
 </main>
@@ -39,6 +40,7 @@
     document.addEventListener('DOMContentLoaded', function () {
         var calendarEl = document.getElementById('calendar');
         var vehiculoId = calendarEl.getAttribute('data-vehiculo-id');
+        var fechaInicioSeleccionada = calendarEl.getAttribute('data-fechaInicial');
 
         var calendar = new FullCalendar.Calendar(calendarEl, {
             timeZone: 'UTC',
@@ -58,6 +60,17 @@
         });
 
         calendar.render();
+
+        // Añadir el evento de la fecha inicial después de renderizar el calendario
+        if (fechaInicioSeleccionada) {
+            calendar.addEvent({
+                id: 'fechaInicial',
+                title: 'Fecha Inicial',
+                start: fechaInicioSeleccionada,
+                allDay: true,
+                color: '#ff9f89'
+            });
+        }
     });
 
     function anadirSeleccionACalendario(fecha, calendar) {
@@ -90,14 +103,14 @@
         // Añadir nueva selección al calendario si la fecha no está ocupada
         calendar.addEvent({
             id: 'seleccion',
-            title: 'Fecha Inicial',
+            title: 'Fecha Final',
             start: fecha,
             allDay: true,
             color: '#ff9f89' // Puedes personalizar el color aquí
         });
 
         // Actualiza el campo oculto del formulario con la fecha seleccionada
-        document.getElementById('fechaInicial').value = fecha;
+        document.getElementById('fechaFinal').value = fecha;
     }
 </script>
 

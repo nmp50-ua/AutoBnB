@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Controller
 public class PerfilController {
@@ -285,8 +286,17 @@ public class PerfilController {
         model.addAttribute("usuario", usuario);
 
         List<Pago> pagos = usuarioService.obtenerPagosPorUsuarioId(idUsuario);
-
         model.addAttribute("pagos", pagos);
+
+        Map<Long, Long> diasDeAlquiler = new HashMap<>();
+        for (Alquiler alquiler : alquilerService.listadoCompleto()) {
+            if (!(alquiler.getFechaDevolucion().equals(alquiler.getFechaEntrega()))) {
+                long diffInMillies = alquiler.getFechaDevolucion().getTime() - alquiler.getFechaEntrega().getTime();
+                long diasDeDiferencia = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+                diasDeAlquiler.put(alquiler.getId(), diasDeDiferencia + 1);
+            }
+        }
+        model.addAttribute("diasDeAlquiler", diasDeAlquiler);
 
         return "perfil/alquileresUsuario";
     }

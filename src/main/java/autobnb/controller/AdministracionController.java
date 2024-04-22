@@ -23,12 +23,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 @Controller
 public class AdministracionController {
     @Autowired
     private ManagerUserSession managerUserSession;
-
     @Autowired
     UsuarioService usuarioService;
     @Autowired
@@ -191,6 +191,16 @@ public class AdministracionController {
 
         List<Alquiler> alquileres = alquilerService.listadoCompleto();
         model.addAttribute("alquileres", alquileres);
+
+        Map<Long, Long> diasDeAlquiler = new HashMap<>();
+        for (Alquiler alquiler : alquileres) {
+            if (!(alquiler.getFechaDevolucion().equals(alquiler.getFechaEntrega()))) {
+                long diffInMillies = alquiler.getFechaDevolucion().getTime() - alquiler.getFechaEntrega().getTime();
+                long diasDeDiferencia = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+                diasDeAlquiler.put(alquiler.getId(), diasDeDiferencia + 1);
+            }
+        }
+        model.addAttribute("diasDeAlquiler", diasDeAlquiler);
 
         return "administracion/listar/administracionAlquileres";
     }

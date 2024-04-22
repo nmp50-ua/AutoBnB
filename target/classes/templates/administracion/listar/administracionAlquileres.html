@@ -48,8 +48,8 @@
                         <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${alquiler.pago.usuario.nombre}"></td>
                         <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${alquiler.fechaEntrega}"></td>
                         <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${alquiler.fechaDevolucion}"></td>
-                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${alquiler.litrosCombustible == null} ? ${#dates.daysBetween(alquiler.fechaEntrega, alquiler.fechaDevolucion)} : '-'"></td>
-                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${alquiler.litrosCombustible != null} ? ${alquiler.litrosCombustible} : '-'"></td>
+                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${alquiler.litrosCombustible == null || alquiler.litrosCombustible <= 0} ? ${diasDeAlquiler[alquiler.id]} : '-'"></td>
+                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${alquiler.litrosCombustible != null && alquiler.litrosCombustible > 0} ? ${alquiler.litrosCombustible} : '-'"></td>
                         <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${alquiler.precioFinal} + ' €'"></td>
                         <td>
                             <form th:action="@{'/administracion/alquileres/eliminar/' + ${alquiler.id}}" method="post">

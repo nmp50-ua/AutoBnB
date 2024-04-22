@@ -36,6 +36,7 @@ autobnb\service\ColorService.class
 autobnb\dto\BusquedaHomeData.class
 autobnb\dto\MarcaData.class
 autobnb\authentication\ManagerUserSession.class
+autobnb\service\PagoService.class
 autobnb\service\UsuarioService$LoginStatus.class
 autobnb\repository\TransmisionRepository.class
 autobnb\service\VehiculoService.class
