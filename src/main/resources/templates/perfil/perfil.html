@@ -21,7 +21,7 @@
                 <div class="col-md-6">
                     <dl class="row text-center">
                         <div class="col-sm-6">
-                            <img th:src="@{/assets/{productoImg}(productoImg=${usuario.imagen})}" alt="Foto de perfil" style="width: 100%; max-width: 400px; height: auto; display: block; margin-bottom: 30px;"/>
+                            <img th:src="@{|/uploads/${usuario.imagen}|}" alt="Foto de perfil" style="width: 100%; max-width: 400px; height: auto; display: block; margin-bottom: 30px;"/>
                             <label class="switch">
                                 <input type="checkbox">
                                 <span class="slider"></span>
@@ -109,7 +109,7 @@
     <script th:inline="javascript">
         /*<![CDATA[*/
         function toggleRol() {
-            var userId = [[${usuario.id}]]; // Asegúrate de que 'usuario' sea un objeto disponible en el modelo
+            var userId = [[${usuario.id}]];
             var form = document.createElement('form');
             form.method = 'POST';
             form.action = '/perfil/cambiarRol/' + userId;

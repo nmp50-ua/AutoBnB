@@ -22,7 +22,7 @@
         <div class="row justify-content-center mt-5">
             <div class="col-md-6">
                 <h2 style="color: #171a1d; text-align: center; margin-bottom: 30px;">Editar Usuario</h2>
-                <form method="post" th:action="@{/administracion/usuarios/editar/{usuarioId}(usuarioId=${usuarioBuscado.id})}" th:object="${usuarioData}" class="needs-validation" novalidate>
+                <form method="post" th:action="@{/administracion/usuarios/editar/{usuarioId}(usuarioId=${usuarioBuscado.id})}" th:object="${registroData}" class="needs-validation" novalidate>
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label for="eMail" style="color: #333; font-family: 'Quicksand', sans-serif;">Correo electrónico</label>
@@ -138,7 +138,7 @@
                     <p class="text-center mt-3"><a th:href="@{'/administracion/usuarios'}" class="btn btn-link" style="color: #171a1d;">Volver al Listado</a></p>
                 </form>
 
-                <div th:object="${usuarioData}">
+                <div th:object="${registroData}">
                     <ul th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
                         <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
                     </ul>

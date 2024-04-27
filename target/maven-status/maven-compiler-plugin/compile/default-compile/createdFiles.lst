@@ -48,12 +48,14 @@ autobnb\dto\VehiculoData.class
 autobnb\model\Modelo.class
 autobnb\model\Vehiculo.class
 autobnb\service\exception\VehiculoServiceException.class
+autobnb\config\MvcConfig.class
 autobnb\dto\CategoriaData.class
 autobnb\service\ComentarioService.class
 autobnb\repository\ComentarioRepository.class
 autobnb\controller\exception\UsuarioNoAutorizadoException.class
 autobnb\service\TransmisionService.class
 autobnb\config\ModelMapperConfig.class
+autobnb\dto\RegistroVehiculoData.class
 autobnb\controller\AdministracionController.class
 autobnb\model\Categoria.class
 autobnb\repository\PagoRepository.class

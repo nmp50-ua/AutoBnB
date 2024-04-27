@@ -10,15 +10,25 @@ import autobnb.service.exception.UsuarioServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -1133,29 +1143,28 @@ public class AdministracionController {
             Vehiculo vehiculoBuscado = vehiculoService.buscarVehiculoPorId(vehiculos, vehiculoId);
             model.addAttribute("vehiculo", vehiculoBuscado);
 
-            VehiculoData vehiculoData = new VehiculoData();
-            vehiculoData.setMatricula(vehiculoBuscado.getMatricula());
-            vehiculoData.setDescripcion(vehiculoBuscado.getDescripcion());
-            vehiculoData.setImagen(vehiculoBuscado.getImagen());
-            vehiculoData.setKilometraje(vehiculoBuscado.getKilometraje());
-            vehiculoData.setAnyoFabricacion(vehiculoBuscado.getAnyoFabricacion());
-            vehiculoData.setCapacidadPasajeros(vehiculoBuscado.getCapacidadPasajeros());
-            vehiculoData.setCapacidadMaletero(vehiculoBuscado.getCapacidadMaletero());
-            vehiculoData.setNumeroPuertas(vehiculoBuscado.getNumeroPuertas());
-            vehiculoData.setNumeroMarchas(vehiculoBuscado.getNumeroMarchas());
-            vehiculoData.setAireAcondicionado(vehiculoBuscado.isAireAcondicionado());
-            vehiculoData.setEnMantenimiento(vehiculoBuscado.isEnMantenimiento());
-            vehiculoData.setOferta(vehiculoBuscado.getOferta());
-            vehiculoData.setPrecioPorDia(vehiculoBuscado.getPrecioPorDia());
-            vehiculoData.setPrecioPorMedioDia(vehiculoBuscado.getPrecioPorMedioDia());
-            vehiculoData.setPrecioCombustible(vehiculoBuscado.getPrecioCombustible());
-            vehiculoData.setIdMarca(vehiculoBuscado.getMarca().getId());
-            vehiculoData.setIdModelo(vehiculoBuscado.getModelo().getId());
-            vehiculoData.setIdCategoria(vehiculoBuscado.getCategoria().getId());
-            vehiculoData.setIdTransmision(vehiculoBuscado.getTransmision().getId());
-            vehiculoData.setIdColor(vehiculoBuscado.getColor().getId());
+            RegistroVehiculoData registroVehiculoData = new RegistroVehiculoData();
+            registroVehiculoData.setMatricula(vehiculoBuscado.getMatricula());
+            registroVehiculoData.setDescripcion(vehiculoBuscado.getDescripcion());
+            registroVehiculoData.setKilometraje(vehiculoBuscado.getKilometraje());
+            registroVehiculoData.setAnyoFabricacion(vehiculoBuscado.getAnyoFabricacion());
+            registroVehiculoData.setCapacidadPasajeros(vehiculoBuscado.getCapacidadPasajeros());
+            registroVehiculoData.setCapacidadMaletero(vehiculoBuscado.getCapacidadMaletero());
+            registroVehiculoData.setNumeroPuertas(vehiculoBuscado.getNumeroPuertas());
+            registroVehiculoData.setNumeroMarchas(vehiculoBuscado.getNumeroMarchas());
+            registroVehiculoData.setAireAcondicionado(vehiculoBuscado.isAireAcondicionado());
+            registroVehiculoData.setEnMantenimiento(vehiculoBuscado.isEnMantenimiento());
+            registroVehiculoData.setOferta(vehiculoBuscado.getOferta());
+            registroVehiculoData.setPrecioPorDia(vehiculoBuscado.getPrecioPorDia());
+            registroVehiculoData.setPrecioPorMedioDia(vehiculoBuscado.getPrecioPorMedioDia());
+            registroVehiculoData.setPrecioCombustible(vehiculoBuscado.getPrecioCombustible());
+            registroVehiculoData.setIdMarca(vehiculoBuscado.getMarca().getId());
+            registroVehiculoData.setIdModelo(vehiculoBuscado.getModelo().getId());
+            registroVehiculoData.setIdCategoria(vehiculoBuscado.getCategoria().getId());
+            registroVehiculoData.setIdTransmision(vehiculoBuscado.getTransmision().getId());
+            registroVehiculoData.setIdColor(vehiculoBuscado.getColor().getId());
 
-            model.addAttribute("vehiculoData", vehiculoData);
+            model.addAttribute("registroVehiculoData", registroVehiculoData);
 
             List<Marca> marcas = marcaService.listadoCompleto();
             model.addAttribute("marcas", marcas);
@@ -1175,12 +1184,12 @@ public class AdministracionController {
     }
 
     @PostMapping("/administracion/vehiculos/editar/{vehiculoId}")
-    public String actualizarVehiculo(@PathVariable Long vehiculoId, @Valid VehiculoData vehiculoData, BindingResult result, Model model) {
+    public String actualizarVehiculo(@PathVariable Long vehiculoId, @Valid RegistroVehiculoData registroVehiculoData, BindingResult result, Model model) {
         Long id = managerUserSession.usuarioLogeado();
 
         comprobarAdmin(id);
 
-        model.addAttribute("vehiculoData", vehiculoData);
+        model.addAttribute("registroVehiculoData", registroVehiculoData);
 
         List<Usuario> usuarios = usuarioService.listadoCompleto();
         Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
@@ -1201,7 +1210,7 @@ public class AdministracionController {
         Vehiculo vehiculoBuscado = vehiculoService.buscarVehiculoPorId(vehiculos, vehiculoId);
         model.addAttribute("vehiculo", vehiculoBuscado);
 
-        if (result.hasErrors() || vehiculoData.getMatricula().trim().isEmpty() || vehiculoData.getDescripcion().trim().isEmpty() || vehiculoData.getImagen().trim().isEmpty() || vehiculoData.getKilometraje() == null || vehiculoData.getAnyoFabricacion() == null || vehiculoData.getCapacidadPasajeros() == null || vehiculoData.getCapacidadMaletero() == null || vehiculoData.getNumeroPuertas() == null || vehiculoData.getNumeroMarchas() == null || vehiculoData.getPrecioPorDia() == null || vehiculoData.getPrecioPorMedioDia() == null || vehiculoData.getPrecioCombustible() == null || vehiculoData.getIdMarca() == null || vehiculoData.getIdModelo() == null || vehiculoData.getIdCategoria() == null || vehiculoData.getIdTransmision() == null || vehiculoData.getIdColor() == null) {
+        if (result.hasErrors() || registroVehiculoData.getMatricula().trim().isEmpty() || registroVehiculoData.getDescripcion().trim().isEmpty() || registroVehiculoData.getKilometraje() == null || registroVehiculoData.getAnyoFabricacion() == null || registroVehiculoData.getCapacidadPasajeros() == null || registroVehiculoData.getCapacidadMaletero() == null || registroVehiculoData.getNumeroPuertas() == null || registroVehiculoData.getNumeroMarchas() == null || registroVehiculoData.getPrecioPorDia() == null || registroVehiculoData.getPrecioPorMedioDia() == null || registroVehiculoData.getPrecioCombustible() == null || registroVehiculoData.getIdMarca() == null || registroVehiculoData.getIdModelo() == null || registroVehiculoData.getIdCategoria() == null || registroVehiculoData.getIdTransmision() == null || registroVehiculoData.getIdColor() == null) {
             model.addAttribute("errorActualizar", "Unicamente puede estar vacio el campo de la oferta. Todos los demás campos son obligatorios.");
             return "administracion/editar/editarVehiculoAdministrador";
         }
@@ -1210,31 +1219,65 @@ public class AdministracionController {
                 VehiculoData nuevoVehiculoData = vehiculoService.findById(vehiculoId);
 
                 if(nuevoVehiculoData.getMatricula() != null) {
-                    if ((vehiculoService.findByMatricula(vehiculoData.getMatricula()) != null) && !vehiculoData.getMatricula().equals(nuevoVehiculoData.getMatricula())) {
-                        model.addAttribute("errorActualizar", "El vehículo con matrícula (" + vehiculoData.getMatricula() + ") ya existe.");
+                    if ((vehiculoService.findByMatricula(registroVehiculoData.getMatricula()) != null) && !registroVehiculoData.getMatricula().equals(nuevoVehiculoData.getMatricula())) {
+                        model.addAttribute("errorActualizar", "El vehículo con matrícula (" + registroVehiculoData.getMatricula() + ") ya existe.");
                         return "administracion/editar/editarVehiculoAdministrador";
                     }
 
-                    nuevoVehiculoData.setMatricula(vehiculoData.getMatricula());
-                    nuevoVehiculoData.setDescripcion(vehiculoData.getDescripcion());
-                    nuevoVehiculoData.setImagen(vehiculoData.getImagen());
-                    nuevoVehiculoData.setKilometraje(vehiculoData.getKilometraje());
-                    nuevoVehiculoData.setAnyoFabricacion(vehiculoData.getAnyoFabricacion());
-                    nuevoVehiculoData.setCapacidadPasajeros(vehiculoData.getCapacidadPasajeros());
-                    nuevoVehiculoData.setCapacidadMaletero(vehiculoData.getCapacidadMaletero());
-                    nuevoVehiculoData.setNumeroPuertas(vehiculoData.getNumeroPuertas());
-                    nuevoVehiculoData.setNumeroMarchas(vehiculoData.getNumeroMarchas());
-                    nuevoVehiculoData.setAireAcondicionado(vehiculoData.isAireAcondicionado());
-                    nuevoVehiculoData.setEnMantenimiento(vehiculoData.isEnMantenimiento());
-                    nuevoVehiculoData.setOferta(vehiculoData.getOferta());
-                    nuevoVehiculoData.setPrecioPorDia(vehiculoData.getPrecioPorDia());
-                    nuevoVehiculoData.setPrecioPorMedioDia(vehiculoData.getPrecioPorMedioDia());
-                    nuevoVehiculoData.setPrecioCombustible(vehiculoData.getPrecioCombustible());
-                    nuevoVehiculoData.setIdMarca(vehiculoData.getIdMarca());
-                    nuevoVehiculoData.setIdModelo(vehiculoData.getIdModelo());
-                    nuevoVehiculoData.setIdCategoria(vehiculoData.getIdCategoria());
-                    nuevoVehiculoData.setIdTransmision(vehiculoData.getIdTransmision());
-                    nuevoVehiculoData.setIdColor(vehiculoData.getIdColor());
+                    nuevoVehiculoData.setMatricula(registroVehiculoData.getMatricula());
+                    nuevoVehiculoData.setDescripcion(registroVehiculoData.getDescripcion());
+                    nuevoVehiculoData.setKilometraje(registroVehiculoData.getKilometraje());
+                    nuevoVehiculoData.setAnyoFabricacion(registroVehiculoData.getAnyoFabricacion());
+                    nuevoVehiculoData.setCapacidadPasajeros(registroVehiculoData.getCapacidadPasajeros());
+                    nuevoVehiculoData.setCapacidadMaletero(registroVehiculoData.getCapacidadMaletero());
+                    nuevoVehiculoData.setNumeroPuertas(registroVehiculoData.getNumeroPuertas());
+                    nuevoVehiculoData.setNumeroMarchas(registroVehiculoData.getNumeroMarchas());
+                    nuevoVehiculoData.setAireAcondicionado(registroVehiculoData.isAireAcondicionado());
+                    nuevoVehiculoData.setEnMantenimiento(registroVehiculoData.isEnMantenimiento());
+                    nuevoVehiculoData.setOferta(registroVehiculoData.getOferta());
+                    nuevoVehiculoData.setPrecioPorDia(registroVehiculoData.getPrecioPorDia());
+                    nuevoVehiculoData.setPrecioPorMedioDia(registroVehiculoData.getPrecioPorMedioDia());
+                    nuevoVehiculoData.setPrecioCombustible(registroVehiculoData.getPrecioCombustible());
+                    nuevoVehiculoData.setIdMarca(registroVehiculoData.getIdMarca());
+                    nuevoVehiculoData.setIdModelo(registroVehiculoData.getIdModelo());
+                    nuevoVehiculoData.setIdCategoria(registroVehiculoData.getIdCategoria());
+                    nuevoVehiculoData.setIdTransmision(registroVehiculoData.getIdTransmision());
+                    nuevoVehiculoData.setIdColor(registroVehiculoData.getIdColor());
+
+                    MultipartFile imagen = registroVehiculoData.getImagen();
+                    if (!imagen.isEmpty()) {
+                        String contentType = imagen.getContentType();
+                        assert contentType != null;
+                        if (contentType.equals("image/jpeg") || contentType.equals("image/jpg")) {
+                            // Define la ruta del directorio 'uploads'
+                            String uploadDir = "uploads";
+
+                            // Formatear la fecha actual para incluirla en el nombre del archivo
+                            String dateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+                            String originalFileName = StringUtils.cleanPath(Objects.requireNonNull(imagen.getOriginalFilename()));
+                            String fileName = originalFileName.replace(".", dateTime + ".");
+
+                            Path uploadPath = Paths.get(uploadDir);
+
+                            if (!Files.exists(uploadPath)) {
+                                Files.createDirectories(uploadPath);
+                            }
+
+                            try (InputStream inputStream = imagen.getInputStream()) {
+                                Path filePath = uploadPath.resolve(fileName);
+                                Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+                            // Guarda solo el nombre del archivo en la base de datos
+                            nuevoVehiculoData.setImagen(fileName);
+                        } else {
+                            // Manejo de error si el archivo no es una imagen JPEG/JPG
+                            model.addAttribute("errorActualizar", "Solo se permiten archivos de imagen en formato JPEG y JPG.");
+                            return "administracion/editar/editarVehiculoAdministrador";
+                        }
+                    }
 
                     vehiculoService.actualizarVehiculo(vehiculoId, nuevoVehiculoData);
 
@@ -1343,26 +1386,22 @@ public class AdministracionController {
             Usuario usuarioBuscado = usuarioService.buscarUsuarioPorId(usuarios, usuarioId);
             model.addAttribute("usuarioBuscado", usuarioBuscado);
 
-            UsuarioData usuarioData = new UsuarioData();
+            RegistroData registroData = new RegistroData();
 
-            usuarioData.setNombre(usuarioBuscado.getNombre());
-            usuarioData.setApellidos(usuarioBuscado.getApellidos());
-            usuarioData.setEmail(usuarioBuscado.getEmail());
-            usuarioData.setPassword(usuarioBuscado.getPassword());
-            usuarioData.setTelefono(usuarioBuscado.getTelefono());
-            usuarioData.setDireccion(usuarioBuscado.getDireccion());
-            usuarioData.setCiudad(usuarioBuscado.getCiudad());
-            usuarioData.setCodigoPostal(usuarioBuscado.getCodigoPostal());
-            usuarioData.setDni(usuarioBuscado.getDni());
-            usuarioData.setFechaCaducidadDni(usuarioBuscado.getFechaCaducidadDni());
-            usuarioData.setFechaCarnetConducir(usuarioBuscado.getFechaCarnetConducir());
-            usuarioData.setAdministrador(usuarioBuscado.isAdministrador());
-            usuarioData.setEsArrendador(usuarioBuscado.isEsArrendador());
-            usuarioData.setEsArrendatario(usuarioBuscado.isEsArrendatario());
-            usuarioData.setImagen(usuarioBuscado.getImagen());
-            usuarioData.setIdCuenta(usuarioBuscado.getCuenta().getId());
+            registroData.setNombre(usuarioBuscado.getNombre());
+            registroData.setApellidos(usuarioBuscado.getApellidos());
+            registroData.setEmail(usuarioBuscado.getEmail());
+            registroData.setPassword(usuarioBuscado.getPassword());
+            registroData.setTelefono(usuarioBuscado.getTelefono());
+            registroData.setDireccion(usuarioBuscado.getDireccion());
+            registroData.setCiudad(usuarioBuscado.getCiudad());
+            registroData.setCodigoPostal(usuarioBuscado.getCodigoPostal());
+            registroData.setDni(usuarioBuscado.getDni());
+            registroData.setFechaCaducidadDni(usuarioBuscado.getFechaCaducidadDni());
+            registroData.setFechaCarnetConducir(usuarioBuscado.getFechaCarnetConducir());
+            registroData.setAdministrador(usuarioBuscado.isAdministrador());
 
-            model.addAttribute("usuarioData", usuarioData);
+            model.addAttribute("registroData", registroData);
 
             return "administracion/editar/editarUsuarioAdministrador";
         }
@@ -1371,12 +1410,12 @@ public class AdministracionController {
     }
 
     @PostMapping("/administracion/usuarios/editar/{usuarioId}")
-    public String actualizarUsuario(@PathVariable Long usuarioId, @Valid UsuarioData usuarioData, BindingResult result, Model model) {
+    public String actualizarUsuario(@PathVariable Long usuarioId, @Valid RegistroData registroData, BindingResult result, Model model) {
         Long id = managerUserSession.usuarioLogeado();
 
         comprobarAdmin(id);
 
-        model.addAttribute("usuarioData", usuarioData);
+        model.addAttribute("registroData", registroData);
 
         List<Usuario> usuarios = usuarioService.listadoCompleto();
         Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
@@ -1385,7 +1424,7 @@ public class AdministracionController {
         Usuario usuarioBuscado = usuarioService.buscarUsuarioPorId(usuarios, usuarioId);
         model.addAttribute("usuarioBuscado", usuarioBuscado);
 
-        if (result.hasErrors() || usuarioData.getNombre().trim().isEmpty() || usuarioData.getEmail().trim().isEmpty() || usuarioData.getTelefono() == null || usuarioData.getDireccion().trim().isEmpty() || usuarioData.getCiudad().trim().isEmpty() || usuarioData.getCodigoPostal() == null || usuarioData.getDni().trim().isEmpty() || usuarioData.getFechaCaducidadDni() == null || usuarioData.getFechaCarnetConducir() == null || usuarioData.getImagen().trim().isEmpty()) {
+        if (result.hasErrors() || registroData.getNombre().trim().isEmpty() || registroData.getEmail().trim().isEmpty() || registroData.getTelefono() == null || registroData.getDireccion().trim().isEmpty() || registroData.getCiudad().trim().isEmpty() || registroData.getCodigoPostal() == null || registroData.getDni().trim().isEmpty() || registroData.getFechaCaducidadDni() == null || registroData.getFechaCarnetConducir() == null) {
             model.addAttribute("errorActualizar", "Unicamente puede estar vacio el campo de los apellidos. Todos los demás campos son obligatorios.");
             return "administracion/editar/editarUsuarioAdministrador";
         }
@@ -1394,23 +1433,57 @@ public class AdministracionController {
                 UsuarioData nuevoUsuarioData = usuarioService.findById(usuarioId);
 
                 if(nuevoUsuarioData.getEmail() != null) {
-                    if ((usuarioService.findByEmail(usuarioData.getEmail()) != null) && !usuarioData.getEmail().equals(nuevoUsuarioData.getEmail())) {
-                        model.addAttribute("errorActualizar", "El vehículo con email (" + usuarioData.getEmail() + ") ya existe.");
+                    if ((usuarioService.findByEmail(registroData.getEmail()) != null) && !registroData.getEmail().equals(nuevoUsuarioData.getEmail())) {
+                        model.addAttribute("errorActualizar", "El vehículo con email (" + registroData.getEmail() + ") ya existe.");
                         return "administracion/editar/editarUsuarioAdministrador";
                     }
 
-                    nuevoUsuarioData.setNombre(usuarioData.getNombre());
-                    nuevoUsuarioData.setApellidos(usuarioData.getApellidos());
-                    nuevoUsuarioData.setEmail(usuarioData.getEmail());
-                    nuevoUsuarioData.setTelefono(usuarioData.getTelefono());
-                    nuevoUsuarioData.setDni(usuarioData.getDni());
-                    nuevoUsuarioData.setFechaCaducidadDni(usuarioData.getFechaCaducidadDni());
-                    nuevoUsuarioData.setAdministrador(usuarioData.isAdministrador());
-                    nuevoUsuarioData.setDireccion(usuarioData.getDireccion());
-                    nuevoUsuarioData.setCiudad(usuarioData.getCiudad());
-                    nuevoUsuarioData.setCodigoPostal(usuarioData.getCodigoPostal());
-                    nuevoUsuarioData.setFechaCarnetConducir(usuarioData.getFechaCarnetConducir());
-                    nuevoUsuarioData.setImagen(usuarioData.getImagen());
+                    nuevoUsuarioData.setNombre(registroData.getNombre());
+                    nuevoUsuarioData.setApellidos(registroData.getApellidos());
+                    nuevoUsuarioData.setEmail(registroData.getEmail());
+                    nuevoUsuarioData.setTelefono(registroData.getTelefono());
+                    nuevoUsuarioData.setDni(registroData.getDni());
+                    nuevoUsuarioData.setFechaCaducidadDni(registroData.getFechaCaducidadDni());
+                    nuevoUsuarioData.setAdministrador(registroData.isAdministrador());
+                    nuevoUsuarioData.setDireccion(registroData.getDireccion());
+                    nuevoUsuarioData.setCiudad(registroData.getCiudad());
+                    nuevoUsuarioData.setCodigoPostal(registroData.getCodigoPostal());
+                    nuevoUsuarioData.setFechaCarnetConducir(registroData.getFechaCarnetConducir());
+
+                    MultipartFile imagen = registroData.getImagen();
+                    if (!imagen.isEmpty()) {
+                        String contentType = imagen.getContentType();
+                        assert contentType != null;
+                        if (contentType.equals("image/jpeg") || contentType.equals("image/jpg")) {
+                            // Define la ruta del directorio 'uploads'
+                            String uploadDir = "uploads";
+
+                            // Formatear la fecha actual para incluirla en el nombre del archivo
+                            String dateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+                            String originalFileName = StringUtils.cleanPath(Objects.requireNonNull(imagen.getOriginalFilename()));
+                            String fileName = originalFileName.replace(".", dateTime + ".");
+
+                            Path uploadPath = Paths.get(uploadDir);
+
+                            if (!Files.exists(uploadPath)) {
+                                Files.createDirectories(uploadPath);
+                            }
+
+                            try (InputStream inputStream = imagen.getInputStream()) {
+                                Path filePath = uploadPath.resolve(fileName);
+                                Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+                            // Guarda solo el nombre del archivo en la base de datos
+                            nuevoUsuarioData.setImagen(fileName);
+                        } else {
+                            // Manejo de error si el archivo no es una imagen JPEG/JPG
+                            model.addAttribute("errorActualizar", "Solo se permiten archivos de imagen en formato JPEG y JPG.");
+                            return "administracion/editar/editarUsuarioAdministrador";
+                        }
+                    }
 
                     nuevoUsuarioData.setEsArrendador(usuarioBuscado.isEsArrendador());
                     nuevoUsuarioData.setEsArrendatario(usuarioBuscado.isEsArrendatario());
@@ -1464,7 +1537,7 @@ public class AdministracionController {
     }
 
     @PostMapping("/administracion/usuarios/crear")
-    public String crearUsuario(@Valid RegistroData registroData, BindingResult result, Model model) {
+    public String crearUsuario(@Valid RegistroData registroData, BindingResult result, Model model) throws IOException {
         Long id = managerUserSession.usuarioLogeado();
 
         comprobarAdmin(id);
@@ -1482,7 +1555,7 @@ public class AdministracionController {
             try {
                 if (usuarioService.findByEmail(registroData.getEmail()) != null) {
                     model.addAttribute("errorCrear", "El usuario con email (" + registroData.getEmail() + ") ya existe.");
-                    return "administracion/crear/crearCategoria";
+                    return "administracion/crear/crearUsuario";
                 }
 
                 UsuarioData usuarioNuevo = new UsuarioData();
@@ -1497,7 +1570,46 @@ public class AdministracionController {
                 usuarioNuevo.setCiudad(registroData.getCiudad());
                 usuarioNuevo.setCodigoPostal(registroData.getCodigoPostal());
                 usuarioNuevo.setFechaCarnetConducir(registroData.getFechaCarnetConducir());
-                usuarioNuevo.setImagen("cara.jpg");
+
+                MultipartFile imagen = registroData.getImagen();
+                if (!imagen.isEmpty()) {
+                    String contentType = imagen.getContentType();
+                    assert contentType != null;
+                    if (contentType.equals("image/jpeg") || contentType.equals("image/jpg")) {
+                        // Define la ruta del directorio 'uploads'
+                        String uploadDir = "uploads";
+
+                        // Formatear la fecha actual para incluirla en el nombre del archivo
+                        String dateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+                        String originalFileName = StringUtils.cleanPath(Objects.requireNonNull(imagen.getOriginalFilename()));
+                        String fileName = originalFileName.replace(".", dateTime + ".");
+
+                        Path uploadPath = Paths.get(uploadDir);
+
+                        if (!Files.exists(uploadPath)) {
+                            Files.createDirectories(uploadPath);
+                        }
+
+                        try (InputStream inputStream = imagen.getInputStream()) {
+                            Path filePath = uploadPath.resolve(fileName);
+                            Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        // Guarda solo el nombre del archivo en la base de datos
+                        usuarioNuevo.setImagen(fileName);
+                    } else {
+                        // Manejo de error si el archivo no es una imagen JPEG/JPG
+                        model.addAttribute("errorCrear", "Solo se permiten archivos de imagen en formato JPEG y JPG.");
+                        return "administracion/crear/crearUsuario";
+                    }
+                } else {
+                    // Manejo de error si no se subió ninguna imagen
+                    model.addAttribute("errorCrear", "Ha ocurrido un error en la subida de la imagen.");
+                    return "administracion/crear/crearUsuario";
+                }
+
                 usuarioNuevo.setEsArrendatario(true);
 
                 UsuarioData nuevoUsuario = usuarioService.registrar(usuarioNuevo);

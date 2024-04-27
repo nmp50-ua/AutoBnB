@@ -1,6 +1,7 @@
 package autobnb.dto;
 
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.*;
 import java.util.Date;
@@ -52,7 +53,9 @@ public class RegistroData {
     @Size(max = 50, message = "El número de cuenta debe tener 50 caracteres como máximo.")
     private String numeroCuenta;
 
-    private String imagen;
+    private MultipartFile imagen;
+
+    private boolean administrador;
 
     public String getEmail() {
         return email;
@@ -150,11 +153,19 @@ public class RegistroData {
         this.fechaCarnetConducir = fechaCarnetConducir;
     }
 
-    public String getImagen() {
+    public MultipartFile getImagen() {
         return imagen;
     }
 
-    public void setImagen(String imagen) {
+    public void setImagen(MultipartFile imagen) {
         this.imagen = imagen;
+    }
+
+    public boolean isAdministrador() {
+        return administrador;
+    }
+
+    public void setAdministrador(boolean administrador) {
+        this.administrador = administrador;
     }
 }

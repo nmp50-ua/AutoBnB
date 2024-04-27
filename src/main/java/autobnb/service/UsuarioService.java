@@ -77,6 +77,16 @@ public class UsuarioService {
     }
 
     @Transactional(readOnly = true)
+    public UsuarioData findByDni(String dni) {
+        Usuario usuario = usuarioRepository.findByDni(dni).orElse(null);
+
+        if (usuario == null) return null;
+        else {
+            return modelMapper.map(usuario, UsuarioData.class);
+        }
+    }
+
+    @Transactional(readOnly = true)
     public UsuarioData findById(Long usuarioId) {
         Usuario usuario = usuarioRepository.findById(usuarioId).orElse(null);
 

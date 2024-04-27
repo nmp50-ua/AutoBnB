@@ -22,7 +22,7 @@
         <div class="row justify-content-center mt-5">
             <div class="col-md-6">
                 <h2 style="color: #171a1d; text-align: center; margin-bottom: 30px;">Editar Vehículo</h2>
-                <form method="post" th:action="@{/administracion/vehiculos/editar/{vehiculoId}(vehiculoId=${vehiculo.id})}" th:object="${vehiculoData}" class="needs-validation" novalidate>
+                <form method="post" th:action="@{/administracion/vehiculos/editar/{vehiculoId}(vehiculoId=${vehiculo.id})}" th:object="${registroVehiculoData}" class="needs-validation" novalidate enctype="multipart/form-data">
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label for="matricula" style="color: #333; font-family: 'Quicksand', sans-serif;">Matrícula</label>
@@ -44,10 +44,7 @@
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label style="color: #333; font-family: 'Quicksand', sans-serif;" for="imagen">Imagen</label>
-                            <input id="imagen" class="form-control" name="imagen" type="text" th:field="*{imagen}" required/>
-                            <div class="invalid-feedback">
-                                La imagen es obligatoria.
-                            </div>
+                            <input id="imagen" class="form-control-file" name="imagen" type="file" th:field="*{imagen}" accept="image/jpeg,image/jpg"/>
                         </div>
 
                         <div class="form-group col-md-6">
@@ -148,7 +145,7 @@
                             <select id="idMarca" class="form-control" name="idMarca" required>
                                 <option value="">Seleccione una marca...</option>
                                 <option th:each="marca : ${marcas}" th:value="${marca.id}" th:text="${marca.nombre}"
-                                        th:selected="${vehiculoData.idMarca == marca.id}">Nombre de la Marca</option>
+                                        th:selected="${registroVehiculoData.idMarca == marca.id}">Nombre de la Marca</option>
                             </select>
                             <div class="invalid-feedback">
                                 La marca es obligatoria.
@@ -160,7 +157,7 @@
                             <select id="idModelo" class="form-control" name="idModelo" required>
                                 <option value="">Seleccione un modelo...</option>
                                 <option th:each="modelo : ${modelos}" th:value="${modelo.id}" th:text="${modelo.nombre}"
-                                        th:selected="${vehiculoData.idModelo == modelo.id}">Nombre del Modelo</option>
+                                        th:selected="${registroVehiculoData.idModelo == modelo.id}">Nombre del Modelo</option>
                             </select>
                             <div class="invalid-feedback">
                                 El modelo es obligatorio.
@@ -174,7 +171,7 @@
                             <select id="idCategoria" class="form-control" name="idCategoria" required>
                                 <option value="">Seleccione una categoría...</option>
                                 <option th:each="categoria : ${categorias}" th:value="${categoria.id}" th:text="${categoria.nombre}"
-                                        th:selected="${vehiculoData.idCategoria == categoria.id}">Nombre de la Categoría</option>
+                                        th:selected="${registroVehiculoData.idCategoria == categoria.id}">Nombre de la Categoría</option>
                             </select>
                             <div class="invalid-feedback">
                                 La categoría es obligatoria.
@@ -186,7 +183,7 @@
                             <select id="idColor" class="form-control" name="idColor" required>
                                 <option value="">Seleccione un color...</option>
                                 <option th:each="color : ${colores}" th:value="${color.id}" th:text="${color.nombre}"
-                                        th:selected="${vehiculoData.idColor == color.id}">Nombre del Color</option>
+                                        th:selected="${registroVehiculoData.idColor == color.id}">Nombre del Color</option>
                             </select>
                             <div class="invalid-feedback">
                                 El color es obligatorio.
@@ -198,7 +195,7 @@
                             <select id="idTransmision" class="form-control" name="idTransmision" required>
                                 <option value="">Seleccione una transmisión...</option>
                                 <option th:each="transmision : ${transmisiones}" th:value="${transmision.id}" th:text="${transmision.nombre}"
-                                        th:selected="${vehiculoData.idTransmision == transmision.id}">Nombre de la Transmisión</option>
+                                        th:selected="${registroVehiculoData.idTransmision == transmision.id}">Nombre de la Transmisión</option>
                             </select>
                             <div class="invalid-feedback">
                                 La transmisión es obligatoria.
@@ -214,7 +211,7 @@
                     <p class="text-center mt-3"><a th:href="@{'/administracion/vehiculos'}" class="btn btn-link" style="color: #171a1d;">Volver al Listado</a></p>
                 </form>
 
-                <div th:object="${vehiculoData}">
+                <div th:object="${registroVehiculoData}">
                     <ul th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
                         <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
                     </ul>

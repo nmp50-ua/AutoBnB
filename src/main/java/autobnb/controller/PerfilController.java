@@ -9,19 +9,26 @@ import autobnb.service.exception.UsuarioServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Controller
@@ -100,7 +107,6 @@ public class PerfilController {
         nuevo.setDni(usuario.getDni());
         nuevo.setFechaCaducidadDni(usuario.getFechaCaducidadDni());
         nuevo.setFechaCarnetConducir(usuario.getFechaCarnetConducir());
-        nuevo.setImagen(usuario.getImagen());
         nuevo.setNumeroCuenta(usuario.getCuenta().getNumeroCuenta());
 
         model.addAttribute("registroData", nuevo);
@@ -110,7 +116,7 @@ public class PerfilController {
 
     // Método para manejar la actualización del perfil
     @PostMapping("/perfil/{id}/actualizar")
-    public String actualizarPerfil(@PathVariable(value = "id") Long idUsuario, @Valid RegistroData registroData, BindingResult result, Model model) {
+    public String actualizarPerfil(@PathVariable(value = "id") Long idUsuario, @Valid RegistroData registroData, BindingResult result, Model model) throws IOException {
         Long id = managerUserSession.usuarioLogeado();
 
         if (result.hasErrors()) {
@@ -137,7 +143,40 @@ public class PerfilController {
                     nuevoUsuarioData.setDni(registroData.getDni());
                     nuevoUsuarioData.setFechaCaducidadDni(registroData.getFechaCaducidadDni());
                     nuevoUsuarioData.setFechaCarnetConducir(registroData.getFechaCarnetConducir());
-                    nuevoUsuarioData.setImagen(registroData.getImagen());
+
+                    MultipartFile imagen = registroData.getImagen();
+                    if (!imagen.isEmpty()) {
+                        String contentType = imagen.getContentType();
+                        assert contentType != null;
+                        if (contentType.equals("image/jpeg") || contentType.equals("image/jpg")) {
+                            // Define la ruta del directorio 'uploads'
+                            String uploadDir = "uploads";
+
+                            // Formatear la fecha actual para incluirla en el nombre del archivo
+                            String dateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+                            String originalFileName = StringUtils.cleanPath(Objects.requireNonNull(imagen.getOriginalFilename()));
+                            String fileName = originalFileName.replace(".", dateTime + ".");
+
+                            Path uploadPath = Paths.get(uploadDir);
+
+                            if (!Files.exists(uploadPath)) {
+                                Files.createDirectories(uploadPath);
+                            }
+
+                            try (InputStream inputStream = imagen.getInputStream()) {
+                                Path filePath = uploadPath.resolve(fileName);
+                                Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+                            // Guarda solo el nombre del archivo en la base de datos
+                            nuevoUsuarioData.setImagen(fileName);
+                        } else {
+                            // Manejo de error si el archivo no es una imagen JPEG/JPG
+                            model.addAttribute("errorActualizar", "Solo se permiten archivos de imagen en formato JPEG y JPG.");
+                        }
+                    }
 
                     // Validar y actualizar los datos del usuario en el servicio
                     usuarioService.actualizarUsuarioPorId(idUsuario, nuevoUsuarioData);
@@ -322,9 +361,9 @@ public class PerfilController {
         Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
         model.addAttribute("usuario", usuario);
 
-        VehiculoData vehiculoData = new VehiculoData();
+        RegistroVehiculoData registroVehiculoData = new RegistroVehiculoData();
 
-        model.addAttribute("vehiculoData", vehiculoData);
+        model.addAttribute("registroVehiculoData", registroVehiculoData);
 
         List<Marca> marcas = marcaService.listadoCompleto();
         model.addAttribute("marcas", marcas);
@@ -351,12 +390,12 @@ public class PerfilController {
     }
 
     @PostMapping("/perfil/{usuarioId}/añadir-vehiculo")
-    public String registrarVehiculo(@PathVariable("usuarioId") Long idUsuario, @Valid VehiculoData vehiculoData, BindingResult result, Model model) {
+    public String registrarVehiculo(@PathVariable("usuarioId") Long idUsuario, @Valid RegistroVehiculoData registroVehiculoData, BindingResult result, Model model) {
         Long id = managerUserSession.usuarioLogeado();
 
         comprobarLogueado(id);
 
-        model.addAttribute("vehiculoData", vehiculoData);
+        model.addAttribute("registroVehiculoData", registroVehiculoData);
 
         List<Usuario> usuarios = usuarioService.listadoCompleto();
         Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
@@ -373,18 +412,79 @@ public class PerfilController {
         List<Transmision> transmisiones = transmisionService.listadoCompleto();
         model.addAttribute("transmisiones", transmisiones);
 
-        if (result.hasErrors() || vehiculoData.getMatricula().trim().isEmpty() || vehiculoData.getDescripcion().trim().isEmpty() || vehiculoData.getImagen().trim().isEmpty() || vehiculoData.getKilometraje() == null || vehiculoData.getAnyoFabricacion() == null || vehiculoData.getCapacidadPasajeros() == null || vehiculoData.getCapacidadMaletero() == null || vehiculoData.getNumeroPuertas() == null || vehiculoData.getNumeroMarchas() == null || vehiculoData.getPrecioPorDia() == null || vehiculoData.getPrecioPorMedioDia() == null || vehiculoData.getPrecioCombustible() == null || vehiculoData.getIdMarca() == null || vehiculoData.getIdModelo() == null || vehiculoData.getIdCategoria() == null || vehiculoData.getIdTransmision() == null || vehiculoData.getIdColor() == null) {
+        if (result.hasErrors() || registroVehiculoData.getMatricula().trim().isEmpty() || registroVehiculoData.getDescripcion().trim().isEmpty() || registroVehiculoData.getKilometraje() == null || registroVehiculoData.getAnyoFabricacion() == null || registroVehiculoData.getCapacidadPasajeros() == null || registroVehiculoData.getCapacidadMaletero() == null || registroVehiculoData.getNumeroPuertas() == null || registroVehiculoData.getNumeroMarchas() == null || registroVehiculoData.getPrecioPorDia() == null || registroVehiculoData.getPrecioPorMedioDia() == null || registroVehiculoData.getPrecioCombustible() == null || registroVehiculoData.getIdMarca() == null || registroVehiculoData.getIdModelo() == null || registroVehiculoData.getIdCategoria() == null || registroVehiculoData.getIdTransmision() == null || registroVehiculoData.getIdColor() == null) {
             model.addAttribute("errorActualizar", "Únicamente puede estar vacio el campo de la oferta. Todos los demás campos son obligatorios.");
             return "perfil/añadirVehiculoUsuario";
         }
         else{
             try {
-                if (vehiculoService.findByMatricula(vehiculoData.getMatricula()) != null) {
-                    model.addAttribute("errorActualizar", "El vehículo con matrícula (" + vehiculoData.getMatricula() + ") ya existe.");
+                if (vehiculoService.findByMatricula(registroVehiculoData.getMatricula()) != null) {
+                    model.addAttribute("errorActualizar", "El vehículo con matrícula (" + registroVehiculoData.getMatricula() + ") ya existe.");
                     return "perfil/añadirVehiculoUsuario";
                 }
 
-                vehiculoData.setIdUsuario(idUsuario);
+                registroVehiculoData.setIdUsuario(idUsuario);
+
+                VehiculoData vehiculoData = new VehiculoData();
+                vehiculoData.setMatricula(registroVehiculoData.getMatricula());
+                vehiculoData.setDescripcion(registroVehiculoData.getDescripcion());
+                vehiculoData.setKilometraje(registroVehiculoData.getKilometraje());
+                vehiculoData.setAnyoFabricacion(registroVehiculoData.getAnyoFabricacion());
+                vehiculoData.setCapacidadPasajeros(registroVehiculoData.getCapacidadPasajeros());
+                vehiculoData.setCapacidadMaletero(registroVehiculoData.getCapacidadMaletero());
+                vehiculoData.setNumeroPuertas(registroVehiculoData.getNumeroPuertas());
+                vehiculoData.setNumeroMarchas(registroVehiculoData.getNumeroMarchas());
+                vehiculoData.setAireAcondicionado(registroVehiculoData.isAireAcondicionado());
+                vehiculoData.setEnMantenimiento(registroVehiculoData.isEnMantenimiento());
+                vehiculoData.setOferta(registroVehiculoData.getOferta());
+                vehiculoData.setPrecioPorDia(registroVehiculoData.getPrecioPorDia());
+                vehiculoData.setPrecioPorMedioDia(registroVehiculoData.getPrecioPorMedioDia());
+                vehiculoData.setPrecioCombustible(registroVehiculoData.getPrecioCombustible());
+                vehiculoData.setIdMarca(registroVehiculoData.getIdMarca());
+                vehiculoData.setIdModelo(registroVehiculoData.getIdModelo());
+                vehiculoData.setIdCategoria(registroVehiculoData.getIdCategoria());
+                vehiculoData.setIdTransmision(registroVehiculoData.getIdTransmision());
+                vehiculoData.setIdColor(registroVehiculoData.getIdColor());
+                vehiculoData.setIdUsuario(registroVehiculoData.getIdUsuario());
+
+                MultipartFile imagen = registroVehiculoData.getImagen();
+                if (!imagen.isEmpty()) {
+                    String contentType = imagen.getContentType();
+                    assert contentType != null;
+                    if (contentType.equals("image/jpeg") || contentType.equals("image/jpg")) {
+                        // Define la ruta del directorio 'uploads'
+                        String uploadDir = "uploads";
+
+                        // Formatear la fecha actual para incluirla en el nombre del archivo
+                        String dateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+                        String originalFileName = StringUtils.cleanPath(Objects.requireNonNull(imagen.getOriginalFilename()));
+                        String fileName = originalFileName.replace(".", dateTime + ".");
+
+                        Path uploadPath = Paths.get(uploadDir);
+
+                        if (!Files.exists(uploadPath)) {
+                            Files.createDirectories(uploadPath);
+                        }
+
+                        try (InputStream inputStream = imagen.getInputStream()) {
+                            Path filePath = uploadPath.resolve(fileName);
+                            Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        // Guarda solo el nombre del archivo en la base de datos
+                        vehiculoData.setImagen(fileName);
+                    } else {
+                        // Manejo de error si el archivo no es una imagen JPEG/JPG
+                        model.addAttribute("errorActualizar", "Solo se permiten archivos de imagen en formato JPEG y JPG.");
+                        return "perfil/añadirVehiculoUsuario";
+                    }
+                } else {
+                    // Manejo de error si no se subió ninguna imagen
+                    model.addAttribute("errorActualizar", "Ha ocurrido un error en la subida de la imagen.");
+                    return "perfil/añadirVehiculoUsuario";
+                }
 
                 vehiculoService.registrarVehiculo(vehiculoData);
 
@@ -431,29 +531,28 @@ public class PerfilController {
             Vehiculo vehiculoBuscado = vehiculoService.buscarVehiculoPorId(vehiculos, vehiculoId);
             model.addAttribute("vehiculo", vehiculoBuscado);
 
-            VehiculoData vehiculoData = new VehiculoData();
-            vehiculoData.setMatricula(vehiculoBuscado.getMatricula());
-            vehiculoData.setDescripcion(vehiculoBuscado.getDescripcion());
-            vehiculoData.setImagen(vehiculoBuscado.getImagen());
-            vehiculoData.setKilometraje(vehiculoBuscado.getKilometraje());
-            vehiculoData.setAnyoFabricacion(vehiculoBuscado.getAnyoFabricacion());
-            vehiculoData.setCapacidadPasajeros(vehiculoBuscado.getCapacidadPasajeros());
-            vehiculoData.setCapacidadMaletero(vehiculoBuscado.getCapacidadMaletero());
-            vehiculoData.setNumeroPuertas(vehiculoBuscado.getNumeroPuertas());
-            vehiculoData.setNumeroMarchas(vehiculoBuscado.getNumeroMarchas());
-            vehiculoData.setAireAcondicionado(vehiculoBuscado.isAireAcondicionado());
-            vehiculoData.setEnMantenimiento(vehiculoBuscado.isEnMantenimiento());
-            vehiculoData.setOferta(vehiculoBuscado.getOferta());
-            vehiculoData.setPrecioPorDia(vehiculoBuscado.getPrecioPorDia());
-            vehiculoData.setPrecioPorMedioDia(vehiculoBuscado.getPrecioPorMedioDia());
-            vehiculoData.setPrecioCombustible(vehiculoBuscado.getPrecioCombustible());
-            vehiculoData.setIdMarca(vehiculoBuscado.getMarca().getId());
-            vehiculoData.setIdModelo(vehiculoBuscado.getModelo().getId());
-            vehiculoData.setIdCategoria(vehiculoBuscado.getCategoria().getId());
-            vehiculoData.setIdTransmision(vehiculoBuscado.getTransmision().getId());
-            vehiculoData.setIdColor(vehiculoBuscado.getColor().getId());
+            RegistroVehiculoData registroVehiculoData = new RegistroVehiculoData();
+            registroVehiculoData.setMatricula(vehiculoBuscado.getMatricula());
+            registroVehiculoData.setDescripcion(vehiculoBuscado.getDescripcion());
+            registroVehiculoData.setKilometraje(vehiculoBuscado.getKilometraje());
+            registroVehiculoData.setAnyoFabricacion(vehiculoBuscado.getAnyoFabricacion());
+            registroVehiculoData.setCapacidadPasajeros(vehiculoBuscado.getCapacidadPasajeros());
+            registroVehiculoData.setCapacidadMaletero(vehiculoBuscado.getCapacidadMaletero());
+            registroVehiculoData.setNumeroPuertas(vehiculoBuscado.getNumeroPuertas());
+            registroVehiculoData.setNumeroMarchas(vehiculoBuscado.getNumeroMarchas());
+            registroVehiculoData.setAireAcondicionado(vehiculoBuscado.isAireAcondicionado());
+            registroVehiculoData.setEnMantenimiento(vehiculoBuscado.isEnMantenimiento());
+            registroVehiculoData.setOferta(vehiculoBuscado.getOferta());
+            registroVehiculoData.setPrecioPorDia(vehiculoBuscado.getPrecioPorDia());
+            registroVehiculoData.setPrecioPorMedioDia(vehiculoBuscado.getPrecioPorMedioDia());
+            registroVehiculoData.setPrecioCombustible(vehiculoBuscado.getPrecioCombustible());
+            registroVehiculoData.setIdMarca(vehiculoBuscado.getMarca().getId());
+            registroVehiculoData.setIdModelo(vehiculoBuscado.getModelo().getId());
+            registroVehiculoData.setIdCategoria(vehiculoBuscado.getCategoria().getId());
+            registroVehiculoData.setIdTransmision(vehiculoBuscado.getTransmision().getId());
+            registroVehiculoData.setIdColor(vehiculoBuscado.getColor().getId());
 
-            model.addAttribute("vehiculoData", vehiculoData);
+            model.addAttribute("registroVehiculoData", registroVehiculoData);
 
             model.addAttribute("marcas", marcaService.listadoCompleto());
             model.addAttribute("modelos", modeloService.listadoCompleto());
@@ -468,12 +567,12 @@ public class PerfilController {
     }
 
     @PostMapping("/perfil/{usuarioId}/vehiculos/editar/{vehiculoId}")
-    public String actualizarVehiculo(@PathVariable(value = "usuarioId") Long idUsuario, @PathVariable Long vehiculoId, @Valid VehiculoData vehiculoData, BindingResult result, Model model) {
+    public String actualizarVehiculo(@PathVariable(value = "usuarioId") Long idUsuario, @PathVariable Long vehiculoId, @Valid RegistroVehiculoData registroVehiculoData, BindingResult result, Model model) {
         Long id = managerUserSession.usuarioLogeado();
 
         comprobarLogueado(id);
 
-        model.addAttribute("vehiculoData", vehiculoData);
+        model.addAttribute("registroVehiculoData", registroVehiculoData);
 
         List<Usuario> usuarios = usuarioService.listadoCompleto();
         Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
@@ -489,7 +588,7 @@ public class PerfilController {
         Vehiculo vehiculoBuscado = vehiculoService.buscarVehiculoPorId(vehiculos, vehiculoId);
         model.addAttribute("vehiculo", vehiculoBuscado);
 
-        if (result.hasErrors() || vehiculoData.getMatricula().trim().isEmpty() || vehiculoData.getDescripcion().trim().isEmpty() || vehiculoData.getImagen().trim().isEmpty() || vehiculoData.getKilometraje() == null || vehiculoData.getAnyoFabricacion() == null || vehiculoData.getCapacidadPasajeros() == null || vehiculoData.getCapacidadMaletero() == null || vehiculoData.getNumeroPuertas() == null || vehiculoData.getNumeroMarchas() == null || vehiculoData.getPrecioPorDia() == null || vehiculoData.getPrecioPorMedioDia() == null || vehiculoData.getPrecioCombustible() == null || vehiculoData.getIdMarca() == null || vehiculoData.getIdModelo() == null || vehiculoData.getIdCategoria() == null || vehiculoData.getIdTransmision() == null || vehiculoData.getIdColor() == null) {
+        if (result.hasErrors() || registroVehiculoData.getMatricula().trim().isEmpty() || registroVehiculoData.getDescripcion().trim().isEmpty() || registroVehiculoData.getKilometraje() == null || registroVehiculoData.getAnyoFabricacion() == null || registroVehiculoData.getCapacidadPasajeros() == null || registroVehiculoData.getCapacidadMaletero() == null || registroVehiculoData.getNumeroPuertas() == null || registroVehiculoData.getNumeroMarchas() == null || registroVehiculoData.getPrecioPorDia() == null || registroVehiculoData.getPrecioPorMedioDia() == null || registroVehiculoData.getPrecioCombustible() == null || registroVehiculoData.getIdMarca() == null || registroVehiculoData.getIdModelo() == null || registroVehiculoData.getIdCategoria() == null || registroVehiculoData.getIdTransmision() == null || registroVehiculoData.getIdColor() == null) {
             model.addAttribute("errorActualizar", "Unicamente puede estar vacio el campo de la oferta. Todos los demás campos son obligatorios.");
             return "perfil/editarVehiculoUsuario";
         }
@@ -498,31 +597,65 @@ public class PerfilController {
                 VehiculoData nuevoVehiculoData = vehiculoService.findById(vehiculoId);
 
                 if(nuevoVehiculoData.getMatricula() != null) {
-                    if ((vehiculoService.findByMatricula(vehiculoData.getMatricula()) != null) && !vehiculoData.getMatricula().equals(nuevoVehiculoData.getMatricula())) {
-                        model.addAttribute("errorActualizar", "El vehículo con matrícula (" + vehiculoData.getMatricula() + ") ya existe.");
+                    if ((vehiculoService.findByMatricula(registroVehiculoData.getMatricula()) != null) && !registroVehiculoData.getMatricula().equals(nuevoVehiculoData.getMatricula())) {
+                        model.addAttribute("errorActualizar", "El vehículo con matrícula (" + registroVehiculoData.getMatricula() + ") ya existe.");
                         return "perfil/editarVehiculoUsuario";
                     }
 
-                    nuevoVehiculoData.setMatricula(vehiculoData.getMatricula());
-                    nuevoVehiculoData.setDescripcion(vehiculoData.getDescripcion());
-                    nuevoVehiculoData.setImagen(vehiculoData.getImagen());
-                    nuevoVehiculoData.setKilometraje(vehiculoData.getKilometraje());
-                    nuevoVehiculoData.setAnyoFabricacion(vehiculoData.getAnyoFabricacion());
-                    nuevoVehiculoData.setCapacidadPasajeros(vehiculoData.getCapacidadPasajeros());
-                    nuevoVehiculoData.setCapacidadMaletero(vehiculoData.getCapacidadMaletero());
-                    nuevoVehiculoData.setNumeroPuertas(vehiculoData.getNumeroPuertas());
-                    nuevoVehiculoData.setNumeroMarchas(vehiculoData.getNumeroMarchas());
-                    nuevoVehiculoData.setAireAcondicionado(vehiculoData.isAireAcondicionado());
-                    nuevoVehiculoData.setEnMantenimiento(vehiculoData.isEnMantenimiento());
-                    nuevoVehiculoData.setOferta(vehiculoData.getOferta());
-                    nuevoVehiculoData.setPrecioPorDia(vehiculoData.getPrecioPorDia());
-                    nuevoVehiculoData.setPrecioPorMedioDia(vehiculoData.getPrecioPorMedioDia());
-                    nuevoVehiculoData.setPrecioCombustible(vehiculoData.getPrecioCombustible());
-                    nuevoVehiculoData.setIdMarca(vehiculoData.getIdMarca());
-                    nuevoVehiculoData.setIdModelo(vehiculoData.getIdModelo());
-                    nuevoVehiculoData.setIdCategoria(vehiculoData.getIdCategoria());
-                    nuevoVehiculoData.setIdTransmision(vehiculoData.getIdTransmision());
-                    nuevoVehiculoData.setIdColor(vehiculoData.getIdColor());
+                    nuevoVehiculoData.setMatricula(registroVehiculoData.getMatricula());
+                    nuevoVehiculoData.setDescripcion(registroVehiculoData.getDescripcion());
+                    nuevoVehiculoData.setKilometraje(registroVehiculoData.getKilometraje());
+                    nuevoVehiculoData.setAnyoFabricacion(registroVehiculoData.getAnyoFabricacion());
+                    nuevoVehiculoData.setCapacidadPasajeros(registroVehiculoData.getCapacidadPasajeros());
+                    nuevoVehiculoData.setCapacidadMaletero(registroVehiculoData.getCapacidadMaletero());
+                    nuevoVehiculoData.setNumeroPuertas(registroVehiculoData.getNumeroPuertas());
+                    nuevoVehiculoData.setNumeroMarchas(registroVehiculoData.getNumeroMarchas());
+                    nuevoVehiculoData.setAireAcondicionado(registroVehiculoData.isAireAcondicionado());
+                    nuevoVehiculoData.setEnMantenimiento(registroVehiculoData.isEnMantenimiento());
+                    nuevoVehiculoData.setOferta(registroVehiculoData.getOferta());
+                    nuevoVehiculoData.setPrecioPorDia(registroVehiculoData.getPrecioPorDia());
+                    nuevoVehiculoData.setPrecioPorMedioDia(registroVehiculoData.getPrecioPorMedioDia());
+                    nuevoVehiculoData.setPrecioCombustible(registroVehiculoData.getPrecioCombustible());
+                    nuevoVehiculoData.setIdMarca(registroVehiculoData.getIdMarca());
+                    nuevoVehiculoData.setIdModelo(registroVehiculoData.getIdModelo());
+                    nuevoVehiculoData.setIdCategoria(registroVehiculoData.getIdCategoria());
+                    nuevoVehiculoData.setIdTransmision(registroVehiculoData.getIdTransmision());
+                    nuevoVehiculoData.setIdColor(registroVehiculoData.getIdColor());
+
+                    MultipartFile imagen = registroVehiculoData.getImagen();
+                    if (!imagen.isEmpty()) {
+                        String contentType = imagen.getContentType();
+                        assert contentType != null;
+                        if (contentType.equals("image/jpeg") || contentType.equals("image/jpg")) {
+                            // Define la ruta del directorio 'uploads'
+                            String uploadDir = "uploads";
+
+                            // Formatear la fecha actual para incluirla en el nombre del archivo
+                            String dateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+                            String originalFileName = StringUtils.cleanPath(Objects.requireNonNull(imagen.getOriginalFilename()));
+                            String fileName = originalFileName.replace(".", dateTime + ".");
+
+                            Path uploadPath = Paths.get(uploadDir);
+
+                            if (!Files.exists(uploadPath)) {
+                                Files.createDirectories(uploadPath);
+                            }
+
+                            try (InputStream inputStream = imagen.getInputStream()) {
+                                Path filePath = uploadPath.resolve(fileName);
+                                Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+                            // Guarda solo el nombre del archivo en la base de datos
+                            nuevoVehiculoData.setImagen(fileName);
+                        } else {
+                            // Manejo de error si el archivo no es una imagen JPEG/JPG
+                            model.addAttribute("errorActualizar", "Solo se permiten archivos de imagen en formato JPEG y JPG.");
+                            return "perfil/editarVehiculoUsuario";
+                        }
+                    }
 
                     vehiculoService.actualizarVehiculo(vehiculoId, nuevoVehiculoData);
 

@@ -10,14 +10,24 @@ import autobnb.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 @Controller
 public class AutenticacionController {
@@ -65,7 +75,7 @@ public class AutenticacionController {
     }
 
    @PostMapping("/registro")
-   public String registroSubmit(@Valid RegistroData registroData, BindingResult result, Model model) {
+   public String registroSubmit(@Valid RegistroData registroData, BindingResult result, Model model) throws IOException {
 
         if (result.hasErrors()) {
             return "formRegistro";
@@ -76,6 +86,12 @@ public class AutenticacionController {
             model.addAttribute("error", "El usuario con email (" + registroData.getEmail() + ") ya existe.");
             return "formRegistro";
         }
+
+       if (usuarioService.findByDni(registroData.getDni()) != null) {
+           model.addAttribute("registroData", registroData);
+           model.addAttribute("error", "El usuario con DNI (" + registroData.getDni() + ") ya existe.");
+           return "formRegistro";
+       }
 
         UsuarioData usuario = new UsuarioData();
         usuario.setEmail(registroData.getEmail());
@@ -89,7 +105,48 @@ public class AutenticacionController {
         usuario.setCiudad(registroData.getCiudad());
         usuario.setCodigoPostal(registroData.getCodigoPostal());
         usuario.setFechaCarnetConducir(registroData.getFechaCarnetConducir());
-        usuario.setImagen("cara.jpg");
+
+       MultipartFile imagen = registroData.getImagen();
+       if (!imagen.isEmpty()) {
+           String contentType = imagen.getContentType();
+           assert contentType != null;
+           if (contentType.equals("image/jpeg") || contentType.equals("image/jpg")) {
+               // Define la ruta del directorio 'uploads'
+               String uploadDir = "uploads";
+
+               // Formatear la fecha actual para incluirla en el nombre del archivo
+               String dateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+               String originalFileName = StringUtils.cleanPath(Objects.requireNonNull(imagen.getOriginalFilename()));
+               String fileName = originalFileName.replace(".", dateTime + ".");
+
+               Path uploadPath = Paths.get(uploadDir);
+
+               if (!Files.exists(uploadPath)) {
+                   Files.createDirectories(uploadPath);
+               }
+
+               try (InputStream inputStream = imagen.getInputStream()) {
+                   Path filePath = uploadPath.resolve(fileName);
+                   Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+               } catch (IOException e) {
+                   e.printStackTrace();
+               }
+
+               // Guarda solo el nombre del archivo en la base de datos
+               usuario.setImagen(fileName);
+           } else {
+               // Manejo de error si el archivo no es una imagen JPEG/JPG
+               model.addAttribute("registroData", registroData);
+               model.addAttribute("error", "Solo se permiten archivos de imagen en formato JPEG y JPG.");
+               return "formRegistro";
+           }
+       } else {
+           // Manejo de error si no se subió ninguna imagen
+           model.addAttribute("registroData", registroData);
+           model.addAttribute("error", "Ha ocurrido un error en la subida de la imagen.");
+           return "formRegistro";
+       }
+
         usuario.setEsArrendatario(true);
 
         UsuarioData nuevoUsuario = usuarioService.registrar(usuario);

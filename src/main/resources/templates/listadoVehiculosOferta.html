@@ -71,7 +71,7 @@
         <div class="row mt-3" style="display: flex; flex-wrap: wrap; justify-content: space-around;">
             <div th:each="vehiculo : ${vehiculosPage.content}" style="width: 18rem; margin: 1rem; box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);">
                 <a th:href="@{/listado-vehiculos/detalles-vehiculo/oferta/{vehiculoId}(vehiculoId=${vehiculo.id})}">
-                    <img th:src="@{/assets/{productoImg}(productoImg=${vehiculo.imagen})}" alt="Imagen del vehículo" style="width: 100%; height: auto; display: block;">
+                    <img th:src="@{|/uploads/${vehiculo.imagen}|}" alt="Imagen del vehículo" style="width: 288px; height: 150px; object-fit: cover; display: block;">
                 </a>
                 <div style="text-align: center; padding: 1rem;">
                     <h5 th:text="${vehiculo.marca.nombre} + ' ' + ${vehiculo.modelo.nombre}" style="margin-bottom: 0.5rem;"></h5>
