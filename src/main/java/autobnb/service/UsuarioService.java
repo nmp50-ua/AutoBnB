@@ -4,6 +4,7 @@ import autobnb.dto.UsuarioData;
 import autobnb.model.*;
 import autobnb.repository.*;
 import autobnb.service.exception.UsuarioServiceException;
+import de.mkammerer.argon2.Argon2;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,17 +41,45 @@ public class UsuarioService {
     private VehiculoService vehiculoService;
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private Argon2 argon2;
+
+    private boolean isArgon2Hashed(String password) {
+        if (password == null || password.isEmpty()) {
+            return false;
+        }
+
+        return password.startsWith("$argon2i$"); // Check for the Argon2i prefix
+    }
 
     @Transactional(readOnly = true)
     public LoginStatus login(String email, String password) {
         Optional<Usuario> usuario = usuarioRepository.findByEmail(email);
 
-        if (!usuario.isPresent()) {
-            return LoginStatus.USER_NOT_FOUND;
-        } else if (!usuario.get().getPassword().equals(password)) {
-            return LoginStatus.ERROR_PASSWORD;
-        } else {
-            return LoginStatus.LOGIN_OK;
+        char[] passwordChars = password.toCharArray();
+
+        try {
+            if (!usuario.isPresent()) {
+                return LoginStatus.USER_NOT_FOUND;
+            } else {
+                // Verificar si la contraseña ya está hasheada con Argon2
+                if (isArgon2Hashed(usuario.get().getPassword())) {
+                    if (!argon2.verify(usuario.get().getPassword(), passwordChars)) {
+                        return LoginStatus.ERROR_PASSWORD;
+                    } else {
+                        return LoginStatus.LOGIN_OK;
+                    }
+                } else {
+                    // La contraseña no está hasheada con Argon2
+                    if (!usuario.get().getPassword().equals(password)) {
+                        return LoginStatus.ERROR_PASSWORD;
+                    } else {
+                        return LoginStatus.LOGIN_OK;
+                    }
+                }
+            }
+        } finally {
+            argon2.wipeArray(passwordChars);
         }
     }
 
@@ -61,6 +90,11 @@ public class UsuarioService {
             throw new UsuarioServiceException("El usuario " + usuario.getEmail() + " ya está registrado");
         else {
             Usuario usuarioNuevo = modelMapper.map(usuario, Usuario.class);
+
+            // Hash de la contraseña con Argon2
+            String hashedPassword = argon2.hash(2, 65536, 1, usuario.getPassword().toCharArray());
+            usuarioNuevo.setPassword(hashedPassword);
+
             usuarioNuevo = usuarioRepository.save(usuarioNuevo);
             return modelMapper.map(usuarioNuevo, UsuarioData.class);
         }
@@ -176,7 +210,9 @@ public class UsuarioService {
         }
 
         if (nuevosDatos.getPassword() != null) {
-            usuarioActualizado.setPassword(nuevosDatos.getPassword());
+            // Hash de la contraseña con Argon2
+            String hashedPassword = argon2.hash(2, 65536, 1, nuevosDatos.getPassword().toCharArray());
+            usuarioActualizado.setPassword(hashedPassword);
         }
         else{
             throw new UsuarioServiceException("Se ha recibido un password NULL");

@@ -182,18 +182,18 @@ INSERT INTO Color (id, nombre) VALUES
 
 -- Seeder para la tabla Vehiculo
 INSERT INTO Vehiculo (id, descripcion, imagen, matricula, kilometraje, anyoFabricacion, capacidadPasajeros, capacidadMaletero, numeroPuertas, numeroMarchas, aireAcondicionado, enMantenimiento, oferta, precioPorDia, precioPorMedioDia, precioCombustible, idCategoria, idMarca, idModelo, idTransmision, idColor, idUsuario) VALUES
-(1, 'Un vehículo compacto y eficiente', 'imagen1.jpg', '1234ABC', 50000, 2018, 5, 300, 5, 6, TRUE, FALSE, NULL, 30.00, 20.00, 1.50, 1, 1, 1, 1, 1, 2),
-(2, 'Un SUV espacioso y cómodo', 'imagen2.jpg', '5678DEF', 75000, 2017, 7, 500, 5, 5, TRUE, FALSE, 10, 60.00, 40.00, 2.00, 2, 2, 2, 2, 2, 1),
-(3, 'Deportivo eléctrico con autonomía superior', 'imagen13.jpg', 'M1234XY', 10000, 2021, 4, 150, 2, 1, TRUE, FALSE, NULL, 100.00, 70.00, 0.00, 9, 7, 7, 9, 9, 4),
-(4, 'SUV híbrido para toda la familia', 'imagen14.jpg', 'M5678YZ', 30000, 2019, 7, 550, 5, 1, TRUE, FALSE, 5, 80.00, 55.00, 1.20, 10, 9, 9, 10, 10, 5),
-(5, 'Pickup robusta para trabajo pesado', 'imagen15.jpg', 'M9012AB', 50000, 2018, 5, 1000, 4, 6, TRUE, FALSE, NULL, 90.00, 60.00, 1.80, 5, 10, 10, 7, 1, 6),
-(6, 'Compacto económico para la ciudad', 'imagen16.jpg', 'M3456BC', 15000, 2020, 5, 200, 4, 5, TRUE, FALSE, 10, 50.00, 35.00, 1.40, 3, 3, 3, 4, 2, 7),
-(7, 'Familiar espacioso y confortable', 'imagen17.jpg', 'M7890CD', 40000, 2017, 6, 600, 4, 5, TRUE, TRUE, NULL, 70.00, 50.00, 1.60, 4, 4, 4, 5, 3, 8),
-(8, 'Coupé elegante y rápido', 'imagen18.jpg', 'M2345DE', 20000, 2019, 4, 300, 2, 7, TRUE, FALSE, 15, 95.00, 65.00, 1.70, 1, 5, 5, 6, 4, 9),
-(9, 'Convertible ideal para el verano', 'imagen19.jpg', 'M6789EF', 25000, 2018, 4, 250, 2, 6, TRUE, FALSE, 20, 85.00, 60.00, 1.50, 8, 6, 6, 8, 5, 10),
-(10, 'Minivan perfecta para viajes largos', 'imagen20.jpg', 'M1122FG', 60000, 2016, 8, 700, 5, 4, TRUE, TRUE, NULL, 75.00, 55.00, 1.90, 6, 8, 8, 3, 6, 4),
-(11, 'Lujo y rendimiento en un solo vehículo', 'imagen21.jpg', 'M3344GH', 12000, 2022, 5, 400, 4, 8, TRUE, FALSE, 25, 110.00, 80.00, 1.30, 2, 11, 11, 2, 7, 5),
-(12, 'Eléctrico compacto y eficiente', 'imagen22.jpg', 'M5566HI', 9000, 2023, 4, 150, 4, 1, TRUE, FALSE, 10, 60.00, 40.00, 0.00, 9, 12, 12, 9, 8, 6);
+(1, 'Un vehículo compacto y eficiente', 'coche.jpg', '1234ABC', 50000, 2018, 5, 300, 5, 6, TRUE, FALSE, NULL, 30.00, 20.00, 1.50, 1, 1, 1, 1, 1, 2),
+(2, 'Un SUV espacioso y cómodo', 'coche.jpg', '5678DEF', 75000, 2017, 7, 500, 5, 5, TRUE, FALSE, 10, 60.00, 40.00, 2.00, 2, 2, 2, 2, 2, 1),
+(3, 'Deportivo eléctrico con autonomía superior', 'coche.jpg', 'M1234XY', 10000, 2021, 4, 150, 2, 1, TRUE, FALSE, NULL, 100.00, 70.00, 0.00, 9, 7, 7, 9, 9, 4),
+(4, 'SUV híbrido para toda la familia', 'coche.jpg', 'M5678YZ', 30000, 2019, 7, 550, 5, 1, TRUE, FALSE, 5, 80.00, 55.00, 1.20, 10, 9, 9, 10, 10, 5),
+(5, 'Pickup robusta para trabajo pesado', 'coche.jpg', 'M9012AB', 50000, 2018, 5, 1000, 4, 6, TRUE, FALSE, NULL, 90.00, 60.00, 1.80, 5, 10, 10, 7, 1, 6),
+(6, 'Compacto económico para la ciudad', 'coche.jpg', 'M3456BC', 15000, 2020, 5, 200, 4, 5, TRUE, FALSE, 10, 50.00, 35.00, 1.40, 3, 3, 3, 4, 2, 7),
+(7, 'Familiar espacioso y confortable', 'coche.jpg', 'M7890CD', 40000, 2017, 6, 600, 4, 5, TRUE, TRUE, NULL, 70.00, 50.00, 1.60, 4, 4, 4, 5, 3, 8),
+(8, 'Coupé elegante y rápido', 'coche.jpg', 'M2345DE', 20000, 2019, 4, 300, 2, 7, TRUE, FALSE, 15, 95.00, 65.00, 1.70, 1, 5, 5, 6, 4, 9),
+(9, 'Convertible ideal para el verano', 'coche.jpg', 'M6789EF', 25000, 2018, 4, 250, 2, 6, TRUE, FALSE, 20, 85.00, 60.00, 1.50, 8, 6, 6, 8, 5, 10),
+(10, 'Minivan perfecta para viajes largos', 'coche.jpg', 'M1122FG', 60000, 2016, 8, 700, 5, 4, TRUE, TRUE, NULL, 75.00, 55.00, 1.90, 6, 8, 8, 3, 6, 4),
+(11, 'Lujo y rendimiento en un solo vehículo', 'coche.jpg', 'M3344GH', 12000, 2022, 5, 400, 4, 8, TRUE, FALSE, 25, 110.00, 80.00, 1.30, 2, 11, 11, 2, 7, 5),
+(12, 'Eléctrico compacto y eficiente', 'coche.jpg', 'M5566HI', 9000, 2023, 4, 150, 4, 1, TRUE, FALSE, 10, 60.00, 40.00, 0.00, 9, 12, 12, 9, 8, 6);
 
 -- Seeder para la tabla Comentario
 INSERT INTO Comentario (id, descripcion, fechaCreacion, idVehiculo, idUsuario) VALUES

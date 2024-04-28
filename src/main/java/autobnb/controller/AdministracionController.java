@@ -1449,6 +1449,7 @@ public class AdministracionController {
                     nuevoUsuarioData.setCiudad(registroData.getCiudad());
                     nuevoUsuarioData.setCodigoPostal(registroData.getCodigoPostal());
                     nuevoUsuarioData.setFechaCarnetConducir(registroData.getFechaCarnetConducir());
+                    nuevoUsuarioData.setPassword(registroData.getPassword());
 
                     MultipartFile imagen = registroData.getImagen();
                     if (!imagen.isEmpty()) {
@@ -1487,7 +1488,6 @@ public class AdministracionController {
 
                     nuevoUsuarioData.setEsArrendador(usuarioBuscado.isEsArrendador());
                     nuevoUsuarioData.setEsArrendatario(usuarioBuscado.isEsArrendatario());
-                    nuevoUsuarioData.setPassword(usuarioBuscado.getPassword());
                     nuevoUsuarioData.setIdCuenta(usuarioBuscado.getCuenta().getId());
 
                     usuarioService.actualizarUsuarioPorId(usuarioId, nuevoUsuarioData);

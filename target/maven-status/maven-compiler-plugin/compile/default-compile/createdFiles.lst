@@ -54,6 +54,7 @@ autobnb\service\ComentarioService.class
 autobnb\repository\ComentarioRepository.class
 autobnb\controller\exception\UsuarioNoAutorizadoException.class
 autobnb\service\TransmisionService.class
+autobnb\config\ArgonConfig.class
 autobnb\config\ModelMapperConfig.class
 autobnb\dto\RegistroVehiculoData.class
 autobnb\controller\AdministracionController.class

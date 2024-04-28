@@ -42,6 +42,15 @@
                         </div>
                     </div>
 
+                    <div class="form-group">
+                        <label for="password" style="color: #333; font-family: 'Quicksand', sans-serif;">Contraseña</label>
+                        <input id="password" class="form-control" name="password" placeholder="Contraseña"
+                               type="password" th:field="*{password}" required/>
+                        <div class="invalid-feedback">
+                            La contraseña es obligatoria.
+                        </div>
+                    </div>
+
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label for="apellidos" style="color: #333; font-family: 'Quicksand', sans-serif;">Apellidos</label>

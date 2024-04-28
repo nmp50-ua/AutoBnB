@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS Usuario (
     nombre VARCHAR(50) NOT NULL,
     apellidos VARCHAR(50) NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
-    password VARCHAR(50) NOT NULL,
+    password VARCHAR(255) NOT NULL,
     telefono INT NOT NULL,
     direccion VARCHAR(100) NOT NULL,
     ciudad VARCHAR(50) NOT NULL,
