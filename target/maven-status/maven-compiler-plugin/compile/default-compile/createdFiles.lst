@@ -47,6 +47,7 @@ autobnb\service\exception\UsuarioServiceException.class
 autobnb\dto\VehiculoData.class
 autobnb\model\Modelo.class
 autobnb\model\Vehiculo.class
+autobnb\controller\CustomErrorController.class
 autobnb\service\exception\VehiculoServiceException.class
 autobnb\config\MvcConfig.class
 autobnb\dto\CategoriaData.class

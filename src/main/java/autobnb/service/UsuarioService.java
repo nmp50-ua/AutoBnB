@@ -49,10 +49,10 @@ public class UsuarioService {
             return false;
         }
 
-        return password.startsWith("$argon2i$"); // Check for the Argon2i prefix
+        return password.startsWith("$argon2i$");
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public LoginStatus login(String email, String password) {
         Optional<Usuario> usuario = usuarioRepository.findByEmail(email);
 
@@ -74,6 +74,11 @@ public class UsuarioService {
                     if (!usuario.get().getPassword().equals(password)) {
                         return LoginStatus.ERROR_PASSWORD;
                     } else {
+                        // Hash de la contraseña con Argon2
+                        String hashedPassword = argon2.hash(2, 65536, 1, passwordChars);
+                        usuario.get().setPassword(hashedPassword);
+                        usuarioRepository.save(usuario.get());
+
                         return LoginStatus.LOGIN_OK;
                     }
                 }

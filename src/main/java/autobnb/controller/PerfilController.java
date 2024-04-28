@@ -334,6 +334,9 @@ public class PerfilController {
                 long diasDeDiferencia = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
                 diasDeAlquiler.put(alquiler.getId(), diasDeDiferencia + 1);
             }
+            else {
+                diasDeAlquiler.put(alquiler.getId(), 1L);
+            }
         }
         model.addAttribute("diasDeAlquiler", diasDeAlquiler);
 
