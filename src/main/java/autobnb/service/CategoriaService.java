@@ -2,10 +2,13 @@ package autobnb.service;
 
 import autobnb.dto.CategoriaData;
 import autobnb.model.Categoria;
+import autobnb.model.Marca;
 import autobnb.repository.CategoriaRepository;
 import autobnb.service.exception.CategoriaServiceException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -103,5 +106,10 @@ public class CategoriaService {
             categoriaNueva = categoriaRepository.save(categoriaNueva);
             return modelMapper.map(categoriaNueva, CategoriaData.class);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Categoria> listadoPaginado(Pageable pageable) {
+        return categoriaRepository.findAll(pageable);
     }
 }

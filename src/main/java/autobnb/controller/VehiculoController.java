@@ -148,6 +148,13 @@ public class VehiculoController {
             List<Usuario> usuarios = usuarioService.listadoCompleto();
             Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
             model.addAttribute("usuario", usuario);
+
+            List<Vehiculo> vehiculosUsuario = usuarioService.obtenerVehiculosPorUsuarioId(id);
+            for (Vehiculo vehiculo : vehiculosUsuario) {
+                if (vehiculo.getId().equals(vehiculoId)) {
+                    model.addAttribute("propio", true);
+                }
+            }
         }
         else {
             model.addAttribute("usuario", null);
@@ -242,6 +249,13 @@ public class VehiculoController {
             List<Usuario> usuarios = usuarioService.listadoCompleto();
             Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
             model.addAttribute("usuario", usuario);
+
+            List<Vehiculo> vehiculosUsuario = usuarioService.obtenerVehiculosPorUsuarioId(id);
+            for (Vehiculo vehiculo : vehiculosUsuario) {
+                if (vehiculo.getId().equals(vehiculoId)) {
+                    model.addAttribute("propio", true);
+                }
+            }
         }
         else {
             model.addAttribute("usuario", null);

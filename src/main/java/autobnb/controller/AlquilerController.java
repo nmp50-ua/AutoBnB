@@ -330,7 +330,7 @@ public class AlquilerController {
             String fechaActualStr = dateFormat.format(fechaActual); // Formatear fecha actual a String
             Date fechaCreacion = dateFormat.parse(fechaActualStr); // Convertir fecha actual a Date
 
-            Pago nuevoPago = pagoService.crearPago(numeroTarjeta, nombreTarjeta, precioTotal, usuario.getId());
+            Pago nuevoPago = pagoService.crearPago(nombreTarjeta, numeroTarjeta, precioTotal, usuario.getId());
 
             if (nuevoPago == null) {
                 model.addAttribute("error", "No tienes suficiente saldo en tu cuenta.");

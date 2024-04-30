@@ -6,6 +6,8 @@ import autobnb.repository.PagoRepository;
 import autobnb.repository.UsuarioRepository;
 import autobnb.repository.VehiculoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -84,5 +86,10 @@ public class AlquilerService {
             nuevoAlquiler.setLitrosCombustible(litrosCombustibles);
         }
         return alquilerRepository.save(nuevoAlquiler);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Alquiler> listadoPaginado(Pageable pageable) {
+        return alquilerRepository.findAll(pageable);
     }
 }

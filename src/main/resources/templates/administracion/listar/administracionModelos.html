@@ -21,13 +21,14 @@
     <div class="container-fluid">
         <div class="row mt-3">
             <div class="col">
-                <h2 style="color: #171a1d; text-align: center; margin-bottom: 10px; margin-top: 30px; font-family: 'Quicksand', sans-serif;">Administración Modelos</h2>
+                <h2 style="color: #171a1d; text-align: center; margin-bottom: 10px; margin-top: 30px; font-family: serif;">Administración Modelos</h2>
             </div>
         </div>
 
         <div class="row mt-3">
             <div class="col text-end">
-                <a href="/administracion/modelos/crear" style="background-color: #005cbf;  color: #fbfcfc;" class="btn">Crear Modelo</a>
+                <a href="/administracion/modelos/crear" style="background-color: #005cbf; color: #fbfcfc; font-family: serif" class="btn">Crear Modelo</a>
+                <a href="/administracion" class="btn btn-link" style="color: #171a1d; font-family: serif; margin-left: 10px;">Volver al Panel</a>
             </div>
         </div>
 
@@ -36,23 +37,23 @@
                 <table class="table table-striped">
                     <thead>
                     <tr>
-                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">ID</th>
-                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Marca</th>
-                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Nombre</th>
+                        <th style="color: #333; font-family: serif;">ID</th>
+                        <th style="color: #333; font-family: serif;">Marca</th>
+                        <th style="color: #333; font-family: serif;">Nombre</th>
                         <th></th>
                         <th></th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="modelo: ${modelos}">
+                    <tr th:each="modelo: ${modelos.content}">
                         <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${modelo.id}"></td>
                         <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${modelo.marca.nombre}"></td>
                         <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${modelo.nombre}"></td>
                         <td>
-                            <a class="btn btn-xs" style="background-color: #81c784;  color: #fbfcfc;" th:href="@{/administracion/modelos/editar/{modeloId}(modeloId=${modelo.id})}">Editar</a>
+                            <a class="btn btn-xs" style="background-color: #81c784;  color: #fbfcfc; font-family: serif" th:href="@{/administracion/modelos/editar/{modeloId}(modeloId=${modelo.id})}">Editar</a>
                         </td>
                         <td>
-                            <form th:action="@{'/administracion/modelos/eliminar/' + ${modelo.id}}" method="post">
+                            <form style="font-family: serif" th:action="@{'/administracion/modelos/eliminar/' + ${modelo.id}}" method="post">
                                 <button type="submit" class="btn btn-danger btn-xs">X</button>
                             </form>
                         </td>
@@ -61,13 +62,20 @@
                 </table>
             </div>
         </div>
-        <p class="text-center mt-3"><a href="/administracion" class="btn btn-link" style="color: #171a1d;">Volver al Panel</a></p>
-
-        <div th:if="${success != null}" class="alert alert-success">
-            <p th:text="${success}"></p>
-        </div>
-        <div th:if="${error != null}" class="alert alert-danger">
-            <p th:text="${error}"></p>
+        <div th:if="${cantidad != null}" class="d-flex justify-content-center" style="font-family: serif;">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                    <li class="page-item" th:classappend="${modelos.first} ? 'disabled'">
+                        <a class="page-link" th:href="@{/administracion/modelos(page=${modelos.number - 1}, size=${modelos.size})}">Anterior</a>
+                    </li>
+                    <li th:each="pageNum : ${#numbers.sequence(0, modelos.totalPages - 1)}" class="page-item" th:classappend="${pageNum == modelos.number} ? 'active'">
+                        <a class="page-link" th:href="@{/administracion/modelos(page=${pageNum}, size=${modelos.size})}" th:text="${pageNum + 1}">1</a>
+                    </li>
+                    <li class="page-item" th:classappend="${modelos.last} ? 'disabled'">
+                        <a class="page-link" th:href="@{/administracion/modelos(page=${modelos.number + 1}, size=${modelos.size})}">Siguiente</a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </div>
 </main>

@@ -1,11 +1,14 @@
 package autobnb.service;
 
 import autobnb.dto.TransmisionData;
+import autobnb.model.Marca;
 import autobnb.model.Transmision;
 import autobnb.repository.TransmisionRepository;
 import autobnb.service.exception.TransmisionServiceException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -102,5 +105,10 @@ public class TransmisionService {
             transmisionNuevo = transmisionRepository.save(transmisionNuevo);
             return modelMapper.map(transmisionNuevo, TransmisionData.class);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Transmision> listadoPaginado(Pageable pageable) {
+        return transmisionRepository.findAll(pageable);
     }
 }

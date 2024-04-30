@@ -8,6 +8,8 @@ import autobnb.repository.ModeloRepository;
 import autobnb.service.exception.ModeloServiceException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -117,5 +119,10 @@ public class ModeloService {
     public List<ModeloData> findByMarcaId(Long marcaId) {
         List<Modelo> modelos = modeloRepository.findByMarcaId(marcaId);
         return modelos.stream().map(modelo -> modelMapper.map(modelo, ModeloData.class)).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Modelo> listadoPaginado(Pageable pageable) {
+        return modeloRepository.findAll(pageable);
     }
 }

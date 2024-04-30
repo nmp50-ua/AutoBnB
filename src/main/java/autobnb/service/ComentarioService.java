@@ -2,6 +2,7 @@ package autobnb.service;
 
 import autobnb.dto.ComentarioData;
 import autobnb.model.Comentario;
+import autobnb.model.Marca;
 import autobnb.model.Usuario;
 import autobnb.model.Vehiculo;
 import autobnb.repository.ComentarioRepository;
@@ -9,6 +10,8 @@ import autobnb.repository.UsuarioRepository;
 import autobnb.repository.VehiculoRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -83,5 +86,10 @@ public class ComentarioService {
                 .stream()
                 .sorted(Comparator.comparingLong(Comentario::getId))
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Comentario> listadoPaginado(Pageable pageable) {
+        return comentarioRepository.findAll(pageable);
     }
 }

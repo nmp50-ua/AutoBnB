@@ -390,4 +390,9 @@ public class VehiculoService {
     public Page<Vehiculo> listadoPaginadoVehiculosDeUsuario(Long usuarioId, Pageable pageable) {
         return vehiculoRepository.findByUsuarioId(usuarioId, pageable);
     }
+
+    @Transactional(readOnly = true)
+    public Page<Vehiculo> listadoPaginadoCompleto(Pageable pageable) {
+        return vehiculoRepository.findAll(pageable);
+    }
 }

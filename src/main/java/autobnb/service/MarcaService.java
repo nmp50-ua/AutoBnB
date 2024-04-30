@@ -3,12 +3,15 @@ package autobnb.service;
 import autobnb.dto.MarcaData;
 import autobnb.dto.UsuarioData;
 import autobnb.model.Marca;
+import autobnb.model.Modelo;
 import autobnb.model.Usuario;
 import autobnb.repository.MarcaRepository;
 import autobnb.service.exception.MarcaServiceException;
 import autobnb.service.exception.UsuarioServiceException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -104,5 +107,10 @@ public class MarcaService {
             marcaNueva = marcaRepository.save(marcaNueva);
             return modelMapper.map(marcaNueva, MarcaData.class);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Marca> listadoPaginado(Pageable pageable) {
+        return marcaRepository.findAll(pageable);
     }
 }

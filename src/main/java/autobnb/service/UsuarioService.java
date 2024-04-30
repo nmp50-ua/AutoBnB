@@ -7,6 +7,8 @@ import autobnb.service.exception.UsuarioServiceException;
 import de.mkammerer.argon2.Argon2;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -340,5 +342,10 @@ public class UsuarioService {
         } else {
             throw new EntityNotFoundException("No se encontró el usuario con ID: " + usuario);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Usuario> listadoPaginado(Pageable pageable) {
+        return usuarioRepository.findAll(pageable);
     }
 }

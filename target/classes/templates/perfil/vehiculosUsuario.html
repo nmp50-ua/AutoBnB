@@ -47,13 +47,13 @@
         <nav aria-label="Page navigation example">
             <ul class="pagination">
                 <li class="page-item" th:classappend="${vehiculosPage.first} ? 'disabled'">
-                    <a class="page-link" th:href="@{/listado-vehiculos(page=${vehiculosPage.number - 1}, size=${vehiculosPage.size})}">Anterior</a>
+                    <a class="page-link" th:href="@{/perfil/{id}/vehiculos(id=${usuario.id}, page=${vehiculosPage.number - 1}, size=${vehiculosPage.size})}">Anterior</a>
                 </li>
                 <li th:each="pageNum : ${#numbers.sequence(0, vehiculosPage.totalPages - 1)}" class="page-item" th:classappend="${pageNum == vehiculosPage.number} ? 'active'">
-                    <a class="page-link" th:href="@{/listado-vehiculos(page=${pageNum}, size=${vehiculosPage.size})}" th:text="${pageNum + 1}">1</a>
+                    <a class="page-link" th:href="@{/perfil/{id}/vehiculos(id=${usuario.id}, page=${pageNum}, size=${vehiculosPage.size})}" th:text="${pageNum + 1}">1</a>
                 </li>
                 <li class="page-item" th:classappend="${vehiculosPage.last} ? 'disabled'">
-                    <a class="page-link" th:href="@{/listado-vehiculos(page=${vehiculosPage.number + 1}, size=${vehiculosPage.size})}">Siguiente</a>
+                    <a class="page-link" th:href="@{/perfil/{id}/vehiculos(id=${usuario.id}, page=${vehiculosPage.number + 1}, size=${vehiculosPage.size})}">Siguiente</a>
                 </li>
             </ul>
         </nav>

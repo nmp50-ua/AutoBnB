@@ -21,7 +21,13 @@
     <div class="container-fluid">
         <div class="row mt-3">
             <div class="col">
-                <h2 style="color: #171a1d; text-align: center; margin-bottom: 10px; margin-top: 30px; font-family: 'Quicksand', sans-serif;">Administración Alquileres</h2>
+                <h2 style="color: #171a1d; text-align: center; margin-bottom: 10px; margin-top: 30px; font-family: serif;">Administración Alquileres</h2>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col text-end">
+                <a href="/administracion" class="btn btn-link" style="color: #171a1d; font-family: serif; margin-left: 10px;">Volver al Panel</a>
             </div>
         </div>
 
@@ -30,19 +36,19 @@
                 <table class="table table-striped">
                     <thead>
                     <tr>
-                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">ID</th>
-                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Vehículo</th>
-                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Usuario</th>
-                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Fecha Entrega</th>
-                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Fecha Devolución</th>
-                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Días Alquilado</th>
-                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Litros Combustible</th>
-                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Precio Final</th>
+                        <th style="color: #333; font-family: serif;">ID</th>
+                        <th style="color: #333; font-family: serif;">Vehículo</th>
+                        <th style="color: #333; font-family: serif;">Usuario</th>
+                        <th style="color: #333; font-family: serif;">Fecha Entrega</th>
+                        <th style="color: #333; font-family: serif;">Fecha Devolución</th>
+                        <th style="color: #333; font-family: serif;">Días Alquilado</th>
+                        <th style="color: #333; font-family: serif;">Litros Combustible</th>
+                        <th style="color: #333; font-family: serif;">Precio Final</th>
                         <th></th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="alquiler: ${alquileres}">
+                    <tr th:each="alquiler: ${alquileres.content}">
                         <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${alquiler.id}"></td>
                         <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${alquiler.vehiculo.marca.nombre} + ' ' + ${alquiler.vehiculo.modelo.nombre}"></td>
                         <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${alquiler.pago.usuario.nombre}"></td>
@@ -52,7 +58,7 @@
                         <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${alquiler.litrosCombustible != null && alquiler.litrosCombustible > 0} ? ${alquiler.litrosCombustible} : '-'"></td>
                         <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${alquiler.precioFinal} + ' €'"></td>
                         <td>
-                            <form th:action="@{'/administracion/alquileres/eliminar/' + ${alquiler.id}}" method="post">
+                            <form style="font-family: serif" th:action="@{'/administracion/alquileres/eliminar/' + ${alquiler.id}}" method="post">
                                 <button type="submit" class="btn btn-danger btn-xs">X</button>
                             </form>
                         </td>
@@ -61,7 +67,21 @@
                 </table>
             </div>
         </div>
-        <p class="text-center mt-3"><a href="/administracion" class="btn btn-link" style="color: #171a1d;">Volver al Panel</a></p>
+        <div th:if="${cantidad != null}" class="d-flex justify-content-center" style="font-family: serif;">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                    <li class="page-item" th:classappend="${alquileres.first} ? 'disabled'">
+                        <a class="page-link" th:href="@{/administracion/alquileres(page=${alquileres.number - 1}, size=${alquileres.size})}">Anterior</a>
+                    </li>
+                    <li th:each="pageNum : ${#numbers.sequence(0, alquileres.totalPages - 1)}" class="page-item" th:classappend="${pageNum == alquileres.number} ? 'active'">
+                        <a class="page-link" th:href="@{/administracion/alquileres(page=${pageNum}, size=${alquileres.size})}" th:text="${pageNum + 1}">1</a>
+                    </li>
+                    <li class="page-item" th:classappend="${alquileres.last} ? 'disabled'">
+                        <a class="page-link" th:href="@{/administracion/alquileres(page=${alquileres.number + 1}, size=${alquileres.size})}">Siguiente</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
     </div>
 </main>
 

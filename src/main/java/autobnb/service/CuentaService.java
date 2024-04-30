@@ -2,10 +2,13 @@ package autobnb.service;
 
 import autobnb.dto.CuentaData;
 import autobnb.model.Cuenta;
+import autobnb.model.Marca;
 import autobnb.model.Usuario;
 import autobnb.repository.CuentaRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,5 +46,10 @@ public class CuentaService {
                 .stream()
                 .sorted(Comparator.comparingLong(Cuenta::getId))
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Cuenta> listadoPaginado(Pageable pageable) {
+        return cuentaRepository.findAll(pageable);
     }
 }

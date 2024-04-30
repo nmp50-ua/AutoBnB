@@ -8,14 +8,15 @@ import autobnb.model.*;
 import autobnb.service.*;
 import autobnb.service.exception.UsuarioServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
@@ -87,7 +88,7 @@ public class AdministracionController {
     // COMENTARIOS
 
     @GetMapping("/administracion/comentarios")
-    public String mostrarListadoComentarios(Model model) {
+    public String mostrarListadoComentarios(Model model, @RequestParam(defaultValue = "0") int page) {
         Long id = managerUserSession.usuarioLogeado();
 
         comprobarAdmin(id);
@@ -96,8 +97,16 @@ public class AdministracionController {
         Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
         model.addAttribute("usuario", usuario);
 
-        List<Comentario> comentarios = comentarioService.listadoCompleto();
+        Pageable pageable = PageRequest.of(page, 8, Sort.by("id"));
+        Page<Comentario> comentarios = comentarioService.listadoPaginado(pageable);
         model.addAttribute("comentarios", comentarios);
+
+        if (comentarios.getContent().isEmpty()) {
+            model.addAttribute("cantidad", null);
+        }
+        else {
+            model.addAttribute("cantidad", comentarios.getContent().size());
+        }
 
         return "administracion/listar/administracionComentarios";
     }
@@ -190,7 +199,7 @@ public class AdministracionController {
     // ALQUILERES
 
     @GetMapping("/administracion/alquileres")
-    public String mostrarListadoAlquileres(Model model) {
+    public String mostrarListadoAlquileres(Model model, @RequestParam(defaultValue = "0") int page) {
         Long id = managerUserSession.usuarioLogeado();
 
         comprobarAdmin(id);
@@ -199,11 +208,8 @@ public class AdministracionController {
         Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
         model.addAttribute("usuario", usuario);
 
-        List<Alquiler> alquileres = alquilerService.listadoCompleto();
-        model.addAttribute("alquileres", alquileres);
-
         Map<Long, Long> diasDeAlquiler = new HashMap<>();
-        for (Alquiler alquiler : alquileres) {
+        for (Alquiler alquiler : alquilerService.listadoCompleto()) {
             if (!(alquiler.getFechaDevolucion().equals(alquiler.getFechaEntrega()))) {
                 long diffInMillies = alquiler.getFechaDevolucion().getTime() - alquiler.getFechaEntrega().getTime();
                 long diasDeDiferencia = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
@@ -211,6 +217,17 @@ public class AdministracionController {
             }
         }
         model.addAttribute("diasDeAlquiler", diasDeAlquiler);
+
+        Pageable pageable = PageRequest.of(page, 8, Sort.by("id"));
+        Page<Alquiler> alquileres = alquilerService.listadoPaginado(pageable);
+        model.addAttribute("alquileres", alquileres);
+
+        if (alquileres.getContent().isEmpty()) {
+            model.addAttribute("cantidad", null);
+        }
+        else {
+            model.addAttribute("cantidad", alquileres.getContent().size());
+        }
 
         return "administracion/listar/administracionAlquileres";
     }
@@ -227,7 +244,7 @@ public class AdministracionController {
     // CUENTAS
 
     @GetMapping("/administracion/cuentas")
-    public String mostrarListadoCuentas(Model model) {
+    public String mostrarListadoCuentas(Model model, @RequestParam(defaultValue = "0") int page) {
         Long id = managerUserSession.usuarioLogeado();
 
         comprobarAdmin(id);
@@ -236,8 +253,16 @@ public class AdministracionController {
         Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
         model.addAttribute("usuario", usuario);
 
-        List<Cuenta> cuentas = cuentaService.listadoCompleto();
+        Pageable pageable = PageRequest.of(page, 8, Sort.by("id"));
+        Page<Cuenta> cuentas = cuentaService.listadoPaginado(pageable);
         model.addAttribute("cuentas", cuentas);
+
+        if (cuentas.getContent().isEmpty()) {
+            model.addAttribute("cantidad", null);
+        }
+        else {
+            model.addAttribute("cantidad", cuentas.getContent().size());
+        }
 
         return "administracion/listar/administracionCuentas";
     }
@@ -246,7 +271,7 @@ public class AdministracionController {
     // MARCAS
 
     @GetMapping("/administracion/marcas")
-    public String mostrarListadoMarcas(Model model) {
+    public String mostrarListadoMarcas(Model model, @RequestParam(defaultValue = "0") int page) {
         Long id = managerUserSession.usuarioLogeado();
 
         comprobarAdmin(id);
@@ -255,8 +280,16 @@ public class AdministracionController {
         Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
         model.addAttribute("usuario", usuario);
 
-        List<Marca> marcas = marcaService.listadoCompleto();
+        Pageable pageable = PageRequest.of(page, 8, Sort.by("nombre"));
+        Page<Marca> marcas = marcaService.listadoPaginado(pageable);
         model.addAttribute("marcas", marcas);
+
+        if (marcas.getContent().isEmpty()) {
+            model.addAttribute("cantidad", null);
+        }
+        else {
+            model.addAttribute("cantidad", marcas.getContent().size());
+        }
 
         return "administracion/listar/administracionMarcas";
     }
@@ -414,7 +447,7 @@ public class AdministracionController {
     // MODELOS
 
     @GetMapping("/administracion/modelos")
-    public String mostrarListadoModelos(Model model) {
+    public String mostrarListadoModelos(Model model, @RequestParam(defaultValue = "0") int page) {
         Long id = managerUserSession.usuarioLogeado();
 
         comprobarAdmin(id);
@@ -423,8 +456,16 @@ public class AdministracionController {
         Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
         model.addAttribute("usuario", usuario);
 
-        List<Modelo> modelos = modeloService.listadoCompleto();
+        Pageable pageable = PageRequest.of(page, 8, Sort.by("nombre"));
+        Page<Modelo> modelos = modeloService.listadoPaginado(pageable);
         model.addAttribute("modelos", modelos);
+
+        if (modelos.getContent().isEmpty()) {
+            model.addAttribute("cantidad", null);
+        }
+        else {
+            model.addAttribute("cantidad", modelos.getContent().size());
+        }
 
         return "administracion/listar/administracionModelos";
     }
@@ -591,7 +632,7 @@ public class AdministracionController {
     // COLORES
 
     @GetMapping("/administracion/colores")
-    public String mostrarListadoColores(Model model) {
+    public String mostrarListadoColores(Model model, @RequestParam(defaultValue = "0") int page) {
         Long id = managerUserSession.usuarioLogeado();
 
         comprobarAdmin(id);
@@ -600,8 +641,16 @@ public class AdministracionController {
         Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
         model.addAttribute("usuario", usuario);
 
-        List<Color> colores = colorService.listadoCompleto();
+        Pageable pageable = PageRequest.of(page, 8, Sort.by("nombre"));
+        Page<Color> colores = colorService.listadoPaginado(pageable);
         model.addAttribute("colores", colores);
+
+        if (colores.getContent().isEmpty()) {
+            model.addAttribute("cantidad", null);
+        }
+        else {
+            model.addAttribute("cantidad", colores.getContent().size());
+        }
 
         return "administracion/listar/administracionColores";
     }
@@ -760,7 +809,7 @@ public class AdministracionController {
     // TRANSMISIONES
 
     @GetMapping("/administracion/transmisiones")
-    public String mostrarListadoTransmisiones(Model model) {
+    public String mostrarListadoTransmisiones(Model model, @RequestParam(defaultValue = "0") int page) {
         Long id = managerUserSession.usuarioLogeado();
 
         comprobarAdmin(id);
@@ -769,8 +818,16 @@ public class AdministracionController {
         Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
         model.addAttribute("usuario", usuario);
 
-        List<Transmision> transmisiones = transmisionService.listadoCompleto();
+        Pageable pageable = PageRequest.of(page, 8, Sort.by("nombre"));
+        Page<Transmision> transmisiones = transmisionService.listadoPaginado(pageable);
         model.addAttribute("transmisiones", transmisiones);
+
+        if (transmisiones.getContent().isEmpty()) {
+            model.addAttribute("cantidad", null);
+        }
+        else {
+            model.addAttribute("cantidad", transmisiones.getContent().size());
+        }
 
         return "administracion/listar/administracionTransmisiones";
     }
@@ -929,7 +986,7 @@ public class AdministracionController {
     // CATETORIAS
 
     @GetMapping("/administracion/categorias")
-    public String mostrarListadoCategorias(Model model) {
+    public String mostrarListadoCategorias(Model model, @RequestParam(defaultValue = "0") int page) {
         Long id = managerUserSession.usuarioLogeado();
 
         comprobarAdmin(id);
@@ -938,8 +995,16 @@ public class AdministracionController {
         Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
         model.addAttribute("usuario", usuario);
 
-        List<Categoria> categorias = categoriaService.listadoCompleto();
+        Pageable pageable = PageRequest.of(page, 8, Sort.by("nombre"));
+        Page<Categoria> categorias = categoriaService.listadoPaginado(pageable);
         model.addAttribute("categorias", categorias);
+
+        if (categorias.getContent().isEmpty()) {
+            model.addAttribute("cantidad", null);
+        }
+        else {
+            model.addAttribute("cantidad", categorias.getContent().size());
+        }
 
         return "administracion/listar/administracionCategorias";
     }
@@ -1100,7 +1165,7 @@ public class AdministracionController {
     // VEHICULOS
 
     @GetMapping("/administracion/vehiculos")
-    public String mostrarListadoVehiculos(Model model) {
+    public String mostrarListadoVehiculos(Model model, @RequestParam(defaultValue = "0") int page) {
         Long id = managerUserSession.usuarioLogeado();
 
         comprobarAdmin(id);
@@ -1109,8 +1174,16 @@ public class AdministracionController {
         Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
         model.addAttribute("usuario", usuario);
 
-        List<Vehiculo> vehiculos = vehiculoService.listadoCompleto();
+        Pageable pageable = PageRequest.of(page, 8, Sort.by("matricula"));
+        Page<Vehiculo> vehiculos = vehiculoService.listadoPaginadoCompleto(pageable);
         model.addAttribute("vehiculos", vehiculos);
+
+        if (vehiculos.getContent().isEmpty()) {
+            model.addAttribute("cantidad", null);
+        }
+        else {
+            model.addAttribute("cantidad", vehiculos.getContent().size());
+        }
 
         return "administracion/listar/administracionVehiculos";
     }
@@ -1357,15 +1430,24 @@ public class AdministracionController {
     // USUARIOS
 
     @GetMapping("/administracion/usuarios")
-    public String mostrarListadoUsuarios(Model model) {
+    public String mostrarListadoUsuarios(Model model, @RequestParam(defaultValue = "0") int page) {
         Long id = managerUserSession.usuarioLogeado();
 
         comprobarAdmin(id);
 
-        List<Usuario> usuarios = usuarioService.listadoCompleto();
-        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarioService.listadoCompleto(), id);
         model.addAttribute("usuario", usuario);
+
+        Pageable pageable = PageRequest.of(page, 8, Sort.by("email"));
+        Page<Usuario> usuarios = usuarioService.listadoPaginado(pageable);
         model.addAttribute("usuarios", usuarios);
+
+        if (usuarios.getContent().isEmpty()) {
+            model.addAttribute("cantidad", null);
+        }
+        else {
+            model.addAttribute("cantidad", usuarios.getContent().size());
+        }
 
         return "administracion/listar/administracionUsuarios";
     }

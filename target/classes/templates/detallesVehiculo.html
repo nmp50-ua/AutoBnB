@@ -130,7 +130,7 @@
             <span th:text="${vehiculo.descripcion}" style="font-size: 18px; color: #555;"></span>
             <br/>
             <br/>
-            <a th:href="@{/alquilar/{vehiculoId}(vehiculoId=${vehiculo.id})}" style="margin-top: 10px; width: 20%; padding: 10px; background-color: #171a1d; color: white; border: none; cursor: pointer;">Alquilar</a>
+            <a th:if="${propio != true}" th:href="@{/alquilar/{vehiculoId}(vehiculoId=${vehiculo.id})}" style="margin-top: 10px; width: 20%; padding: 10px; background-color: #171a1d; color: white; border: none; cursor: pointer;">Alquilar</a>
         </div>
         <div style="border-top: 1px solid #eee; padding-top: 20px;">
             <p style="font-size: 18px; color: #666; font-family: 'serif';"><strong>Detalles del vehículo</strong></p>
@@ -174,7 +174,7 @@
             <p th:if="${cantidadComentarios == null}" style="font-size: 18px; color: #666; font-family: 'serif';"><strong>Comentarios <span th:text="'(0)'"></span></strong></p>
 
             <!-- Formulario para nuevo comentario -->
-            <div th:if="${usuario != null}" style="margin-bottom: 20px; font-family: serif">
+            <div th:if="${propio != true}" style="margin-bottom: 20px; font-family: serif">
                 <form th:action="@{/comentarios/home/agregar/{vehiculoId}(vehiculoId=${vehiculo.id})}" method="post">
                     <input type="text" class="form-control" name="descripcion" placeholder="Deja un comentario" required style="width: 50%; margin-bottom: 10px;">
                     <input type="hidden" th:value="${usuario.id}" name="usuarioId">

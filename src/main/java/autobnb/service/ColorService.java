@@ -2,10 +2,13 @@ package autobnb.service;
 
 import autobnb.dto.ColorData;
 import autobnb.model.Color;
+import autobnb.model.Marca;
 import autobnb.repository.ColorRepository;
 import autobnb.service.exception.ColorServiceException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -102,5 +105,10 @@ public class ColorService {
             colorNuevo = colorRepository.save(colorNuevo);
             return modelMapper.map(colorNuevo, ColorData.class);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Color> listadoPaginado(Pageable pageable) {
+        return colorRepository.findAll(pageable);
     }
 }
