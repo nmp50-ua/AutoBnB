@@ -16,58 +16,69 @@
     </div>
 
     <main style="flex: 1;">
-        <div class="container mt-4">
-            <div class="row mt-4 justify-content-center">
-                <div class="col-md-6">
-                    <dl class="row text-center">
-                        <div class="col-sm-6">
-                            <img th:src="@{|/uploads/${usuario.imagen}|}" alt="Foto de perfil" style="width: 100%; max-width: 400px; height: auto; display: block; margin-bottom: 30px;"/>
-                            <label class="switch">
-                                <input type="checkbox">
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-
-                        <div class="col-sm-6">
-                            <dt>Correo Electrónico:</dt>
-                            <dd th:text="${usuario.email}"></dd>
-
-                            <dt>Nombre:</dt>
-                            <dd th:text="${usuario.nombre}"></dd>
-
-                            <dt>Apellidos:</dt>
-                            <dd th:text="${usuario.apellidos != null ? usuario.apellidos : 'No especificados'}"></dd>
-
-                            <dt>DNI:</dt>
-                            <dd th:text="${usuario.dni}"></dd>
-                        </div>
-
-                        <div class="col-sm-6">
-                            <dt>Teléfono:</dt>
-                            <dd th:text="${usuario.telefono}"></dd>
-
-                            <dt>Código Postal:</dt>
-                            <dd th:text="${usuario.codigoPostal}"></dd>
-
-                            <dt>Ciudad:</dt>
-                            <dd th:text="${usuario.ciudad}"></dd>
-
-                            <dt>Dirección:</dt>
-                            <dd th:text="${usuario.direccion}"></dd>
-                        </div>
-
-                        <div class="col-sm-6">
-                            <dt>Fecha carnet de condudir:</dt>
-                            <dd th:text="${usuario.fechaCarnetConducir}"></dd>
-
-                            <dt>Fecha caducidad DNI:</dt>
-                            <dd th:text="${usuario.fechaCaducidadDni}"></dd>
-                        </div>
-                    </dl>
+        <div class="container-lg mt-4">
+            <div class="row justify-content-center">
+                <div class="col-12">
+                    <div class="text-center">
+                        <img style="box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); width: auto; max-height: 500px;" th:src="@{|/uploads/${usuario.imagen}|}" alt="Foto de perfil" class="img-fluid"/>
+                    </div>
+                    <div class="text-center" style="margin-top: 15px">
+                        <label class="switch">
+                            <input type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                        <span th:if="${usuario.esArrendatario}">Arrendatario</span>
+                        <span th:if="${usuario.esArrendador}">Arrendador</span>
+                    </div>
                 </div>
             </div>
 
-            <div class="row mt-4">
+            <div class="row justify-content-center mt-4">
+                <div class="col-12">
+                    <div class="row d-flex justify-content-center">
+                        <div class="col-md-6 text-center">
+                            <div style="font-family: serif"><strong>Correo Electrónico: </strong><span th:text="${usuario.email}" style="font-family: 'Quicksand', sans-serif;"></span></div>
+                        </div>
+                        <div class="col-md-6 text-center">
+                            <div style="font-family: serif"><strong>Nombre: </strong><span th:text="${usuario.nombre}" style="font-family: 'Quicksand', sans-serif;"></span></div>
+                        </div>
+                    </div>
+                    <div class="row d-flex justify-content-center" style="margin-top: 15px">
+                        <div class="col-md-6 text-center">
+                            <div style="font-family: serif"><strong>Apellidos: </strong><span th:text="${usuario.apellidos != null ? usuario.apellidos : 'No especificados'}" style="font-family: 'Quicksand', sans-serif;"></span></div>
+                        </div>
+                        <div class="col-md-6 text-center">
+                            <div style="font-family: serif"><strong>DNI: </strong><span th:text="${usuario.dni}" style="font-family: 'Quicksand', sans-serif;"></span></div>
+                        </div>
+                    </div>
+                    <div class="row d-flex justify-content-center" style="margin-top: 15px">
+                        <div class="col-md-6 text-center">
+                            <div style="font-family: serif"><strong>Teléfono: </strong><span th:text="${usuario.telefono}" style="font-family: 'Quicksand', sans-serif;"></span></div>
+                        </div>
+                        <div class="col-md-6 text-center">
+                            <div style="font-family: serif"><strong>Código Postal: </strong><span th:text="${usuario.codigoPostal}" style="font-family: 'Quicksand', sans-serif;"></span></div>
+                        </div>
+                    </div>
+                    <div class="row d-flex justify-content-center" style="margin-top: 15px">
+                        <div class="col-md-6 text-center">
+                            <div style="font-family: serif"><strong>Ciudad: </strong><span th:text="${usuario.ciudad}" style="font-family: 'Quicksand', sans-serif;"></span></div>
+                        </div>
+                        <div class="col-md-6 text-center">
+                            <div style="font-family: serif"><strong>Dirección: </strong><span th:text="${usuario.direccion}" style="font-family: 'Quicksand', sans-serif;"></span></div>
+                        </div>
+                    </div>
+                    <div class="row d-flex justify-content-center" style="margin-top: 15px">
+                        <div class="col-md-6 text-center">
+                            <div style="font-family: serif"><strong>Carnet de condudir: </strong><span th:text="${usuario.fechaCarnetConducir}" style="font-family: 'Quicksand', sans-serif;"></span></div>
+                        </div>
+                        <div class="col-md-6 text-center">
+                            <div style="font-family: serif"><strong>Caducidad DNI: </strong><span th:text="${usuario.fechaCaducidadDni}" style="font-family: 'Quicksand', sans-serif;"></span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4" style="font-family: serif; margin-top: 20px">
                 <div class="col">
                     <div class="text-center">
                         <a th:href="@{'/perfil/' + ${logueado.getId()} + '/actualizar'}" style="background-color: #81c784; color: #fbfcfc;" class="btn">Actualizar Perfil</a>

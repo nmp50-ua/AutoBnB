@@ -110,7 +110,7 @@ public class VehiculoController {
                 BigDecimal porcentajeOferta = BigDecimal.valueOf(vehiculo.getOferta());
                 BigDecimal descuento = porcentajeOferta.divide(new BigDecimal(100), 2, RoundingMode.HALF_UP);
                 BigDecimal precioOferta = precioOriginal.multiply(BigDecimal.ONE.subtract(descuento));
-                precioOferta = precioOferta.setScale(2, RoundingMode.HALF_UP);
+                precioOferta = precioOferta.setScale(0, RoundingMode.HALF_UP);
                 preciosOferta.put(vehiculo.getId(), precioOferta);
             }
         }
@@ -165,7 +165,7 @@ public class VehiculoController {
                 BigDecimal porcentajeOferta = BigDecimal.valueOf(vehiculoBuscado.getOferta());
                 BigDecimal descuento = porcentajeOferta.divide(new BigDecimal(100), 2, RoundingMode.HALF_UP);
                 BigDecimal precioOferta = precioOriginal.multiply(BigDecimal.ONE.subtract(descuento));
-                precioOferta = precioOferta.setScale(2, RoundingMode.HALF_UP);
+                precioOferta = precioOferta.setScale(0, RoundingMode.HALF_UP);
                 model.addAttribute("precioOferta", precioOferta);
             }
 
@@ -204,7 +204,7 @@ public class VehiculoController {
                 BigDecimal porcentajeOferta = BigDecimal.valueOf(vehiculo.getOferta());
                 BigDecimal descuento = porcentajeOferta.divide(new BigDecimal(100), 2, RoundingMode.HALF_UP);
                 BigDecimal precioOferta = precioOriginal.multiply(BigDecimal.ONE.subtract(descuento));
-                precioOferta = precioOferta.setScale(2, RoundingMode.HALF_UP);
+                precioOferta = precioOferta.setScale(0, RoundingMode.HALF_UP);
                 preciosOferta.put(vehiculo.getId(), precioOferta);
             }
         }
@@ -259,7 +259,7 @@ public class VehiculoController {
                 BigDecimal porcentajeOferta = BigDecimal.valueOf(vehiculoBuscado.getOferta());
                 BigDecimal descuento = porcentajeOferta.divide(new BigDecimal(100), 2, RoundingMode.HALF_UP);
                 BigDecimal precioOferta = precioOriginal.multiply(BigDecimal.ONE.subtract(descuento));
-                precioOferta = precioOferta.setScale(2, RoundingMode.HALF_UP);
+                precioOferta = precioOferta.setScale(0, RoundingMode.HALF_UP);
                 model.addAttribute("precioOferta", precioOferta);
             }
 
@@ -282,6 +282,10 @@ public class VehiculoController {
 
     @GetMapping("/listado-vehiculos/busqueda")
     public String buscarVehiculo(@ModelAttribute BusquedaData busquedaData, Model model, @RequestParam(defaultValue = "0") int page) {
+        if (busquedaData.getBusqueda().isEmpty()) {
+            return "redirect:/listado-vehiculos";
+        }
+
         Long id = managerUserSession.usuarioLogeado();
 
         if (id != null) {
@@ -347,7 +351,7 @@ public class VehiculoController {
                 BigDecimal porcentajeOferta = BigDecimal.valueOf(vehiculo.getOferta());
                 BigDecimal descuento = porcentajeOferta.divide(new BigDecimal(100), 2, RoundingMode.HALF_UP);
                 BigDecimal precioOferta = precioOriginal.multiply(BigDecimal.ONE.subtract(descuento));
-                precioOferta = precioOferta.setScale(2, RoundingMode.HALF_UP);
+                precioOferta = precioOferta.setScale(0, RoundingMode.HALF_UP);
                 preciosOferta.put(vehiculo.getId(), precioOferta);
             }
         }
@@ -439,7 +443,7 @@ public class VehiculoController {
                 BigDecimal porcentajeOferta = BigDecimal.valueOf(vehiculo.getOferta());
                 BigDecimal descuento = porcentajeOferta.divide(new BigDecimal(100), 2, RoundingMode.HALF_UP);
                 BigDecimal precioOferta = precioOriginal.multiply(BigDecimal.ONE.subtract(descuento));
-                precioOferta = precioOferta.setScale(2, RoundingMode.HALF_UP);
+                precioOferta = precioOferta.setScale(0, RoundingMode.HALF_UP);
                 preciosOferta.put(vehiculo.getId(), precioOferta);
             }
         }
@@ -502,7 +506,7 @@ public class VehiculoController {
                 BigDecimal porcentajeOferta = BigDecimal.valueOf(vehiculo.getOferta());
                 BigDecimal descuento = porcentajeOferta.divide(new BigDecimal(100), 2, RoundingMode.HALF_UP);
                 BigDecimal precioOferta = precioOriginal.multiply(BigDecimal.ONE.subtract(descuento));
-                precioOferta = precioOferta.setScale(2, RoundingMode.HALF_UP);
+                precioOferta = precioOferta.setScale(0, RoundingMode.HALF_UP);
                 preciosOferta.put(vehiculo.getId(), precioOferta);
             }
         }
@@ -526,7 +530,6 @@ public class VehiculoController {
 
         return "listadoVehiculos";
     }
-
 
     @GetMapping("/listado-vehiculos/ofertas/filtrar-categoria")
     public String filtrarVehiculosOferta(@RequestParam(defaultValue = "0") int page, @RequestParam Optional<String> categoria,
@@ -563,7 +566,7 @@ public class VehiculoController {
                 BigDecimal porcentajeOferta = BigDecimal.valueOf(vehiculo.getOferta());
                 BigDecimal descuento = porcentajeOferta.divide(new BigDecimal(100), 2, RoundingMode.HALF_UP);
                 BigDecimal precioOferta = precioOriginal.multiply(BigDecimal.ONE.subtract(descuento));
-                precioOferta = precioOferta.setScale(2, RoundingMode.HALF_UP);
+                precioOferta = precioOferta.setScale(0, RoundingMode.HALF_UP);
                 preciosOferta.put(vehiculo.getId(), precioOferta);
             }
         }

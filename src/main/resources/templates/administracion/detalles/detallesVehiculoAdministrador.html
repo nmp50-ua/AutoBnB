@@ -22,9 +22,9 @@
     <div class="container" style="max-width: 1000px; background: white; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
         <div style="text-align: center; margin-bottom: 30px;">
             <h1 th:text="${vehiculo.marca.nombre + ' ' + vehiculo.modelo.nombre}" style="font-size: 24px; color: #333;"></h1>
-            <span th:if="${vehiculo.oferta == null}" th:text="'por ' + ${vehiculo.precioPorDia} + '€ al día'" style="font-size: 18px; color: #555;"></span>
+            <span th:if="${vehiculo.oferta == null}" th:text="${vehiculo.getPrecioPorDiaSinDecimales()} + '€ / día'" style="font-size: 18px; color: #555;"></span>
             <div th:if="${vehiculo.oferta != null}" class="price">
-                <span style="text-decoration: line-through; color: red;" th:text="${vehiculo.precioPorDia} + '€'"></span>
+                <span style="text-decoration: line-through; color: red;" th:text="${vehiculo.getPrecioPorDiaSinDecimales()} + '€'"></span>
                 <span style="font-weight: bold; color: green; margin-left: 10px;" th:text="${precioOferta} + '€'"></span>
             </div>
             <!-- Condición para mostrar el número de comentarios si existen -->
@@ -69,7 +69,7 @@
             <br/>
             <p style="font-size: 18px; color: #666; font-family: 'Quicksand', sans-serif;"><strong>Precios sin oferta y disponibilidad</strong></p>
             <p style="color: #333; font-family: 'Quicksand', sans-serif;">
-                <strong>Precio por día:</strong> <span th:text="${vehiculo.precioPorDia} + ' €'"></span>&nbsp;&nbsp;&nbsp;
+                <strong>Precio por día:</strong> <span th:text="${vehiculo.getPrecioPorDiaSinDecimales()} + ' €'"></span>&nbsp;&nbsp;&nbsp;
                 <strong>Precio por Medio Día:</strong> <span th:text="${vehiculo.precioPorMedioDia} + ' €'"></span>&nbsp;&nbsp;&nbsp;
                 <strong>Precio del Combustible:</strong> <span th:text="${vehiculo.precioCombustible} + ' €'"></span>
             </p>

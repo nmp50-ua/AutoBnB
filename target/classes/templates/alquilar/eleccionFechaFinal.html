@@ -16,15 +16,15 @@
 
 <main style="margin: 10px;">
     <p class="text-center mt-3">
-        <a href="/home" class="btn btn-link" style="color: #171a1d;">Volver</a>
+        <a href="/home" class="btn btn-link" style="color: #171a1d; font-family: serif">Volver</a>
     </p>
-    <div th:if="${error != null}" class="alert alert-danger" style="max-width: 500px; margin-left: auto; margin-right: auto; display: block;">
+    <div th:if="${error != null}" id="errorDiv" class="alert alert-danger" style="max-width: 500px; margin-left: auto; margin-right: auto; display: block; font-family: 'Quicksand', sans-serif">
         <p th:text="${error}"></p>
     </div>
-    <div class="container">
-        <div id='calendar' class="table-responsive" th:data-vehiculo-id="${vehiculo.id}" th:data-fechaInicial="${fechaInicioSeleccionada}"></div>
+    <div class="container" style="font-family: serif">
+        <div id='calendar' class="table-responsive" th:data-vehiculo-id="${vehiculo.id}" th:data-fechaInicial="${fechaInicioSeleccionada}" style="max-width: 1000px; max-height: 1000px; margin: auto;"></div>
     </div>
-    <div style="text-align: center;">
+    <div style="text-align: center; font-family: serif">
         <form id="fechaFinalForm" th:action="@{/alquilar/{vehiculoId}/metodoDePago (vehiculoId=${vehiculo.id})}" method="get">
             <input type="hidden" id="fechaFinal" name="fechaFinal"/>
             <input type="hidden" id="fechaInicial" name="fechaInicial" th:value="${fechaInicioSeleccionada}"/>
@@ -112,6 +112,25 @@
         // Actualiza el campo oculto del formulario con la fecha seleccionada
         document.getElementById('fechaFinal').value = fecha;
     }
+
+    document.getElementById('fechaFinalForm').onsubmit = function() {
+        if (!document.getElementById('fechaFinal').value) {
+            alert('Por favor, seleccione una fecha antes de continuar.');
+            return false; // Previene la sumisión del formulario
+        }
+        return true;
+    };
+</script>
+
+<script>
+    window.onload = function() {
+        var errorDiv = document.getElementById('errorDiv');
+        if (errorDiv) {
+            setTimeout(function() {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+    };
 </script>
 
 </body>

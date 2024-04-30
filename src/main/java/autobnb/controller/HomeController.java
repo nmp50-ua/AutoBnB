@@ -62,7 +62,7 @@ public class HomeController {
             BigDecimal porcentajeOferta = BigDecimal.valueOf(vehiculo.getOferta());
             BigDecimal descuento = porcentajeOferta.divide(new BigDecimal(100), 2, RoundingMode.HALF_UP);
             BigDecimal precioOferta = precioOriginal.multiply(BigDecimal.ONE.subtract(descuento));
-            precioOferta = precioOferta.setScale(2, RoundingMode.HALF_UP);
+            precioOferta = precioOferta.setScale(0, RoundingMode.HALF_UP);
             preciosOferta.put(vehiculo.getId(), precioOferta);
         }
 
@@ -123,7 +123,7 @@ public class HomeController {
                 BigDecimal porcentajeOferta = BigDecimal.valueOf(vehiculoBuscado.getOferta());
                 BigDecimal descuento = porcentajeOferta.divide(new BigDecimal(100), 2, RoundingMode.HALF_UP);
                 BigDecimal precioOferta = precioOriginal.multiply(BigDecimal.ONE.subtract(descuento));
-                precioOferta = precioOferta.setScale(2, RoundingMode.HALF_UP);
+                precioOferta = precioOferta.setScale(0, RoundingMode.HALF_UP);
                 model.addAttribute("precioOferta", precioOferta);
             }
 
@@ -147,7 +147,39 @@ public class HomeController {
     @GetMapping("/listado-vehiculos/home/busqueda")
     public String buscarVehiculo(@ModelAttribute BusquedaHomeData busquedaHomeData, Model model, @RequestParam(defaultValue = "0") int page) {
         if (busquedaHomeData.getIdMarca() == null || busquedaHomeData.getIdCategoria() == null || busquedaHomeData.getFechaInicial() == null || busquedaHomeData.getFechaFinal() == null){
-            return "redirect:/home";
+            model.addAttribute("error", "Debe completar todos los campos.");
+
+            Long id = managerUserSession.usuarioLogeado();
+
+            List<Vehiculo> vehiculos = vehiculoService.listadoVehiculosConOferta();
+            model.addAttribute("vehiculos", vehiculos);
+
+            Map<Long, BigDecimal> preciosOferta = new HashMap<>();
+
+            for (Vehiculo vehiculo : vehiculos) {
+                BigDecimal precioOriginal = vehiculo.getPrecioPorDia();
+                BigDecimal porcentajeOferta = BigDecimal.valueOf(vehiculo.getOferta());
+                BigDecimal descuento = porcentajeOferta.divide(new BigDecimal(100), 2, RoundingMode.HALF_UP);
+                BigDecimal precioOferta = precioOriginal.multiply(BigDecimal.ONE.subtract(descuento));
+                precioOferta = precioOferta.setScale(0, RoundingMode.HALF_UP);
+                preciosOferta.put(vehiculo.getId(), precioOferta);
+            }
+
+            model.addAttribute("vehiculos", vehiculos);
+            model.addAttribute("preciosOferta", preciosOferta);
+
+            model.addAttribute("marcas", marcaService.listadoCompleto());
+            model.addAttribute("categorias", categoriaService.listadoCompleto());
+
+            if(id != null){
+                UsuarioData user = usuarioService.findById(id);
+                model.addAttribute("usuario", user);
+            }
+            else {
+                model.addAttribute("usuario", null);
+            }
+
+            return "home";
         }
 
         Long id = managerUserSession.usuarioLogeado();
@@ -177,7 +209,7 @@ public class HomeController {
                 BigDecimal porcentajeOferta = BigDecimal.valueOf(vehiculo.getOferta());
                 BigDecimal descuento = porcentajeOferta.divide(new BigDecimal(100), 2, RoundingMode.HALF_UP);
                 BigDecimal precioOferta = precioOriginal.multiply(BigDecimal.ONE.subtract(descuento));
-                precioOferta = precioOferta.setScale(2, RoundingMode.HALF_UP);
+                precioOferta = precioOferta.setScale(0, RoundingMode.HALF_UP);
                 preciosOferta.put(vehiculo.getId(), precioOferta);
             }
         }

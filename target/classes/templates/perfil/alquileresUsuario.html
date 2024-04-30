@@ -3,7 +3,7 @@
 
 <head th:replace="fragments :: head (titulo='Alquileres Usuario')"></head>
 
-<body>
+<body style="font-family: 'Quicksand', sans-serif;">
 <!-- Si el usuario está logueado, incluye el Navbar normal -->
 <div th:if="${usuario != null}">
     <!-- Recuperamos el objeto "usuarios" que nos pasa el Controller y usamos sus atributos, pasandolos al NavBar -->
@@ -21,22 +21,24 @@
     <div class="container-fluid">
         <div class="row mt-3">
             <div class="col">
-                <h2 style="color: #171a1d; text-align: center; margin-bottom: 30px;">Listado de Alquileres</h2>
+                <h2 style="color: #171a1d; text-align: center; margin-bottom: 10px; margin-top: 30px; font-family: serif">Listado de Alquileres</h2>
             </div>
         </div>
+
+        <p class="text-center mt-3"><a th:href="@{'/perfil/' + ${usuario.id}}" class="btn btn-link" style="color: #171a1d; font-family: serif">Volver al Perfil</a></p>
 
         <div class="row mt-3">
             <div class="col">
                 <table class="table table-striped">
                     <thead>
-                    <tr>
-                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Vehículo</th>
-                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Fecha Entrega</th>
-                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Fecha Devolución</th>
-                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Días Alquilado</th>
-                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Litros Combustible</th>
-                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Precio Final</th>
-                        <th style="color: #333; font-family: 'Quicksand', sans-serif;"></th>
+                    <tr style="font-family: serif">
+                        <th style="color: #333;">Vehículo</th>
+                        <th style="color: #333;">Fecha Entrega</th>
+                        <th style="color: #333;">Fecha Devolución</th>
+                        <th style="color: #333;">Días Alquilado</th>
+                        <th style="color: #333;">Litros Combustible</th>
+                        <th style="color: #333;">Precio Final</th>
+                        <th style="color: #333;"></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -48,7 +50,7 @@
                         <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${pago.alquiler.litrosCombustible != null && pago.alquiler.litrosCombustible > 0} ? ${pago.alquiler.litrosCombustible} : '-'"></td>
                         <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${pago.alquiler.precioFinal} + ' €'"></td>
                         <td>
-                            <form th:action="@{'/perfil/' + ${usuario.id} + '/alquileres/eliminar/' + ${pago.alquiler.id}}" method="post">
+                            <form style="font-family: serif" th:action="@{'/perfil/' + ${usuario.id} + '/alquileres/eliminar/' + ${pago.alquiler.id}}" method="post">
                                 <button type="submit" class="btn btn-danger btn-xs">X</button>
                             </form>
                         </td>
@@ -57,7 +59,6 @@
                 </table>
             </div>
         </div>
-        <p class="text-center mt-3"><a th:href="@{'/perfil/' + ${usuario.id}}" class="btn btn-link" style="color: #171a1d;">Volver al Perfil</a></p>
     </div>
 </main>
 

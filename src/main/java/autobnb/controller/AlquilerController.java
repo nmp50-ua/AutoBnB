@@ -102,6 +102,19 @@ public class AlquilerController {
                                       Model model) {
         Long id = managerUserSession.usuarioLogeado();
 
+        if (fechaInicial == null) {
+            model.addAttribute("error", "La fecha seleccionada no es válida.");
+
+            List<Usuario> usuarios = usuarioService.listadoCompleto();
+            Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+            model.addAttribute("usuario", usuario);
+
+            List<Vehiculo> vehiculos = vehiculoService.listadoCompleto();
+            model.addAttribute("vehiculo", vehiculoService.buscarVehiculoPorId(vehiculos, vehiculoId));
+
+            return "alquilar/eleccionFechaInicio";
+        }
+
         comprobarLogueado(id);
 
         List<Usuario> usuarios = usuarioService.listadoCompleto();
@@ -211,6 +224,7 @@ public class AlquilerController {
 
         List<Vehiculo> vehiculos = vehiculoService.listadoCompleto();
         model.addAttribute("vehiculo", vehiculoService.buscarVehiculoPorId(vehiculos, vehiculoId));
+        model.addAttribute("propietario", vehiculoService.obtenerUsuarioPorVehiculoId(vehiculoId));
 
         if (fechaFinal.equals(fechaInicial)) {
             model.addAttribute("mismoDia", true);
@@ -241,8 +255,8 @@ public class AlquilerController {
                 BigDecimal descuento = porcentajeOferta.divide(new BigDecimal(100), 2, RoundingMode.HALF_UP);
                 BigDecimal precioOferta = precioOriginal.multiply(BigDecimal.ONE.subtract(descuento));
                 BigDecimal precioOfertaMedioDia = precioOriginalMedioDia.multiply(BigDecimal.ONE.subtract(descuento));
-                precioOferta = precioOferta.setScale(2, RoundingMode.HALF_UP);
-                precioOfertaMedioDia = precioOfertaMedioDia.setScale(2, RoundingMode.HALF_UP);
+                precioOferta = precioOferta.setScale(0, RoundingMode.HALF_UP);
+                precioOfertaMedioDia = precioOfertaMedioDia.setScale(0, RoundingMode.HALF_UP);
                 preciosOferta.put(vehiculo.getId(), precioOferta);
                 preciosOfertaMedioDia.put(vehiculo.getId(), precioOfertaMedioDia);
             }
@@ -275,6 +289,7 @@ public class AlquilerController {
 
         List<Vehiculo> vehiculos = vehiculoService.listadoCompleto();
         model.addAttribute("vehiculo", vehiculoService.buscarVehiculoPorId(vehiculos, vehiculoId));
+        model.addAttribute("propietario", vehiculoService.obtenerUsuarioPorVehiculoId(vehiculoId));
 
         if (fechaFinal.equals(fechaInicial)) {
             model.addAttribute("mismoDia", true);
@@ -302,7 +317,7 @@ public class AlquilerController {
                 BigDecimal porcentajeOferta = BigDecimal.valueOf(vehiculo.getOferta());
                 BigDecimal descuento = porcentajeOferta.divide(new BigDecimal(100), 2, RoundingMode.HALF_UP);
                 BigDecimal precioOferta = precioOriginal.multiply(BigDecimal.ONE.subtract(descuento));
-                precioOferta = precioOferta.setScale(2, RoundingMode.HALF_UP);
+                precioOferta = precioOferta.setScale(0, RoundingMode.HALF_UP);
                 preciosOferta.put(vehiculo.getId(), precioOferta);
             }
         }

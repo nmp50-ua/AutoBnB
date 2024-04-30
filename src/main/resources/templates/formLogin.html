@@ -27,7 +27,7 @@
 
             <div class="row justify-content-center mb-3">
                 <div class="col-auto">
-                    <h2 style="color: #171a1d; text-align: center; margin-bottom: 30px;">Login</h2>
+                    <h2 style="color: #171a1d; text-align: center; margin-bottom: 30px; font-family: serif">Login</h2>
                 </div>
             </div>
 
@@ -37,15 +37,15 @@
                         <div class="row justify-content-center">
                             <div class="col-6">
                                 <div class="form-group">
-                                    <label for="email" style="color: #333; font-family: 'Quicksand', sans-serif;">Usuario</label>
+                                    <label for="email" style="color: #333; font-family: 'serif';">Usuario</label>
                                     <input id="email" class="form-control" name="email" placeholder="Correo electrónico" type="text" th:field="*{email}" required/>
                                 </div>
                                 <div class="form-group">
-                                    <label for="password" style="color: #333; font-family: 'Quicksand', sans-serif;">Contraseña</label>
+                                    <label for="password" style="color: #333; font-family: 'serif';">Contraseña</label>
                                     <input id="password" class="form-control" name="password"  placeholder="Contraseña" type="password" th:field="*{password}" required/>
                                 </div>
-                                <button type="submit" class="btn btn-primary btn-block" style="background-color: #171a1d; border-color: #171a1d; color: #fff;">Login</button>
-                                <a class="btn btn-link" href="/registro" style="color: #171a1d;">Ir a registro</a>
+                                <button type="submit" class="btn btn-primary btn-block" style="background-color: #171a1d; border-color: #171a1d; color: #fff; font-family: serif">Login</button>
+                                <a class="btn btn-link" href="/registro" style="color: #171a1d; font-family: serif">Ir a registro</a>
                             </div>
                         </div>
                     </form>
@@ -54,7 +54,7 @@
 
             <div class="row mt-3 justify-content-center">
                 <div class="col-6">
-                    <div class="alert alert-danger" th:if="${error != null}" th:text="${error}"></div>
+                    <div class="alert alert-danger" id="errorDiv" th:if="${error != null}" th:text="${error}"></div>
                 </div>
             </div>
         </div>
@@ -62,5 +62,16 @@
 
     <div th:replace="fragments :: footer"></div>
     <div th:replace="fragments::javascript"/>
+
+    <script>
+        window.onload = function() {
+            var errorDiv = document.getElementById('errorDiv');
+            if (errorDiv) {
+                setTimeout(function() {
+                    errorDiv.style.display = 'none';
+                }, 5000);
+            }
+        };
+    </script>
 </body>
 </html>

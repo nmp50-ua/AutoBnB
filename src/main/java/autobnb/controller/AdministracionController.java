@@ -1332,7 +1332,7 @@ public class AdministracionController {
                 BigDecimal porcentajeOferta = BigDecimal.valueOf(vehiculoBuscado.getOferta());
                 BigDecimal descuento = porcentajeOferta.divide(new BigDecimal(100), 2, RoundingMode.HALF_UP);
                 BigDecimal precioOferta = precioOriginal.multiply(BigDecimal.ONE.subtract(descuento));
-                precioOferta = precioOferta.setScale(2, RoundingMode.HALF_UP);
+                precioOferta = precioOferta.setScale(0, RoundingMode.HALF_UP);
                 model.addAttribute("precioOferta", precioOferta);
             }
 

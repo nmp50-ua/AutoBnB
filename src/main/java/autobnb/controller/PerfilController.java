@@ -7,14 +7,15 @@ import autobnb.model.*;
 import autobnb.service.*;
 import autobnb.service.exception.UsuarioServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
@@ -501,7 +502,7 @@ public class PerfilController {
     }
 
     @GetMapping("/perfil/{id}/vehiculos")
-    public String mostrarListadoVehiculos(@PathVariable(value = "id") Long idUsuario, Model model) {
+    public String mostrarListadoVehiculos(@PathVariable(value = "id") Long idUsuario, Model model, @RequestParam(defaultValue = "0") int page) {
         Long id = managerUserSession.usuarioLogeado();
 
         comprobarLogueado(id);
@@ -510,9 +511,16 @@ public class PerfilController {
         Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, idUsuario);
         model.addAttribute("usuario", usuario);
 
-        List<Vehiculo> vehiculos = usuarioService.obtenerVehiculosPorUsuarioId(idUsuario);
+        Pageable pageable = PageRequest.of(page, 6, Sort.by("id").ascending());
+        Page<Vehiculo> vehiculosPage = vehiculoService.listadoPaginadoVehiculosDeUsuario(idUsuario, pageable);
+        model.addAttribute("vehiculosPage", vehiculosPage);
 
-        model.addAttribute("vehiculos", vehiculos);
+        if (vehiculosPage.getContent().isEmpty()) {
+            model.addAttribute("cantidad", null);
+        }
+        else {
+            model.addAttribute("cantidad", vehiculosPage.getContent().size());
+        }
 
         return "perfil/vehiculosUsuario";
     }
@@ -691,6 +699,20 @@ public class PerfilController {
         return "redirect:/perfil/" + idUsuario + "/vehiculos";
     }
 
+    @PostMapping("/perfil/{id}/vehiculos/{vehiculoId}/eliminar-comentario/{comentarioId}")
+    public String eliminarComentario(@PathVariable("id") Long idUsuario, @PathVariable("comentarioId") Long comentarioId, @PathVariable("vehiculoId") Long vehiculoId, Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarLogueado(id);
+
+        try {
+            comentarioService.eliminarComentario(comentarioId);
+        } catch (Exception e) {
+            model.addAttribute("error", "No se puede eliminar el vehículo debido a: " + e.getMessage());
+        }
+        return "redirect:/perfil/" + idUsuario + "/vehiculos/detalles/" + vehiculoId;
+    }
+
     @GetMapping("/perfil/{usuarioId}/vehiculos/detalles/{vehiculoId}")
     public String mostrarDetallesVehiculo(@PathVariable(value = "usuarioId") Long idUsuario, @PathVariable(value = "vehiculoId") Long vehiculoId, Model model) {
         Long id = managerUserSession.usuarioLogeado();
@@ -713,7 +735,7 @@ public class PerfilController {
                 BigDecimal porcentajeOferta = BigDecimal.valueOf(vehiculoBuscado.getOferta());
                 BigDecimal descuento = porcentajeOferta.divide(new BigDecimal(100), 2, RoundingMode.HALF_UP);
                 BigDecimal precioOferta = precioOriginal.multiply(BigDecimal.ONE.subtract(descuento));
-                precioOferta = precioOferta.setScale(2, RoundingMode.HALF_UP);
+                precioOferta = precioOferta.setScale(0, RoundingMode.HALF_UP);
                 model.addAttribute("precioOferta", precioOferta);
             }
 

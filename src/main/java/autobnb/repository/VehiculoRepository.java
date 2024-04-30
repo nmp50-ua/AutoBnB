@@ -21,4 +21,6 @@ public interface VehiculoRepository extends PagingAndSortingRepository<Vehiculo,
     Page<Vehiculo> findAllWithOferta(Pageable pageable);
     Page<Vehiculo> findByMarcaNombreAndOfertaIsNotNull(String marca, Pageable pageable);
     Page<Vehiculo> findByMarcaNombreAndModeloNombreAndOfertaIsNotNull(String marca, String modelo, Pageable pageable);
+    Page<Vehiculo> findByUsuarioId(Long usuarioId, Pageable pageable);
+
 }

@@ -21,37 +21,40 @@
     <div class="container-fluid">
         <div class="row mt-3">
             <div th:if="${usuario.esArrendatario}" class="col">
-                <h2 style="color: #171a1d; text-align: center; margin-bottom: 30px;">Cuenta en modo Arrendatario</h2>
+                <h2 style="color: #171a1d; text-align: center; margin-bottom: 10px; margin-top: 30px; font-family: serif">Cuenta Arrendatario</h2>
             </div>
             <div th:if="${usuario.esArrendador}" class="col">
-                <h2 style="color: #171a1d; text-align: center; margin-bottom: 30px;">Cuenta en modo Arrendador</h2>
+                <h2 style="color: #171a1d; text-align: center; margin-bottom: 10px; margin-top: 30px; font-family: serif">Cuenta Arrendador</h2>
             </div>
         </div>
 
+        <p class="text-center mt-3"><a th:href="@{'/perfil/' + ${usuario.id}}" class="btn btn-link" style="color: #171a1d; font-family: serif;">Volver al Perfil</a></p>
+
         <div class="row mt-3">
             <div class="col">
-                <p style="color: #333; font-family: 'Quicksand', sans-serif;"><strong>Número de cuenta: </strong><span th:text="${usuario.cuenta.numeroCuenta}"></span></p>
+                <p style="color: #333; font-family: serif;"><strong>Número de cuenta: </strong><span style="font-family: 'Quicksand', sans-serif;" th:text="${usuario.cuenta.numeroCuenta}"></span></p>
             </div>
             <div class="col">
-                <p style="color: #333; font-family: 'Quicksand', sans-serif;"><strong>Saldo: </strong><span th:text="${usuario.cuenta.saldo} + ' €'"></span></p>
+                <p style="color: #333; font-family: serif;"><strong>Saldo: </strong><span style="font-family: 'Quicksand', sans-serif;" th:text="${usuario.cuenta.saldo} + ' €'"></span></p>
             </div>
             <div class="col">
                 <form th:action="@{'/perfil/' + ${usuario.id} + '/añadirSaldo'}" method="post">
                     <button type="submit" class="button-sumar">+</button>
+                    <span style="margin-left: 5px; font-family: serif;">Añadir 100 €</span>
                 </form>
             </div>
         </div>
 
         <div th:if="${usuario.esArrendatario}" class="row mt-3">
             <div class="col">
-                <strong><p style="color: #333; font-family: 'Quicksand', sans-serif;">Listado de pagos efectuados</p></strong>
+                <strong><p style="color: #333; font-family: serif;">Listado de pagos efectuados</p></strong>
                 <table class="table table-striped">
                     <thead>
                     <tr>
-                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Titular</th>
-                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Número de Tarjeta</th>
-                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Fecha</th>
-                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Cantidad pagada</th>
+                        <th style="color: #333; font-family: serif;">Titular</th>
+                        <th style="color: #333; font-family: serif;">Número de Tarjeta</th>
+                        <th style="color: #333; font-family: serif;">Fecha</th>
+                        <th style="color: #333; font-family: serif;">Cantidad pagada</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -67,14 +70,14 @@
         </div>
         <div th:if="${usuario.esArrendador}" class="row mt-3">
             <div class="col">
-                <strong><p style="color: #333; font-family: 'Quicksand', sans-serif;">Listado de pagos entrantes</p></strong>
+                <strong><p style="color: #333; font-family: serif;">Listado de pagos entrantes</p></strong>
                 <table class="table table-striped">
                     <thead>
                     <tr>
-                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Titular</th>
-                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Número de Tarjeta</th>
-                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Fecha</th>
-                        <th style="color: #333; font-family: 'Quicksand', sans-serif;">Cantidad recibida</th>
+                        <th style="color: #333; font-family: serif;">Titular</th>
+                        <th style="color: #333; font-family: serif;">Número de Tarjeta</th>
+                        <th style="color: #333; font-family: serif;">Fecha</th>
+                        <th style="color: #333; font-family: serif;">Cantidad recibida</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -88,7 +91,6 @@
                 </table>
             </div>
         </div>
-        <p class="text-center mt-3"><a th:href="@{'/perfil/' + ${usuario.id}}" class="btn btn-link" style="color: #171a1d;">Volver al Perfil</a></p>
     </div>
 </main>
 

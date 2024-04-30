@@ -4,6 +4,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -327,6 +328,18 @@ public class Vehiculo implements Serializable {
 
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
+    }
+
+    public String getPrecioPorDiaSinDecimales() {
+        return precioPorDia.setScale(0, RoundingMode.HALF_UP).toString();
+    }
+
+    public String getPrecioPorMedioDiaSinDecimales() {
+        return precioPorMedioDia.setScale(0, RoundingMode.HALF_UP).toString();
+    }
+
+    public String getPrecioCombustibleSinDecimales() {
+        return precioCombustible.setScale(0, RoundingMode.HALF_UP).toString();
     }
 
     @Override

@@ -373,4 +373,21 @@ public class VehiculoService {
 
         return vehiculoRepository.findAll(specification, pageable);
     }
+
+    @Transactional(readOnly = true)
+    public Usuario obtenerUsuarioPorVehiculoId(Long vehiculoId) throws EntityNotFoundException {
+        Vehiculo vehiculo = vehiculoRepository.findById(vehiculoId).orElseThrow(() ->
+                new EntityNotFoundException("Vehículo no encontrado con ID: " + vehiculoId)
+        );
+        Usuario usuario = vehiculo.getUsuario();
+        if (usuario == null) {
+            throw new EntityNotFoundException("No se encontró usuario asociado al vehículo con ID: " + vehiculoId);
+        }
+        return usuario;
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Vehiculo> listadoPaginadoVehiculosDeUsuario(Long usuarioId, Pageable pageable) {
+        return vehiculoRepository.findByUsuarioId(usuarioId, pageable);
+    }
 }

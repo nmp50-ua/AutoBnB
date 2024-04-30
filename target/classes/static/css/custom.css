@@ -76,7 +76,7 @@ input:checked + .slider:before {
 .about-section {
     max-width: 1200px;
     margin: 100px auto;
-    padding: 50px;
+    padding: 10px 50px 50px 50px;
     box-shadow: 0 0 10px rgba(0,0,0,0.1); /* Añade una sombra ligera si es necesario */
 }
 
