@@ -130,11 +130,40 @@
         });
     }
 
+    function validateCardNumber(number) {
+        var regex = new RegExp("^[0-9]{13,19}$");
+        if (!regex.test(number)) {
+            return false;
+        }
+
+        var sum = 0;
+        var shouldDouble = false;
+        for (var i = number.length - 1; i >= 0; i--) {
+            var digit = parseInt(number.charAt(i));
+
+            if (shouldDouble) {
+                digit *= 2;
+                if (digit > 9) {
+                    digit -= 9;
+                }
+            }
+
+            sum += digit;
+            shouldDouble = !shouldDouble;
+        }
+
+        return (sum % 10) == 0;
+    }
+
     function validateForm() {
         var tarjeta = document.getElementById('tarjeta').value;
         var checkboxes = document.querySelectorAll('input[name="selectedPrice"]:checked');
         var litrosInput = document.getElementById('litrosCombustible');
 
+        if (!validateCardNumber(tarjeta)) {
+            alert('Número de tarjeta no válido. Por favor, verifica los datos ingresados.');
+            return false;
+        }
         if (!tarjeta) {
             alert('Por favor, ingresa el número de tarjeta.');
             return false;

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
@@ -21,6 +22,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 public class VehiculoService {
@@ -279,21 +281,25 @@ public class VehiculoService {
     }
 
     @Transactional(readOnly = true)
-    public Page<Vehiculo> filtrarVehiculosConPaginacion(String categoria, String color, String marca, String transmision, Pageable pageable) {
+    public Page<Vehiculo> filtrarVehiculosConPaginacion(String categoria, String ciudad, String marca, Integer precioMin, Integer precioMax, Pageable pageable) {
         Specification<Vehiculo> spec = (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
             if (categoria != null && !categoria.isEmpty() && !categoria.equals("Categoria")) {
                 predicates.add(criteriaBuilder.equal(root.get("categoria").get("nombre"), categoria));
             }
-            if (color != null && !color.isEmpty() && !color.equals("Color")) {
-                predicates.add(criteriaBuilder.equal(root.get("color").get("nombre"), color));
+            if (ciudad != null && !ciudad.isEmpty() && !ciudad.equals("Ciudad")) {
+                Join<Vehiculo, Usuario> userJoin = root.join("usuario");
+                predicates.add(criteriaBuilder.equal(userJoin.get("ciudad"), ciudad));
             }
             if (marca != null && !marca.isEmpty() && !marca.equals("Marca")) {
                 predicates.add(criteriaBuilder.equal(root.get("marca").get("nombre"), marca));
             }
-            if (transmision != null && !transmision.isEmpty() && !transmision.equals("Transmision")) {
-                predicates.add(criteriaBuilder.equal(root.get("transmision").get("nombre"), transmision));
+            if (precioMin != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("precioPorDia"), precioMin));
+            }
+            if (precioMax != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("precioPorDia"), precioMax));
             }
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
@@ -313,7 +319,7 @@ public class VehiculoService {
     }
 
     @Transactional(readOnly = true)
-    public Page<Vehiculo> filtrarVehiculosEnOfertaPaginados(String categoria, String color, String marca, String transmision, Pageable pageable) {
+    public Page<Vehiculo> filtrarVehiculosEnOfertaPaginados(String categoria, String ciudad, String marca, Integer precioMin, Integer precioMax, Pageable pageable) {
         Specification<Vehiculo> spec = (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
             predicates.add(criteriaBuilder.isNotNull(root.get("oferta")));
@@ -322,14 +328,18 @@ public class VehiculoService {
             if (categoria != null && !categoria.isEmpty() && !categoria.equals("Categoria")) {
                 predicates.add(criteriaBuilder.equal(root.get("categoria").get("nombre"), categoria));
             }
-            if (color != null && !color.isEmpty() && !color.equals("Color")) {
-                predicates.add(criteriaBuilder.equal(root.get("color").get("nombre"), color));
+            if (ciudad != null && !ciudad.isEmpty() && !ciudad.equals("Ciudad")) {
+                Join<Vehiculo, Usuario> userJoin = root.join("usuario");
+                predicates.add(criteriaBuilder.equal(userJoin.get("ciudad"), ciudad));
             }
             if (marca != null && !marca.isEmpty() && !marca.equals("Marca")) {
                 predicates.add(criteriaBuilder.equal(root.get("marca").get("nombre"), marca));
             }
-            if (transmision != null && !transmision.isEmpty() && !transmision.equals("Transmision")) {
-                predicates.add(criteriaBuilder.equal(root.get("transmision").get("nombre"), transmision));
+            if (precioMin != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("precioPorDia"), precioMin));
+            }
+            if (precioMax != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("precioPorDia"), precioMax));
             }
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
@@ -394,5 +404,12 @@ public class VehiculoService {
     @Transactional(readOnly = true)
     public Page<Vehiculo> listadoPaginadoCompleto(Pageable pageable) {
         return vehiculoRepository.findAll(pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Set<String> obtenerCiudadesUnicas() {
+        return StreamSupport.stream(usuarioRepository.findAll().spliterator(), false)
+                .map(Usuario::getCiudad)
+                .collect(Collectors.toCollection(TreeSet::new)); // Usar TreeSet para ordenar automáticamente
     }
 }

@@ -8,36 +8,38 @@ import java.util.Date;
 
 public class RegistroData {
 
-    @NotNull(message = "El nombre no puede ser nulo.")
+    @NotEmpty(message = "El nombre no puede ser nulo.")
     private String nombre;
 
     private String apellidos;
 
-    @NotNull(message = "El email no puede ser nulo.")
+    @NotEmpty(message = "El email no puede ser nulo.")
     @Email(message = "Por favor, introduce una dirección de correo electrónico válida.")
     private String email;
 
-    @NotNull(message = "La contraseña no puede ser nula.")
+    @NotEmpty(message = "La contraseña no puede ser nula.")
     @Size(min = 6, message = "La contraseña debe tener al menos 6 caracteres.")
     private String password;
 
     @NotNull(message = "La contraseña no puede ser nula.")
-    @Digits(integer = 9, fraction = 0, message = "El teléfono debe tener 9 dígitos.")
+    @Min(value = 100000000, message = "El teléfono debe tener 9 dígitos.")
+    @Max(value = 999999999, message = "El teléfono debe tener 9 dígitos.")
     private Integer telefono;
 
-    @NotNull(message = "El DNI no puede ser nulo.")
-    @Size(min = 9, max = 9, message = "El DNI debe contener 9 carácteres.")
+    @NotEmpty(message = "El DNI no puede ser nulo.")
+    @Pattern(regexp = "\\d{8}[A-HJ-NP-TV-Z]", message = "DNI no válido.")
     private String dni;
 
     @NotNull(message = "La fecha de caducidad del DNI no puede ser nula.")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @Future(message = "La fecha de caducidad del DNI debe ser en el futuro.")
     private Date fechaCaducidadDni;
 
-    @NotNull(message = "La dirección no puede ser nula.")
+    @NotEmpty(message = "La dirección no puede ser nula.")
     @Size(max = 100, message = "La dirección no puede superar los 100 caracteres.")
     private String direccion;
 
-    @NotNull(message = "La ciudad no puede ser nula.")
+    @NotEmpty(message = "La ciudad no puede ser nula.")
     @Size(max = 50, message = "La ciudad no debe superar los 50 caracteres.")
     private String ciudad;
 
@@ -47,10 +49,11 @@ public class RegistroData {
 
     @NotNull(message = "La fecha de expedición del carnet de conducir no puede ser nula.")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @Past(message = "La fecha del carnet de conducir debe ser en el pasado.")
     private Date fechaCarnetConducir;
 
-    @NotNull(message = "El número de cuenta no puede ser nulo.")
-    @Size(max = 50, message = "El número de cuenta debe tener 50 caracteres como máximo.")
+    @NotEmpty(message = "El número de cuenta no puede ser nulo.")
+    @Pattern(regexp = "ES\\d{22}", message = "Número de cuenta no válido. Debe comenzar por ES seguido de 22 dígitos.")
     private String numeroCuenta;
 
     private MultipartFile imagen;

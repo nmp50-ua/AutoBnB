@@ -130,10 +130,10 @@
                             <label for="imagen" style="color: #333; font-family: 'serif';">Imagen</label>
                             <input id="imagen" class="form-control-file" name="imagen" type="file" th:field="*{imagen}" accept="image/jpeg,image/jpg"/>
                         </div>
-                        <div class="form-group col-md-4">
+                        <div class="form-group col-md-4" hidden>
                             <label for="numeroCuenta" style="color: #333; font-family: 'serif';">Número de cuenta</label>
                             <input id="numeroCuenta" class="form-control" name="numeroCuenta"
-                                   placeholder="Número de cuenta" th:field="*{numeroCuenta}" readonly />
+                                   placeholder="Número de cuenta" th:field="*{numeroCuenta}" readonly hidden/>
                         </div>
                     </div>
 

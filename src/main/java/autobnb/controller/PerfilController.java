@@ -416,8 +416,7 @@ public class PerfilController {
         List<Transmision> transmisiones = transmisionService.listadoCompleto();
         model.addAttribute("transmisiones", transmisiones);
 
-        if (result.hasErrors() || registroVehiculoData.getMatricula().trim().isEmpty() || registroVehiculoData.getDescripcion().trim().isEmpty() || registroVehiculoData.getKilometraje() == null || registroVehiculoData.getAnyoFabricacion() == null || registroVehiculoData.getCapacidadPasajeros() == null || registroVehiculoData.getCapacidadMaletero() == null || registroVehiculoData.getNumeroPuertas() == null || registroVehiculoData.getNumeroMarchas() == null || registroVehiculoData.getPrecioPorDia() == null || registroVehiculoData.getPrecioPorMedioDia() == null || registroVehiculoData.getPrecioCombustible() == null || registroVehiculoData.getIdMarca() == null || registroVehiculoData.getIdModelo() == null || registroVehiculoData.getIdCategoria() == null || registroVehiculoData.getIdTransmision() == null || registroVehiculoData.getIdColor() == null) {
-            model.addAttribute("errorActualizar", "Únicamente puede estar vacio el campo de la oferta. Todos los demás campos son obligatorios.");
+        if (result.hasErrors()) {
             return "perfil/añadirVehiculoUsuario";
         }
         else{
@@ -599,8 +598,7 @@ public class PerfilController {
         Vehiculo vehiculoBuscado = vehiculoService.buscarVehiculoPorId(vehiculos, vehiculoId);
         model.addAttribute("vehiculo", vehiculoBuscado);
 
-        if (result.hasErrors() || registroVehiculoData.getMatricula().trim().isEmpty() || registroVehiculoData.getDescripcion().trim().isEmpty() || registroVehiculoData.getKilometraje() == null || registroVehiculoData.getAnyoFabricacion() == null || registroVehiculoData.getCapacidadPasajeros() == null || registroVehiculoData.getCapacidadMaletero() == null || registroVehiculoData.getNumeroPuertas() == null || registroVehiculoData.getNumeroMarchas() == null || registroVehiculoData.getPrecioPorDia() == null || registroVehiculoData.getPrecioPorMedioDia() == null || registroVehiculoData.getPrecioCombustible() == null || registroVehiculoData.getIdMarca() == null || registroVehiculoData.getIdModelo() == null || registroVehiculoData.getIdCategoria() == null || registroVehiculoData.getIdTransmision() == null || registroVehiculoData.getIdColor() == null) {
-            model.addAttribute("errorActualizar", "Unicamente puede estar vacio el campo de la oferta. Todos los demás campos son obligatorios.");
+        if (result.hasErrors()) {
             return "perfil/editarVehiculoUsuario";
         }
         else{

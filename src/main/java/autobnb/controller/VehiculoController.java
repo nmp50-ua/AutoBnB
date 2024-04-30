@@ -21,7 +21,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Controller
 public class VehiculoController {
@@ -98,7 +97,7 @@ public class VehiculoController {
 
         model.addAttribute("marcas", marcaService.listadoCompleto());
         model.addAttribute("categorias", categoriaService.listadoCompleto());
-        model.addAttribute("colores", colorService.listadoCompleto());
+        model.addAttribute("ciudades", vehiculoService.obtenerCiudadesUnicas());
         model.addAttribute("marcas", marcaService.listadoCompleto());
         model.addAttribute("transmisiones", transmisionService.listadoCompleto());
 
@@ -199,7 +198,7 @@ public class VehiculoController {
 
         model.addAttribute("marcas", marcaService.listadoCompleto());
         model.addAttribute("categorias", categoriaService.listadoCompleto());
-        model.addAttribute("colores", colorService.listadoCompleto());
+        model.addAttribute("ciudades", vehiculoService.obtenerCiudadesUnicas());
         model.addAttribute("marcas", marcaService.listadoCompleto());
         model.addAttribute("transmisiones", transmisionService.listadoCompleto());
 
@@ -374,7 +373,7 @@ public class VehiculoController {
 
         model.addAttribute("marcas", marcaService.listadoCompleto());
         model.addAttribute("categorias", categoriaService.listadoCompleto());
-        model.addAttribute("colores", colorService.listadoCompleto());
+        model.addAttribute("ciudades", vehiculoService.obtenerCiudadesUnicas());
         model.addAttribute("marcas", marcaService.listadoCompleto());
         model.addAttribute("transmisiones", transmisionService.listadoCompleto());
 
@@ -466,7 +465,7 @@ public class VehiculoController {
 
         model.addAttribute("marcas", marcaService.listadoCompleto());
         model.addAttribute("categorias", categoriaService.listadoCompleto());
-        model.addAttribute("colores", colorService.listadoCompleto());
+        model.addAttribute("ciudades", vehiculoService.obtenerCiudadesUnicas());
         model.addAttribute("marcas", marcaService.listadoCompleto());
         model.addAttribute("transmisiones", transmisionService.listadoCompleto());
 
@@ -485,31 +484,34 @@ public class VehiculoController {
     @GetMapping("/listado-vehiculos/filtrar-categoria")
     public String filtrarVehiculos(@RequestParam(defaultValue = "0") int page,
                                    @RequestParam Optional<String> categoria,
-                                   @RequestParam Optional<String> color,
+                                   @RequestParam Optional<String> ciudad,
                                    @RequestParam Optional<String> marca,
-                                   @RequestParam Optional<String> transmision,
+                                   @RequestParam Optional<Integer> precioMin,
+                                   @RequestParam Optional<Integer> precioMax,
                                    Model model) {
 
         Pageable pageable = PageRequest.of(page, 6, Sort.by("id").ascending());
 
         if ((!categoria.isPresent() || categoria.get().equals("Categoria")) &&
-                (!color.isPresent() || color.get().equals("Color")) &&
+                (!ciudad.isPresent() || ciudad.get().equals("Ciudad")) &&
                 (!marca.isPresent() || marca.get().equals("Marca")) &&
-                (!transmision.isPresent() || transmision.get().equals("Transmision"))) {
+                (!precioMin.isPresent() || precioMin.get() == 0) &&
+                (!precioMax.isPresent() || precioMax.get() == 0)) {
             return "redirect:/listado-vehiculos";
         }
 
         Page<Vehiculo> vehiculosPage = vehiculoService.filtrarVehiculosConPaginacion(
                 categoria.orElse(null),
-                color.orElse(null),
+                ciudad.orElse(null),
                 marca.orElse(null),
-                transmision.orElse(null),
+                precioMin.orElse(null),
+                precioMax.orElse(null),
                 pageable);
 
         model.addAttribute("vehiculosPage", vehiculosPage);
         model.addAttribute("marcas", marcaService.listadoCompleto());
         model.addAttribute("categorias", categoriaService.listadoCompleto());
-        model.addAttribute("colores", colorService.listadoCompleto());
+        model.addAttribute("ciudades", vehiculoService.obtenerCiudadesUnicas());
         model.addAttribute("transmisiones", transmisionService.listadoCompleto());
 
         Map<Long, BigDecimal> preciosOferta = new HashMap<>();
@@ -547,28 +549,29 @@ public class VehiculoController {
 
     @GetMapping("/listado-vehiculos/ofertas/filtrar-categoria")
     public String filtrarVehiculosOferta(@RequestParam(defaultValue = "0") int page, @RequestParam Optional<String> categoria,
-                                   @RequestParam Optional<String> color,
-                                   @RequestParam Optional<String> marca,
-                                   @RequestParam Optional<String> transmision,
+                                   @RequestParam Optional<String> ciudad,
+                                   @RequestParam Optional<String> marca, @RequestParam Optional<Integer> precioMin, @RequestParam Optional<Integer> precioMax,
                                    Model model) {
         Pageable pageable = PageRequest.of(page, 6, Sort.by("id").ascending());
 
-        if ((!categoria.isPresent() || categoria.get().equals("Categoria")) || (!color.isPresent() || color.get().equals("Color")) ||
-                (!marca.isPresent() || marca.get().equals("Marca")) || (!transmision.isPresent() || transmision.get().equals("Transmision"))) {
+        if ((!categoria.isPresent() || categoria.get().equals("Categoria")) || (!ciudad.isPresent() || ciudad.get().equals("Color")) ||
+                (!marca.isPresent() || marca.get().equals("Marca")) || (!precioMin.isPresent() || precioMin.get() == 0) ||
+                (!precioMax.isPresent() || precioMax.get() == 0)){
             return "redirect:/listado-vehiculos/ofertas";
         }
 
         Page<Vehiculo> vehiculosPage = vehiculoService.filtrarVehiculosEnOfertaPaginados(
                 categoria.orElse(null),
-                color.orElse(null),
+                ciudad.orElse(null),
                 marca.orElse(null),
-                transmision.orElse(null),
+                precioMin.orElse(null),
+                precioMax.orElse(null),
                 pageable);
 
         model.addAttribute("vehiculosPage", vehiculosPage);
         model.addAttribute("marcas", marcaService.listadoCompleto());
         model.addAttribute("categorias", categoriaService.listadoCompleto());
-        model.addAttribute("colores", colorService.listadoCompleto());
+        model.addAttribute("ciudades", vehiculoService.obtenerCiudadesUnicas());
         model.addAttribute("marcas", marcaService.listadoCompleto());
         model.addAttribute("transmisiones", transmisionService.listadoCompleto());
 

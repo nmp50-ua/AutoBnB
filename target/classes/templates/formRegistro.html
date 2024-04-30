@@ -62,6 +62,15 @@
                             </div>
                         </div>
 
+                        <div class="form-group">
+                            <label for="confirmPassword" style="color: #333; font-family: 'serif';">Confirmar Contraseña</label>
+                            <input id="confirmPassword" class="form-control" name="confirmPassword" placeholder="Confirmar Contraseña"
+                                   type="password" required/>
+                            <div class="invalid-feedback">
+                                Las contraseñas deben coincidir.
+                            </div>
+                        </div>
+
                         <div class="form-row">
                             <div class="form-group col-md-4">
                                 <label for="telefono" style="color: #333; font-family: 'serif';">Teléfono</label>
@@ -192,6 +201,23 @@
                 }, 5000);
             }
         };
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var form = document.querySelector("form.needs-validation");
+            form.addEventListener("submit", function(event) {
+                var password = document.getElementById("password").value;
+                var confirmPassword = document.getElementById("confirmPassword").value;
+                if (password !== confirmPassword) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    alert("Las contraseñas no coinciden. Por favor, inténtalo de nuevo.");
+                    document.getElementById("confirmPassword").classList.add("is-invalid");
+                } else {
+                    document.getElementById("confirmPassword").classList.remove("is-invalid");
+                }
+            }, false);
+        });
     </script>
 </body>
 </html>

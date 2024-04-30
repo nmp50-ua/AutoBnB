@@ -22,9 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 public class HomeController {
@@ -153,8 +151,25 @@ public class HomeController {
 
     @GetMapping("/listado-vehiculos/home/busqueda")
     public String buscarVehiculo(@ModelAttribute BusquedaHomeData busquedaHomeData, Model model, @RequestParam(defaultValue = "0") int page) {
-        if (busquedaHomeData.getIdMarca() == null || busquedaHomeData.getIdCategoria() == null || busquedaHomeData.getFechaInicial() == null || busquedaHomeData.getFechaFinal() == null){
-            model.addAttribute("error", "Debe completar todos los campos.");
+        Date today = new Date();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(today);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        today = cal.getTime();
+
+        if (busquedaHomeData.getIdMarca() == null || busquedaHomeData.getIdCategoria() == null || busquedaHomeData.getFechaInicial() == null || busquedaHomeData.getFechaFinal() == null || busquedaHomeData.getFechaInicial().before(today) || busquedaHomeData.getFechaFinal().before(today) || busquedaHomeData.getFechaFinal().before(busquedaHomeData.getFechaInicial())){
+            if (busquedaHomeData.getFechaInicial().before(today) || busquedaHomeData.getFechaFinal().before(today)) {
+                model.addAttribute("error", "La fecha de inicio y la fecha de fin deben ser posteriores a la fecha actual.");
+            }
+            else if (busquedaHomeData.getFechaFinal().before(busquedaHomeData.getFechaInicial())) {
+                model.addAttribute("error", "La fecha de fin debe ser posterior a la fecha de inicio.");
+            }
+            else {
+                model.addAttribute("error", "Debe completar todos los campos.");
+            }
 
             Long id = managerUserSession.usuarioLogeado();
 

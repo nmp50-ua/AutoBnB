@@ -155,7 +155,7 @@ public class AdministracionController {
             try {
                 ComentarioData nuevoComentarioData = comentarioService.findById(comentarioId);
 
-                if(comentarioData.getDescripcion() != null) {
+                if(comentarioData.getDescripcion() != null && !Objects.equals(comentarioData.getDescripcion(), "")) {
                     nuevoComentarioData.setDescripcion(comentarioData.getDescripcion());
                     nuevoComentarioData.setFechaCreacion(comentarioData.getFechaCreacion());
                     nuevoComentarioData.setIdUsuario(comentarioData.getIdUsuario());
@@ -1482,6 +1482,7 @@ public class AdministracionController {
             registroData.setFechaCaducidadDni(usuarioBuscado.getFechaCaducidadDni());
             registroData.setFechaCarnetConducir(usuarioBuscado.getFechaCarnetConducir());
             registroData.setAdministrador(usuarioBuscado.isAdministrador());
+            registroData.setNumeroCuenta(usuarioBuscado.getCuenta().getNumeroCuenta());
 
             model.addAttribute("registroData", registroData);
 

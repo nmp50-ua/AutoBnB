@@ -37,6 +37,10 @@
                         </div>
                     </div>
 
+                    <div id="errorActualizar" th:if="${errorActualizar != null}" class="alert alert-danger">
+                        <p th:text="${errorActualizar}"></p>
+                    </div>
+
                     <button type="submit" class="btn btn-primary btn-block" style="background-color: #171a1d; border-color: #171a1d; color: #fff; font-family: serif">Confirmar Edición</button>
                     <p class="text-center mt-3"><a th:href="@{'/administracion/comentarios'}" class="btn btn-link" style="color: #171a1d; font-family: serif">Volver al Listado</a></p>
                 </form>
@@ -83,6 +87,16 @@
         if (errorUlDiv) {
             setTimeout(function() {
                 errorUlDiv.style.display = 'none';
+            }, 5000);
+        }
+    };
+</script>
+<script>
+    window.onload = function() {
+        var errorActualizar = document.getElementById('errorActualizar');
+        if (errorActualizar) {
+            setTimeout(function() {
+                errorActualizar.style.display = 'none';
             }, 5000);
         }
     };

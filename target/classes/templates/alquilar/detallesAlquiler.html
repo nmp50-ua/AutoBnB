@@ -65,8 +65,8 @@
                         </div>
                         <div class="form-group col-md-6">
                             <label for="precioTotal" style="color: #333; font-family: 'serif';">Total a pagar (€)</label>
-                            <input th:if="${vehiculo.oferta == null and opcionSeleccionada == 'dia' and mismoDia == false}" id="precioTotal" class="form-control" name="precioTotal" type="number" th:value="${diasDeAlquiler * vehiculo.precioPorDia}" style="font-family: 'Quicksand', sans-serif;" readonly/>
-                            <input th:if="${vehiculo.oferta != null and opcionSeleccionada == 'dia' and mismoDia == false}" id="precioTotal" class="form-control" name="precioTotal" type="number" th:value="${diasDeAlquiler * preciosOferta[vehiculo.id]}" style="font-family: 'Quicksand', sans-serif;" readonly/>
+                            <input th:if="${vehiculo.oferta == null and opcionSeleccionada == 'dia' and mismoDia == null}" id="precioTotal" class="form-control" name="precioTotal" type="number" th:value="${diasDeAlquiler * vehiculo.precioPorDia}" style="font-family: 'Quicksand', sans-serif;" readonly/>
+                            <input th:if="${vehiculo.oferta != null and opcionSeleccionada == 'dia' and mismoDia == null}" id="precioTotal" class="form-control" name="precioTotal" type="number" th:value="${diasDeAlquiler * preciosOferta[vehiculo.id]}" style="font-family: 'Quicksand', sans-serif;" readonly/>
 
                             <input th:if="${vehiculo.oferta == null and opcionSeleccionada == 'dia' and mismoDia == true}" id="precioTotal" class="form-control" name="precioTotal" type="number" th:value="${vehiculo.precioPorDia}" style="font-family: 'Quicksand', sans-serif;" readonly/>
                             <input th:if="${vehiculo.oferta != null and opcionSeleccionada == 'dia' and mismoDia == true}" id="precioTotal" class="form-control" name="precioTotal" type="number" th:value="${preciosOferta[vehiculo.id]}" style="font-family: 'Quicksand', sans-serif;" readonly/>

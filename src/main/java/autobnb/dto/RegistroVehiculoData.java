@@ -2,37 +2,48 @@ package autobnb.dto;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.math.BigDecimal;
 
 public class RegistroVehiculoData {
-    @NotNull
+    @NotEmpty(message = "La descripción no puede estar vacía.")
     private String descripcion;
     private MultipartFile imagen;
-    @NotNull
+    @NotEmpty(message = "La descripción no puede estar vacía.")
+    @Pattern(regexp = "^\\d{4}[\\s\\-]?[a-zA-Z]{3}$", message = "La matrícula no es válida.")
     private String matricula;
-    @NotNull
+    @NotNull(message = "El kilometraje no puede ser nulo.")
+    @Min(value = 1, message = "El kilometraje debe ser mayor que 0.")
     private Integer kilometraje;
-    @NotNull
+    @NotNull(message = "El año de fabricación no puede ser nulo.")
+    @Min(value = 1, message = "El año de fabricación debe ser mayor que 0.")
     private Integer anyoFabricacion;
-    @NotNull
+    @NotNull(message = "La capacidad de pasajeros no puede ser nula.")
+    @Min(value = 1, message = "La capacidad de pasajeros debe ser mayor que 0.")
     private Integer capacidadPasajeros;
-    @NotNull
+    @NotNull(message = "La capacidad del maletero no puede ser nula.")
+    @Min(value = 1, message = "La capacidad del maletero debe ser mayor que 0.")
     private Integer capacidadMaletero;
-    @NotNull
+    @NotNull(message = "El número de puertas no puede ser nulo.")
+    @Min(value = 1, message = "El número de puertas debe ser mayor que 0.")
     private Integer numeroPuertas;
-    @NotNull
+    @NotNull(message = "El número de marchas no puede ser nulo.")
+    @Min(value = 1, message = "El número de marchas debe ser mayor que 0.")
     private Integer numeroMarchas;
-    @NotNull
+    @NotNull(message = "El aire acondicionado no puede ser nulo.")
     private boolean aireAcondicionado;
-    @NotNull
+    @NotNull(message = "El mentenimiento no puede ser nulo.")
     private boolean enMantenimiento;
+    @Min(value = 1, message = "La oferta debe ser mayor que 0.")
     private Integer oferta;
-    @NotNull
+    @NotNull(message = "El precio por día no puede ser nulo.")
     private BigDecimal precioPorDia;
-    @NotNull
+    @NotNull(message = "El precio por medio día no puede ser nulo.")
     private BigDecimal precioPorMedioDia;
-    @NotNull
+    @NotNull(message = "El precio del combustible no puede ser nulo.")
     private BigDecimal precioCombustible;
     private Long idUsuario;
     private Long idMarca;
