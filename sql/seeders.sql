@@ -237,3 +237,4 @@ SELECT setval('color_id_seq', COALESCE((SELECT MAX(id)+1 FROM color), 1), false)
 SELECT setval('vehiculo_id_seq', COALESCE((SELECT MAX(id)+1 FROM vehiculo), 1), false);
 SELECT setval('comentario_id_seq', COALESCE((SELECT MAX(id)+1 FROM comentario), 1), false);
 SELECT setval('alquiler_id_seq', COALESCE((SELECT MAX(id)+1 FROM alquiler), 1), false);
+SELECT setval('mensaje_id_seq', COALESCE((SELECT MAX(id)+1 FROM mensaje), 1), false);

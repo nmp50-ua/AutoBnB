@@ -29,6 +29,7 @@ autobnb\service\exception\ModeloServiceException.class
 autobnb\dto\AlquilerData.class
 autobnb\model\Usuario.class
 autobnb\repository\AlquilerRepository.class
+autobnb\controller\MensajeController.class
 autobnb\service\exception\MarcaServiceException.class
 autobnb\model\Marca.class
 autobnb\repository\MarcaRepository.class
@@ -39,6 +40,7 @@ autobnb\authentication\ManagerUserSession.class
 autobnb\service\PagoService.class
 autobnb\service\UsuarioService$LoginStatus.class
 autobnb\repository\TransmisionRepository.class
+autobnb\repository\MensajeRepository.class
 autobnb\service\VehiculoService.class
 autobnb\model\Alquiler.class
 autobnb\controller\exception\UsuarioNoLogeadoException.class
@@ -58,8 +60,10 @@ autobnb\service\TransmisionService.class
 autobnb\config\ArgonConfig.class
 autobnb\config\ModelMapperConfig.class
 autobnb\dto\RegistroVehiculoData.class
+autobnb\service\MensajeService.class
 autobnb\controller\AdministracionController.class
 autobnb\model\Categoria.class
+autobnb\model\Mensaje.class
 autobnb\repository\PagoRepository.class
 autobnb\dto\PagoData.class
 autobnb\repository\ColorRepository.class

@@ -112,3 +112,12 @@ CREATE TABLE IF NOT EXISTS Alquiler (
     idVehiculo INT REFERENCES Vehiculo(id) NOT NULL,
     idPago INT REFERENCES Pago(id) NOT NULL
 );
+
+-- Mensaje
+CREATE TABLE IF NOT EXISTS Mensaje (
+    id SERIAL PRIMARY KEY,
+    remitente_id INT REFERENCES Usuario(id) NOT NULL,
+    destinatario_id INT REFERENCES Usuario(id) NOT NULL,
+    contenido TEXT NOT NULL,
+    timestamp TIMESTAMP NOT NULL
+);
