@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="fragments :: head (titulo='Alquileres Usuario')"></head>
+<head th:replace="fragments :: head (titulo='Historial Alquileres Arrendatario')"></head>
 
 <body style="font-family: 'Quicksand', sans-serif;">
 <!-- Si el usuario está logueado, incluye el Navbar normal -->
@@ -21,11 +21,11 @@
     <div class="container-fluid">
         <div class="row mt-3">
             <div class="col">
-                <h2 style="color: #171a1d; text-align: center; margin-bottom: 10px; margin-top: 30px; font-family: serif">Listado de Alquileres</h2>
+                <h2 style="color: #171a1d; text-align: center; margin-bottom: 10px; margin-top: 30px; font-family: serif">Historial de Alquileres</h2>
             </div>
         </div>
 
-        <p class="text-center mt-3"><a th:href="@{'/perfil/' + ${usuario.id}}" class="btn btn-link" style="color: #171a1d; font-family: serif">Volver al Perfil</a></p>
+        <p class="text-center mt-3"><a th:href="@{'/perfil/' + ${usuario.id} + '/vehiculosAlquiladosArrendatario'}" class="btn btn-link" style="color: #171a1d; font-family: serif">Volver al listado</a></p>
 
         <div class="row mt-3">
             <div class="col">
@@ -38,7 +38,6 @@
                         <th style="color: #333;">Días Alquilado</th>
                         <th style="color: #333;">Litros Combustible</th>
                         <th style="color: #333;">Precio Final</th>
-                        <th style="color: #333;"></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -49,11 +48,6 @@
                         <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${pago.alquiler.litrosCombustible == null || pago.alquiler.litrosCombustible <= 0} ? ${diasDeAlquiler[pago.alquiler.id]} : '-'"></td>
                         <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${pago.alquiler.litrosCombustible != null && pago.alquiler.litrosCombustible > 0} ? ${pago.alquiler.litrosCombustible} : '-'"></td>
                         <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${pago.alquiler.precioFinal} + ' €'"></td>
-                        <td>
-                            <form style="font-family: serif" th:action="@{'/perfil/' + ${usuario.id} + '/alquileres/eliminar/' + ${pago.alquiler.id}}" method="post">
-                                <button type="submit" class="btn btn-danger btn-xs">X</button>
-                            </form>
-                        </td>
                     </tr>
                     </tbody>
                 </table>

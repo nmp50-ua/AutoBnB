@@ -36,16 +36,30 @@ public class AlquilerService {
             Pago pago = alquiler.getPago();
             Vehiculo vehiculo = alquiler.getVehiculo();
 
+            BigDecimal precioFinal = alquiler.getPrecioFinal();
+
             if (vehiculo != null) {
+                Usuario arrendador = vehiculo.getUsuario();
+
+                // Restar el precio final al saldo del arrendador
+                if (arrendador != null && arrendador.getCuenta() != null) {
+                    Cuenta cuentaArrendador = arrendador.getCuenta();
+                    cuentaArrendador.setSaldo(cuentaArrendador.getSaldo().subtract(precioFinal));
+                    usuarioRepository.save(arrendador); // Guardar cambios del usuario con su cuenta
+                }
+
                 vehiculo.getAlquileres().remove(alquiler);
                 vehiculoRepository.save(vehiculo);
             }
 
             if (pago != null) {
-                Usuario usuario = pago.getUsuario();
-                if (usuario != null) {
-                    usuario.getPagos().remove(pago);
-                    usuarioRepository.save(usuario);
+                Usuario arrendatario = pago.getUsuario();
+
+                // Devolver el precio final al saldo del arrendatario
+                if (arrendatario != null && arrendatario.getCuenta() != null) {
+                    Cuenta cuentaArrendatario = arrendatario.getCuenta();
+                    cuentaArrendatario.setSaldo(cuentaArrendatario.getSaldo().add(precioFinal));
+                    usuarioRepository.save(arrendatario); // Guardar cambios del usuario con su cuenta
                 }
             }
 
@@ -91,5 +105,19 @@ public class AlquilerService {
     @Transactional(readOnly = true)
     public Page<Alquiler> listadoPaginado(Pageable pageable) {
         return alquilerRepository.findAll(pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Alquiler> obtenerAlquileresActivosPorVehiculoId(Long vehiculoId) {
+        Date today = new Date();
+        return alquilerRepository.findByVehiculoIdAndFechaDevolucionGreaterThanEqual(vehiculoId, today);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Alquiler> obtenerAlquileresPorVehiculos(List<Vehiculo> vehiculos) {
+        List<Long> vehiculoIds = vehiculos.stream()
+                .map(Vehiculo::getId)
+                .collect(Collectors.toList());
+        return alquilerRepository.findByVehiculoIdIn(vehiculoIds);
     }
 }

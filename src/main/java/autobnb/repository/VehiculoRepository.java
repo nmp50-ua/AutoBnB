@@ -1,6 +1,5 @@
 package autobnb.repository;
 
-import autobnb.model.Marca;
 import autobnb.model.Vehiculo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,4 +21,8 @@ public interface VehiculoRepository extends PagingAndSortingRepository<Vehiculo,
     Page<Vehiculo> findByMarcaNombreAndModeloNombreAndOfertaIsNotNull(String marca, String modelo, Pageable pageable);
     Page<Vehiculo> findByUsuarioId(Long usuarioId, Pageable pageable);
     Page<Vehiculo> findAll(Pageable pageable);
+    @Query("SELECT DISTINCT v FROM Vehiculo v JOIN v.alquileres a WHERE a.pago.usuario.id = :usuarioId AND a.fechaDevolucion >= CURRENT_DATE")
+    Page<Vehiculo> findVehiculosAlquiladosPorUsuario(Long usuarioId, Pageable pageable);
+    @Query("SELECT DISTINCT v FROM Vehiculo v JOIN v.alquileres a WHERE v.usuario.id = :usuarioId AND a.fechaDevolucion >= CURRENT_DATE")
+    Page<Vehiculo> findVehiculosConAlquileresActivosPorPropietario(Long usuarioId, Pageable pageable);
 }

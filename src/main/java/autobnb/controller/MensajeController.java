@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/chat")
@@ -26,8 +25,8 @@ public class MensajeController {
     @Autowired
     ManagerUserSession managerUserSession;
 
-    @GetMapping("/{destinatarioId}")
-    public String mostrarChat(@PathVariable Long destinatarioId, Model model) {
+    @GetMapping("/arrendatario/{destinatarioId}")
+    public String mostrarChatArrendatario(@PathVariable Long destinatarioId, Model model) {
         Long remitenteId = managerUserSession.usuarioLogeado();
         Usuario remitente = usuarioService.buscarUsuarioPorId(usuarioService.listadoCompleto(), remitenteId);
         Usuario destinatario = usuarioService.buscarUsuarioPorId(usuarioService.listadoCompleto(), destinatarioId);
@@ -46,14 +45,45 @@ public class MensajeController {
         model.addAttribute("destinatarioId", destinatarioId);
         model.addAttribute("mensajes", mensajes);
 
-        return "chat";
+        return "perfil/chatArrendatario";
     }
 
-    @PostMapping("/enviar")
-    public String enviarMensaje(@RequestParam Long remitenteId, @RequestParam Long destinatarioId, @RequestParam String contenido) {
+    @GetMapping("/arrendador/{destinatarioId}")
+    public String mostrarChatArrendador(@PathVariable Long destinatarioId, Model model) {
+        Long remitenteId = managerUserSession.usuarioLogeado();
+        Usuario remitente = usuarioService.buscarUsuarioPorId(usuarioService.listadoCompleto(), remitenteId);
+        Usuario destinatario = usuarioService.buscarUsuarioPorId(usuarioService.listadoCompleto(), destinatarioId);
+
+        List<Mensaje> mensajes = mensajeService.obtenerConversacion(remitente, destinatario);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        mensajes.forEach(mensaje -> mensaje.setContenido(
+                String.format("%s (%s)",
+                        mensaje.getContenido(),
+                        mensaje.getTimestamp().format(formatter))
+        ));
+
+        model.addAttribute("usuario", remitente);
+        model.addAttribute("destinatarioNombre", destinatario.getNombre());
+        model.addAttribute("destinatarioId", destinatarioId);
+        model.addAttribute("mensajes", mensajes);
+
+        return "perfil/chatArrendador";
+    }
+
+    @PostMapping("/arrendatario/enviar")
+    public String enviarMensajeArrendatario(@RequestParam Long remitenteId, @RequestParam Long destinatarioId, @RequestParam String contenido) {
         Usuario remitente = usuarioService.buscarUsuarioPorId(usuarioService.listadoCompleto(), remitenteId);
         Usuario destinatario = usuarioService.buscarUsuarioPorId(usuarioService.listadoCompleto(), destinatarioId);
         mensajeService.enviarMensaje(remitente, destinatario, contenido);
-        return "redirect:/chat/" + destinatarioId;
+        return "redirect:/chat/arrendatario/" + destinatarioId;
+    }
+
+    @PostMapping("/arrendador/enviar")
+    public String enviarMensajeArrendador(@RequestParam Long remitenteId, @RequestParam Long destinatarioId, @RequestParam String contenido) {
+        Usuario remitente = usuarioService.buscarUsuarioPorId(usuarioService.listadoCompleto(), remitenteId);
+        Usuario destinatario = usuarioService.buscarUsuarioPorId(usuarioService.listadoCompleto(), destinatarioId);
+        mensajeService.enviarMensaje(remitente, destinatario, contenido);
+        return "redirect:/chat/arrendador/" + destinatarioId;
     }
 }

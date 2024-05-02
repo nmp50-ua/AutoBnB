@@ -257,9 +257,6 @@ public class VehiculoService {
         return nuevoComentario;
     }
 
-
-    // Métodos para la paginación de vehículos
-
     @Transactional(readOnly = true)
     public Page<Vehiculo> listadoPaginado(Pageable pageable) {
         return vehiculoRepository.findAll(pageable);
@@ -402,6 +399,11 @@ public class VehiculoService {
     }
 
     @Transactional(readOnly = true)
+    public List<Vehiculo> obtenerVehiculosPorPropietario(Long usuarioId) {
+        return vehiculoRepository.findByUsuarioId(usuarioId);
+    }
+
+    @Transactional(readOnly = true)
     public Page<Vehiculo> listadoPaginadoCompleto(Pageable pageable) {
         return vehiculoRepository.findAll(pageable);
     }
@@ -411,5 +413,15 @@ public class VehiculoService {
         return StreamSupport.stream(usuarioRepository.findAll().spliterator(), false)
                 .map(Usuario::getCiudad)
                 .collect(Collectors.toCollection(TreeSet::new)); // Usar TreeSet para ordenar automáticamente
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Vehiculo> obtenerVehiculosAlquiladosActivosPorUsuario(Long usuarioId, Pageable pageable) {
+        return vehiculoRepository.findVehiculosAlquiladosPorUsuario(usuarioId, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Vehiculo> obtenerVehiculosConAlquileresActivosPorPropietario(Long usuarioId, Pageable pageable) {
+        return vehiculoRepository.findVehiculosConAlquileresActivosPorPropietario(usuarioId, pageable);
     }
 }

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="fragments :: head (titulo='Historial Alquileres Arrendatario')"></head>
+<head th:replace="fragments :: head (titulo='Historial Alquileres Arrendador')"></head>
 
 <body style="font-family: 'Quicksand', sans-serif;">
 <!-- Si el usuario está logueado, incluye el Navbar normal -->
@@ -25,7 +25,7 @@
             </div>
         </div>
 
-        <p class="text-center mt-3"><a th:href="@{'/perfil/' + ${usuario.id} + '/vehiculosAlquiladosArrendatario'}" class="btn btn-link" style="color: #171a1d; font-family: serif">Volver al listado</a></p>
+        <p class="text-center mt-3"><a th:href="@{'/perfil/' + ${usuario.id} + '/vehiculos-alquilados'}" class="btn btn-link" style="color: #171a1d; font-family: serif">Volver al listado</a></p>
 
         <div class="row mt-3">
             <div class="col">
@@ -41,13 +41,13 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="pago: ${pagos}">
-                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${pago.alquiler.vehiculo.marca.nombre} + ' ' + ${pago.alquiler.vehiculo.modelo.nombre}"></td>
-                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${pago.alquiler.fechaEntrega}"></td>
-                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${pago.alquiler.fechaDevolucion}"></td>
-                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${pago.alquiler.litrosCombustible == null || pago.alquiler.litrosCombustible <= 0} ? ${diasDeAlquiler[pago.alquiler.id]} : '-'"></td>
-                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${pago.alquiler.litrosCombustible != null && pago.alquiler.litrosCombustible > 0} ? ${pago.alquiler.litrosCombustible} : '-'"></td>
-                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${pago.alquiler.precioFinal} + ' €'"></td>
+                    <tr th:each="alquiler: ${alquileres}">
+                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${alquiler.vehiculo.marca.nombre} + ' ' + ${alquiler.vehiculo.modelo.nombre}"></td>
+                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${alquiler.fechaEntrega}"></td>
+                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${alquiler.fechaDevolucion}"></td>
+                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${alquiler.litrosCombustible == null || alquiler.litrosCombustible <= 0} ? ${diasDeAlquiler[alquiler.id]} : '-'"></td>
+                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${alquiler.litrosCombustible != null && alquiler.litrosCombustible > 0} ? ${alquiler.litrosCombustible} : '-'"></td>
+                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${alquiler.precioFinal} + ' €'"></td>
                     </tr>
                     </tbody>
                 </table>

@@ -344,6 +344,183 @@ public class PerfilController {
         return "perfil/alquileresUsuario";
     }
 
+    @GetMapping("/perfil/{id}/alquileres/arrendador")
+    public String mostrarListadoAlquileresArrendador(@PathVariable(value = "id") Long idUsuario, Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarLogueado(id);
+
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, idUsuario);
+        model.addAttribute("usuario", usuario);
+
+        List<Vehiculo> vehiculos = vehiculoService.obtenerVehiculosPorPropietario(idUsuario);
+
+        List<Alquiler> alquileres = alquilerService.obtenerAlquileresPorVehiculos(vehiculos);
+        model.addAttribute("alquileres", alquileres);
+
+        Map<Long, Long> diasDeAlquiler = new HashMap<>();
+        for (Alquiler alquiler : alquilerService.listadoCompleto()) {
+            if (!(alquiler.getFechaDevolucion().equals(alquiler.getFechaEntrega()))) {
+                long diffInMillies = alquiler.getFechaDevolucion().getTime() - alquiler.getFechaEntrega().getTime();
+                long diasDeDiferencia = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+                diasDeAlquiler.put(alquiler.getId(), diasDeDiferencia + 1);
+            }
+            else {
+                diasDeAlquiler.put(alquiler.getId(), 1L);
+            }
+        }
+        model.addAttribute("diasDeAlquiler", diasDeAlquiler);
+
+        return "perfil/alquileresUsuarioArrendador";
+    }
+
+    @GetMapping("/perfil/{id}/vehiculosAlquiladosArrendatario")
+    public String mostrarVehiculosAlquiladosArrendatario(@PathVariable("id") Long idUsuario, Model model, @RequestParam(defaultValue = "0") int page) {
+        Long id = managerUserSession.usuarioLogeado();
+        comprobarLogueado(id);
+
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, idUsuario);
+        model.addAttribute("usuario", usuario);
+
+        Pageable pageable = PageRequest.of(page, 3, Sort.by("id").ascending());
+        Page<Vehiculo> vehiculosPage = vehiculoService.obtenerVehiculosAlquiladosActivosPorUsuario(idUsuario, pageable);
+        model.addAttribute("vehiculosPage", vehiculosPage);
+
+        model.addAttribute("cantidad", vehiculosPage.getContent().isEmpty() ? null : vehiculosPage.getContent().size());
+
+        return "perfil/vehiculosAlquiladosArrendatario";
+    }
+
+    @GetMapping("/perfil/{id}/vehiculos-alquilados")
+    public String mostrarVehiculosAlquiladosArrendador(@PathVariable("id") Long idUsuario, Model model, @RequestParam(defaultValue = "0") int page) {
+        Long id = managerUserSession.usuarioLogeado();
+        comprobarLogueado(id);
+
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, idUsuario);
+        model.addAttribute("usuario", usuario);
+
+        Pageable pageable = PageRequest.of(page, 3, Sort.by("id").ascending());
+        Page<Vehiculo> vehiculosPage = vehiculoService.obtenerVehiculosConAlquileresActivosPorPropietario(idUsuario, pageable);
+        model.addAttribute("vehiculosPage", vehiculosPage);
+
+        model.addAttribute("cantidad", vehiculosPage.getContent().isEmpty() ? null : vehiculosPage.getContent().size());
+
+        return "perfil/vehiculosAlquiladosArrendador";
+    }
+
+    @GetMapping("/perfil/{usuarioId}/vehiculos-alquilados/detalles/{vehiculoId}")
+    public String mostrarDetallesVehiculoAlquilado(@PathVariable(value = "usuarioId") Long idUsuario, @PathVariable(value = "vehiculoId") Long vehiculoId, Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarLogueado(id);
+
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+        model.addAttribute("usuario", usuario);
+
+        VehiculoData vehiculo = vehiculoService.findById(vehiculoId);
+
+        if (vehiculo != null) {
+            List<Vehiculo> vehiculos = vehiculoService.listadoCompleto();
+            Vehiculo vehiculoBuscado = vehiculoService.buscarVehiculoPorId(vehiculos, vehiculoId);
+            model.addAttribute("vehiculo", vehiculoBuscado);
+
+            if (vehiculoBuscado.getOferta() != null) {
+                BigDecimal precioOriginal = vehiculoBuscado.getPrecioPorDia();
+                BigDecimal porcentajeOferta = BigDecimal.valueOf(vehiculoBuscado.getOferta());
+                BigDecimal descuento = porcentajeOferta.divide(new BigDecimal(100), 2, RoundingMode.HALF_UP);
+                BigDecimal precioOferta = precioOriginal.multiply(BigDecimal.ONE.subtract(descuento));
+                precioOferta = precioOferta.setScale(0, RoundingMode.HALF_UP);
+                model.addAttribute("precioOferta", precioOferta);
+            }
+
+            if (vehiculoBuscado.getComentarios() != null) {
+                model.addAttribute("comentarios", vehiculoService.obtenerComentariosPorVehiculoId(vehiculoBuscado.getId()));
+
+                if (!vehiculoService.obtenerComentariosPorVehiculoId(vehiculoBuscado.getId()).isEmpty()) {
+                    model.addAttribute("cantidadComentarios", vehiculoService.obtenerComentariosPorVehiculoId(vehiculoBuscado.getId()).size());
+                }
+                else {
+                    model.addAttribute("cantidadComentarios", null);
+                }
+            }
+
+            // Obtener alquileres activos para el vehículo
+            List<Alquiler> alquileresActivos = alquilerService.obtenerAlquileresActivosPorVehiculoId(vehiculoId);
+            model.addAttribute("alquileresActivos", alquileresActivos);
+
+            return "perfil/detallesVehiculoAlquiladoUsuario";
+        }
+
+        return "redirect:/perfil/" + idUsuario + "/vehiculosAlquiladosArrendatario";
+    }
+
+    @GetMapping("/perfil/{usuarioId}/vehiculos-alquilados/arrendador/detalles/{vehiculoId}")
+    public String mostrarDetallesVehiculoAlquiladoArrendador(@PathVariable(value = "usuarioId") Long idUsuario, @PathVariable(value = "vehiculoId") Long vehiculoId, Model model) {
+        Long id = managerUserSession.usuarioLogeado();
+
+        comprobarLogueado(id);
+
+        List<Usuario> usuarios = usuarioService.listadoCompleto();
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarios, id);
+        model.addAttribute("usuario", usuario);
+
+        VehiculoData vehiculo = vehiculoService.findById(vehiculoId);
+
+        if (vehiculo != null) {
+            List<Vehiculo> vehiculos = vehiculoService.listadoCompleto();
+            Vehiculo vehiculoBuscado = vehiculoService.buscarVehiculoPorId(vehiculos, vehiculoId);
+            model.addAttribute("vehiculo", vehiculoBuscado);
+
+            if (vehiculoBuscado.getOferta() != null) {
+                BigDecimal precioOriginal = vehiculoBuscado.getPrecioPorDia();
+                BigDecimal porcentajeOferta = BigDecimal.valueOf(vehiculoBuscado.getOferta());
+                BigDecimal descuento = porcentajeOferta.divide(new BigDecimal(100), 2, RoundingMode.HALF_UP);
+                BigDecimal precioOferta = precioOriginal.multiply(BigDecimal.ONE.subtract(descuento));
+                precioOferta = precioOferta.setScale(0, RoundingMode.HALF_UP);
+                model.addAttribute("precioOferta", precioOferta);
+            }
+
+            if (vehiculoBuscado.getComentarios() != null) {
+                model.addAttribute("comentarios", vehiculoService.obtenerComentariosPorVehiculoId(vehiculoBuscado.getId()));
+
+                if (!vehiculoService.obtenerComentariosPorVehiculoId(vehiculoBuscado.getId()).isEmpty()) {
+                    model.addAttribute("cantidadComentarios", vehiculoService.obtenerComentariosPorVehiculoId(vehiculoBuscado.getId()).size());
+                }
+                else {
+                    model.addAttribute("cantidadComentarios", null);
+                }
+            }
+
+            // Obtener alquileres activos para el vehículo
+            List<Alquiler> alquileresActivos = alquilerService.obtenerAlquileresActivosPorVehiculoId(vehiculoId);
+            model.addAttribute("alquileresActivos", alquileresActivos);
+
+            return "perfil/detallesVehiculoAlquiladoUsuarioArrendador";
+        }
+
+        return "redirect:/perfil/" + idUsuario + "/vehiculos-alquilados";
+    }
+
+    @PostMapping("/perfil/{id}/alquileres/{vehiculoId}/arrendatario/eliminar/{alquilerId}")
+    public String eliminarAlquilerArrendatario(@PathVariable("id") Long idUsuario, @PathVariable("alquilerId") Long alquilerId, @PathVariable("vehiculoId") Long vehiculoId) {
+        Long id = managerUserSession.usuarioLogeado();
+        comprobarLogueado(id);
+        alquilerService.eliminarAlquiler(alquilerId);
+        return "redirect:/perfil/" + idUsuario + "/vehiculos-alquilados/detalles/" + vehiculoId;
+    }
+
+    @PostMapping("/perfil/{id}/alquileres/{vehiculoId}/arrendador/eliminar/{alquilerId}")
+    public String eliminarAlquilerArrendador(@PathVariable("id") Long idUsuario, @PathVariable("alquilerId") Long alquilerId, @PathVariable("vehiculoId") Long vehiculoId) {
+        Long id = managerUserSession.usuarioLogeado();
+        comprobarLogueado(id);
+        alquilerService.eliminarAlquiler(alquilerId);
+        return "redirect:/perfil/" + idUsuario + "/vehiculos-alquilados/arrendador/detalles/" + vehiculoId;
+    }
+
     @PostMapping("/perfil/{id}/alquileres/eliminar/{alquilerId}")
     public String eliminarAlquiler(@PathVariable("id") Long idUsuario, @PathVariable("alquilerId") Long alquilerId) {
         Long id = managerUserSession.usuarioLogeado();
