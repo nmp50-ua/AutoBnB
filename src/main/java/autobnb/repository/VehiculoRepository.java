@@ -13,14 +13,15 @@ import java.util.Optional;
 public interface VehiculoRepository extends PagingAndSortingRepository<Vehiculo, Long>, JpaSpecificationExecutor<Vehiculo> {
     Optional<Vehiculo> findByMatricula(String matricula);
     List<Vehiculo> findByUsuarioId(Long usuarioId);
-    Page<Vehiculo> findByMarcaNombre(String marca, Pageable pageable);
-    Page<Vehiculo> findByMarcaNombreAndModeloNombre(String marca, String modelo, Pageable pageable);
-    @Query("SELECT v FROM Vehiculo v WHERE v.oferta IS NOT NULL")
-    Page<Vehiculo> findAllWithOferta(Pageable pageable);
-    Page<Vehiculo> findByMarcaNombreAndOfertaIsNotNull(String marca, Pageable pageable);
-    Page<Vehiculo> findByMarcaNombreAndModeloNombreAndOfertaIsNotNull(String marca, String modelo, Pageable pageable);
+    Page<Vehiculo> findByMarcaNombreAndEnMantenimientoFalse(String marca, Pageable pageable);
+    Page<Vehiculo> findByMarcaNombreAndModeloNombreAndEnMantenimientoFalse(String marca, String modelo, Pageable pageable);
+    @Query("SELECT v FROM Vehiculo v WHERE v.oferta IS NOT NULL AND v.enMantenimiento = false")
+    Page<Vehiculo> findAllWithOfertaAndEnMantenimientoFalse(Pageable pageable);
+    Page<Vehiculo> findByMarcaNombreAndOfertaIsNotNullAndEnMantenimientoFalse(String marca, Pageable pageable);
+    Page<Vehiculo> findByMarcaNombreAndModeloNombreAndOfertaIsNotNullAndEnMantenimientoFalse(String marca, String modelo, Pageable pageable);
     Page<Vehiculo> findByUsuarioId(Long usuarioId, Pageable pageable);
-    Page<Vehiculo> findAll(Pageable pageable);
+    @Query("SELECT v FROM Vehiculo v WHERE v.enMantenimiento = false")
+    Page<Vehiculo> findAllWithoutMaintenance(Pageable pageable);
     @Query("SELECT DISTINCT v FROM Vehiculo v JOIN v.alquileres a WHERE a.pago.usuario.id = :usuarioId AND a.fechaDevolucion >= CURRENT_DATE")
     Page<Vehiculo> findVehiculosAlquiladosPorUsuario(Long usuarioId, Pageable pageable);
     @Query("SELECT DISTINCT v FROM Vehiculo v JOIN v.alquileres a WHERE v.usuario.id = :usuarioId AND a.fechaDevolucion >= CURRENT_DATE")

@@ -73,6 +73,7 @@ public class VehiculoService {
     public List<Vehiculo> listadoVehiculosConOferta() {
         return ((List<Vehiculo>) vehiculoRepository.findAll())
                 .stream()
+                .filter(vehiculo -> !vehiculo.isEnMantenimiento())
                 .filter(vehiculo -> vehiculo.getOferta() != null)
                 .sorted(Comparator.comparingLong(Vehiculo::getId))
                 .limit(3) // Limita la cantidad de vehículos a 3
@@ -259,22 +260,22 @@ public class VehiculoService {
 
     @Transactional(readOnly = true)
     public Page<Vehiculo> listadoPaginado(Pageable pageable) {
-        return vehiculoRepository.findAll(pageable);
+        return vehiculoRepository.findAllWithoutMaintenance(pageable);
     }
 
     @Transactional(readOnly = true)
     public Page<Vehiculo> listadoPaginadoPorMarca(String marca, Pageable pageable) {
-        return vehiculoRepository.findByMarcaNombre(marca, pageable);
+        return vehiculoRepository.findByMarcaNombreAndEnMantenimientoFalse(marca, pageable);
     }
 
     @Transactional(readOnly = true)
     public Page<Vehiculo> listadoPaginadoPorMarcaYModelo(String marca, String modelo, Pageable pageable) {
-        return vehiculoRepository.findByMarcaNombreAndModeloNombre(marca, modelo, pageable);
+        return vehiculoRepository.findByMarcaNombreAndModeloNombreAndEnMantenimientoFalse(marca, modelo, pageable);
     }
 
     @Transactional(readOnly = true)
     public Page<Vehiculo> listadoPaginadoVehiculosConOfertaCompleto(Pageable pageable) {
-        return vehiculoRepository.findAllWithOferta(pageable);
+        return vehiculoRepository.findAllWithOfertaAndEnMantenimientoFalse(pageable);
     }
 
     @Transactional(readOnly = true)
@@ -299,6 +300,8 @@ public class VehiculoService {
                 predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("precioPorDia"), precioMax));
             }
 
+            predicates.add(criteriaBuilder.equal(root.get("enMantenimiento"), false));
+
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
 
@@ -307,12 +310,12 @@ public class VehiculoService {
 
     @Transactional(readOnly = true)
     public Page<Vehiculo> buscarVehiculosPorMarcaConOferta(String marca, Pageable pageable) {
-        return vehiculoRepository.findByMarcaNombreAndOfertaIsNotNull(marca, pageable);
+        return vehiculoRepository.findByMarcaNombreAndOfertaIsNotNullAndEnMantenimientoFalse(marca, pageable);
     }
 
     @Transactional(readOnly = true)
     public Page<Vehiculo> buscarVehiculosPorMarcaYModeloConOferta(String marca, String modelo, Pageable pageable) {
-        return vehiculoRepository.findByMarcaNombreAndModeloNombreAndOfertaIsNotNull(marca, modelo, pageable);
+        return vehiculoRepository.findByMarcaNombreAndModeloNombreAndOfertaIsNotNullAndEnMantenimientoFalse(marca, modelo, pageable);
     }
 
     @Transactional(readOnly = true)
@@ -338,6 +341,8 @@ public class VehiculoService {
             if (precioMax != null) {
                 predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("precioPorDia"), precioMax));
             }
+
+            predicates.add(criteriaBuilder.equal(root.get("enMantenimiento"), false));
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
@@ -374,6 +379,8 @@ public class VehiculoService {
                     overlap
             ));
             predicates.add(criteriaBuilder.not(criteriaBuilder.exists(alquilerSubquery)));
+
+            predicates.add(criteriaBuilder.equal(root.get("enMantenimiento"), false));
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };

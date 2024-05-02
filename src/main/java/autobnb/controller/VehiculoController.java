@@ -93,8 +93,6 @@ public class VehiculoController {
 
     @GetMapping("/listado-vehiculos")
     public String mostrarListadoVehiculos(Model model, @RequestParam(defaultValue = "0") int page) {
-        List<Vehiculo> vehiculos = vehiculoService.listadoCompleto();
-
         model.addAttribute("marcas", marcaService.listadoCompleto());
         model.addAttribute("categorias", categoriaService.listadoCompleto());
         model.addAttribute("ciudades", vehiculoService.obtenerCiudadesUnicas());
@@ -103,7 +101,7 @@ public class VehiculoController {
 
         Map<Long, BigDecimal> preciosOferta = new HashMap<>();
 
-        for (Vehiculo vehiculo : vehiculos) {
+        for (Vehiculo vehiculo : vehiculoService.listadoCompleto()) {
             if (vehiculo.getOferta() != null && vehiculo.getOferta() > 0) {
                 BigDecimal precioOriginal = vehiculo.getPrecioPorDia();
                 BigDecimal porcentajeOferta = BigDecimal.valueOf(vehiculo.getOferta());
@@ -194,8 +192,6 @@ public class VehiculoController {
 
     @GetMapping("/listado-vehiculos/ofertas")
     public String mostrarListadoVehiculosOfertas(Model model, @RequestParam(defaultValue = "0") int page) {
-        List<Vehiculo> vehiculos = vehiculoService.listadoVehiculosConOfertaCompleto();
-
         model.addAttribute("marcas", marcaService.listadoCompleto());
         model.addAttribute("categorias", categoriaService.listadoCompleto());
         model.addAttribute("ciudades", vehiculoService.obtenerCiudadesUnicas());
@@ -204,7 +200,7 @@ public class VehiculoController {
 
         Map<Long, BigDecimal> preciosOferta = new HashMap<>();
 
-        for (Vehiculo vehiculo : vehiculos) {
+        for (Vehiculo vehiculo : vehiculoService.listadoVehiculosConOfertaCompleto()) {
             if (vehiculo.getOferta() != null && vehiculo.getOferta() > 0) {
                 BigDecimal precioOriginal = vehiculo.getPrecioPorDia();
                 BigDecimal porcentajeOferta = BigDecimal.valueOf(vehiculo.getOferta());
