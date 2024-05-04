@@ -18,6 +18,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.io.InputStream;
@@ -80,10 +81,16 @@ public class PerfilController {
         return "perfil/perfil";
     }
 
-    @PostMapping("/perfil/cambiarRol/{id}")
-    public String cambiarRolUsuario(@PathVariable(value = "id") Long idUsuario) {
+    @PostMapping("/cambiarRol/{id}")
+    public String cambiarRolUsuario(@PathVariable(value = "id") Long idUsuario, HttpServletRequest request) {
         usuarioService.cambiarRolUsuario(idUsuario);
-        return "redirect:/perfil/" + idUsuario;
+
+        // Obtener el valor del encabezado 'Referer'
+        String referer = request.getHeader("Referer");
+
+        // Redirigir a la URL del 'Referer' si está presente, de lo contrario, redirigir a la página de perfil
+        return referer != null ? "redirect:" + referer : "redirect:/perfil/" + idUsuario;
+
     }
 
     @GetMapping("/perfil/{id}/actualizar")
