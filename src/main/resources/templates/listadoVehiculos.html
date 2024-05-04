@@ -1,7 +1,43 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="fragments :: head (titulo='Catálogo Vehículos')"></head>
+<head th:replace="fragments :: head (titulo='Catálogo Vehículos')">
+    <style>
+        /* Solo aplica cambios cuando el tamaño de la pantalla es menor a 768px */
+        @media (max-width: 768px) {
+            .search-section .container {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .search-section .form-inline,
+            .filter-form {
+                flex-grow: 1;
+                max-width: 100%;
+                margin: 10px 0;
+            }
+
+            .filter-form {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-form select,
+            .filter-form input,
+            .filter-form button {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .form-inline button {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
 
 <body>
 <!-- Si el usuario está logueado, incluye el Navbar normal -->
@@ -24,39 +60,39 @@
 
     <!-- Sección de búsqueda -->
     <section class="search-section py-4" style="border-top: 1px solid #eee; padding-top: 30px; font-family: serif">
-        <div class="container" style="display: flex; justify-content: center; align-items: center;">
-            <form th:action="@{'/listado-vehiculos'}" method="get" class="form-inline my-2 my-lg-0" style="flex-grow: 1; justify-content: center; max-width: 300px;">
-                <button type="submit" style="width: 100%; padding: 10px; background-color: #171a1d; color: white; border: none; cursor: pointer;" class="btn btn-xs">Reestablecer</button>
+        <div class="catalogo-vehiculos" style="display: flex; justify-content: center; align-items: center;">
+            <form th:action="@{'/listado-vehiculos'}" method="get" class="form-inline my-2 my-lg-0" style="flex-grow: 1; justify-content: center; max-width: 150px;">
+                <button type="submit" style="width: 100%; padding: 10px; background-color: #171a1d; color: white; border: none; cursor: pointer;" class="btn-reset">Reestablecer</button>
             </form>
 
-            <form th:action="@{'/listado-vehiculos/busqueda'}" method="get" th:object="${busquedaData}" class="form-inline my-2 my-lg-0" style="flex-grow: 1; margin-left: 50px; justify-content: center; max-width: 200px; margin-right: 10px;">
-                <input id="busqueda" name="busqueda" class="form-control mr-sm-2" type="search" placeholder="Busqueda" aria-label="Search" style="width: 100%; border-radius: 20px; padding: 0.5rem 1rem;">
+            <form th:action="@{'/listado-vehiculos/busqueda'}" method="get" th:object="${busquedaData}" class="form-inline my-2 my-lg-0" style="flex-grow: 1; justify-content: center; max-width: 200px; margin: 0 10px;">
+                <input id="busqueda" name="busqueda" class="input-busqueda" type="search" placeholder="Busqueda" aria-label="Search" style="width: 100%; border-radius: 20px; padding: 0.5rem 1rem;">
             </form>
 
-            <form action="/listado-vehiculos/filtrar-categoria" method="get" class="filter-form" style="display: flex; align-items: center; margin-right: 10px;">
-                <select id="marca" name="marca" class="form-control" style="border-radius: 0.25rem; border: 1px solid #ced4da; max-width: 250px; margin-right: 10px;">
+            <form action="/listado-vehiculos/filtrar-categoria" method="get" class="filter-form" style="display: flex; align-items: center;">
+                <select id="marca" name="marca" class="select-marca" style="border-radius: 0.25rem; border: 1px solid #ced4da; max-width: 150px; margin-right: 10px;">
                     <option value="">Marca</option>
                     <option th:each="marca : ${marcas}"
                             th:value="${marca.nombre}"
                             th:text="${marca.nombre}">Marca</option>
                 </select>
 
-                <select id="categoria" name="categoria" class="form-control" style="border-radius: 0.25rem; border: 1px solid #ced4da; max-width: 250px; margin-right: 10px;">
+                <select id="categoria" name="categoria" class="select-categoria" style="border-radius: 0.25rem; border: 1px solid #ced4da; max-width: 150px; margin-right: 10px;">
                     <option value="">Categoria</option>
                     <option th:each="categoria : ${categorias}"
                             th:value="${categoria.nombre}"
                             th:text="${categoria.nombre}">Categoría</option>
                 </select>
 
-                <select id="ciudad" name="ciudad" class="form-control" style="border-radius: 0.25rem; border: 1px solid #ced4da; max-width: 250px; margin-right: 10px;">
+                <select id="ciudad" name="ciudad" class="select-ciudad" style="border-radius: 0.25rem; border: 1px solid #ced4da; max-width: 150px; margin-right: 10px;">
                     <option value="">Ciudad</option>
                     <option th:each="ciudad : ${ciudades}" th:value="${ciudad}" th:text="${ciudad}">Ciudad</option>
                 </select>
 
-                <input type="number" id="precioMin" name="precioMin" placeholder="Precio Min" class="form-control" style="margin-right: 10px;">
-                <input type="number" id="precioMax" name="precioMax" placeholder="Precio Max" class="form-control" style="margin-right: 10px;">
+                <input type="number" id="precioMin" name="precioMin" placeholder="Precio Min" class="input-precio-min" style="margin-right: 10px;">
+                <input type="number" id="precioMax" name="precioMax" placeholder="Precio Max" class="input-precio-max" style="margin-right: 10px;">
 
-                <button type="submit" class="btn btn-primary" style="background-color: #81c784; color: white; border-radius: 0.25rem; padding: 0.5rem 1rem; border: none; cursor: pointer; margin-left: 10px;">Filtrar</button>
+                <button type="submit" class="btn-filtrar" style="background-color: #81c784; color: white; border-radius: 0.25rem; padding: 0.5rem 1rem; border: none; cursor: pointer; margin-left: 10px;">Filtrar</button>
             </form>
         </div>
     </section>

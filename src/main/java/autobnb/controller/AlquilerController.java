@@ -344,6 +344,6 @@ public class AlquilerController {
             return "alquilar/detallesAlquiler";
         }
 
-        return "redirect:/perfil/" + id + "/alquileres";
+        return "redirect:/perfil/" + id + "/vehiculosAlquiladosArrendatario";
     }
 }

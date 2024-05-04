@@ -161,11 +161,13 @@ public class HomeController {
         today = cal.getTime();
 
         if (busquedaHomeData.getIdMarca() == null || busquedaHomeData.getIdCategoria() == null || busquedaHomeData.getFechaInicial() == null || busquedaHomeData.getFechaFinal() == null || busquedaHomeData.getFechaInicial().before(today) || busquedaHomeData.getFechaFinal().before(today) || busquedaHomeData.getFechaFinal().before(busquedaHomeData.getFechaInicial())){
-            if (busquedaHomeData.getFechaInicial().before(today) || busquedaHomeData.getFechaFinal().before(today)) {
-                model.addAttribute("error", "La fecha de inicio y la fecha de fin deben ser posteriores a la fecha actual.");
-            }
-            else if (busquedaHomeData.getFechaFinal().before(busquedaHomeData.getFechaInicial())) {
-                model.addAttribute("error", "La fecha de fin debe ser posterior a la fecha de inicio.");
+            if (busquedaHomeData.getFechaFinal() != null && busquedaHomeData.getFechaInicial() != null) {
+                if (busquedaHomeData.getFechaInicial().before(today) || busquedaHomeData.getFechaFinal().before(today)) {
+                    model.addAttribute("error", "La fecha de inicio y la fecha de fin deben ser posteriores a la fecha actual.");
+                }
+                else if (busquedaHomeData.getFechaFinal().before(busquedaHomeData.getFechaInicial())) {
+                    model.addAttribute("error", "La fecha de fin debe ser posterior a la fecha de inicio.");
+                }
             }
             else {
                 model.addAttribute("error", "Debe completar todos los campos.");
