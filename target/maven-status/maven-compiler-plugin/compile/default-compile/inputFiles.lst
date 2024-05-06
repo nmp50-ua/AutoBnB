@@ -24,6 +24,7 @@ C:\Users\Noel Martínez\Downloads\segundo cuatrimestre\TFG\AutoBnB\src\main\java\
 C:\Users\Noel Martínez\Downloads\segundo cuatrimestre\TFG\AutoBnB\src\main\java\autobnb\service\CategoriaService.java
 C:\Users\Noel Martínez\Downloads\segundo cuatrimestre\TFG\AutoBnB\src\main\java\autobnb\service\exception\MarcaServiceException.java
 C:\Users\Noel Martínez\Downloads\segundo cuatrimestre\TFG\AutoBnB\src\main\java\autobnb\service\exception\UsuarioServiceException.java
+C:\Users\Noel Martínez\Downloads\segundo cuatrimestre\TFG\AutoBnB\src\main\java\autobnb\DataInitializer.java
 C:\Users\Noel Martínez\Downloads\segundo cuatrimestre\TFG\AutoBnB\src\main\java\autobnb\controller\AlquilerController.java
 C:\Users\Noel Martínez\Downloads\segundo cuatrimestre\TFG\AutoBnB\src\main\java\autobnb\repository\ModeloRepository.java
 C:\Users\Noel Martínez\Downloads\segundo cuatrimestre\TFG\AutoBnB\src\main\java\autobnb\repository\AlquilerRepository.java
@@ -72,3 +73,4 @@ C:\Users\Noel Martínez\Downloads\segundo cuatrimestre\TFG\AutoBnB\src\main\java\
 C:\Users\Noel Martínez\Downloads\segundo cuatrimestre\TFG\AutoBnB\src\main\java\autobnb\repository\ComentarioRepository.java
 C:\Users\Noel Martínez\Downloads\segundo cuatrimestre\TFG\AutoBnB\src\main\java\autobnb\service\ComentarioService.java
 C:\Users\Noel Martínez\Downloads\segundo cuatrimestre\TFG\AutoBnB\src\main\java\autobnb\model\Transmision.java
+C:\Users\Noel Martínez\Downloads\segundo cuatrimestre\TFG\AutoBnB\src\main\java\autobnb\service\DataInitializationService.java

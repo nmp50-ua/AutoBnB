@@ -47,18 +47,14 @@ INSERT INTO Pago (id, titular, numeroTarjeta, idUsuario) VALUES
 
 -- Seeder para la tabla Marca
 INSERT INTO Marca (id, nombre) VALUES
-(1, 'Toyota'),
-(2, 'Ford'),
-(3, 'Nissan'),
-(4, 'Chevrolet'),
-(5, 'Volkswagen'),
-(6, 'Honda'),
-(7, 'BMW'),
-(8, 'Audi'),
-(9, 'Hyundai'),
-(10, 'Kia'),
-(11, 'Fiat'),
-(12, 'Peugeot');
+                                   (1, 'Toyota'), (2, 'Ford'), (3, 'Nissan'), (4, 'Chevrolet'), (5, 'Volkswagen'), (6, 'Honda'), (7, 'BMW'), (8, 'Audi'), (9, 'Hyundai'), (10, 'Kia'),
+                                   (11, 'Fiat'), (12, 'Peugeot'), (13, 'Tesla'), (14, 'Abarth'), (15, 'Alfa Romeo'), (16, 'Alpine'), (17, 'Aston Martin'), (18, 'Bentley'), (19, 'Bugatti'), (20, 'BYD'),
+                                   (21, 'Buick'), (22, 'Cadillac'), (23, 'Caterham'), (24, 'Chrysler'), (25, 'Citroen'), (26, 'Cupra'), (27, 'Dacia'), (28, 'Dodge'), (29, 'DS'), (30, 'Ferrari'),
+                                   (31, 'Fisker'), (32, 'Genesis'), (33, 'GMC'), (34, 'Hummer'), (35, 'Infiniti'), (36, 'IONIQ'), (37, 'Jaguar'), (38, 'Jeep'), (39, 'Koenigsegg'), (40, 'Lamborghini'),
+                                   (41, 'Lancia'), (42, 'Land Rover'), (43, 'Lexus'), (44, 'Lincoln'), (45, 'Lotus'), (46, 'Lucid'), (47, 'Lynk&Co'), (48, 'Mahindra'), (49, 'Maserati'), (50, 'Maybach'),
+                                   (51, 'Mazda'), (52, 'McLaren'), (53, 'Mercedes-Benz'), (54, 'MG'), (55, 'Mercury'), (56, 'Mini'), (57, 'Mitsubishi'), (58, 'Morgan'), (59, 'Mustang'), (60, 'Omoda'),
+                                   (61, 'Oldsmobile'), (62, 'Opel'), (63, 'Pagani'), (64, 'Plymouth'), (65, 'Pontiac'), (66, 'Porsche'), (67, 'Ram'), (68, 'Renault'), (69, 'Rolls-Royce'), (70, 'Saab'),
+                                   (71, 'Saturn'), (72, 'Scion'), (73, 'Seat'), (74, 'Skoda'), (75, 'Smart'), (76, 'Ssangyong'), (77, 'Spyker'), (78, 'Subaru'), (79, 'Suzuki'), (80, 'Tata'), (81, 'Volvo');
 
 -- Seeder para la tabla Modelo
 INSERT INTO Modelo (id, nombre, idMarca) VALUES
