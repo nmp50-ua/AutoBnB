@@ -467,6 +467,14 @@ public class AdministracionController {
             model.addAttribute("cantidad", modelos.getContent().size());
         }
 
+        int totalPages = modelos.getTotalPages();
+        int currentPage = modelos.getNumber();
+        int startPage = Math.max(0, currentPage - 3);
+        int endPage = Math.min(currentPage + 3, totalPages - 1);
+
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
+
         return "administracion/listar/administracionModelos";
     }
 

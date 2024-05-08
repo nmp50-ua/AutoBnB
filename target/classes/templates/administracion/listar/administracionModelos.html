@@ -68,13 +68,21 @@
             <nav aria-label="Page navigation example">
                 <ul class="pagination">
                     <li class="page-item" th:classappend="${modelos.first} ? 'disabled'">
+                        <a class="page-link" th:href="@{/administracion/modelos(page=0, size=${modelos.size})}">Inicio</a>
+                    </li>
+                    <li class="page-item" th:classappend="${modelos.first} ? 'disabled'">
                         <a class="page-link" th:href="@{/administracion/modelos(page=${modelos.number - 1}, size=${modelos.size})}">Anterior</a>
                     </li>
-                    <li th:each="pageNum : ${#numbers.sequence(0, modelos.totalPages - 1)}" class="page-item" th:classappend="${pageNum == modelos.number} ? 'active'">
-                        <a class="page-link" th:href="@{/administracion/modelos(page=${pageNum}, size=${modelos.size})}" th:text="${pageNum + 1}">1</a>
+                    <!-- Mostrar solo algunas páginas alrededor de la página actual -->
+                    <li th:each="pageNum : ${#numbers.sequence(startPage, endPage)}"
+                        class="page-item" th:classappend="${pageNum == modelos.number} ? 'active'">
+                        <a class="page-link" th:href="@{/administracion/modelos(page=${pageNum}, size=${modelos.size})}" th:text="${pageNum + 1}"></a>
                     </li>
                     <li class="page-item" th:classappend="${modelos.last} ? 'disabled'">
                         <a class="page-link" th:href="@{/administracion/modelos(page=${modelos.number + 1}, size=${modelos.size})}">Siguiente</a>
+                    </li>
+                    <li class="page-item" th:classappend="${modelos.last} ? 'disabled'">
+                        <a class="page-link" th:href="@{/administracion/modelos(page=${modelos.totalPages - 1}, size=${modelos.size})}">Fin</a>
                     </li>
                 </ul>
             </nav>
