@@ -8,6 +8,7 @@
     <link rel="stylesheet" th:href="@{/css/custom.css}">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
 <body>
@@ -47,9 +48,6 @@
                 <ul style="font-family: serif">
                     <li th:each="alquiler : ${alquileresActivos}" class="bg-gray-100 p-4 mb-4 rounded shadow-sm flex justify-between items-center">
                         <span th:text="'Desde: ' + ${alquiler.fechaEntrega} + ' hasta ' + ${alquiler.fechaDevolucion}" class="text-gray-700"></span>
-                        <span th:if="${alquiler.litrosCombustible != null and alquiler.litrosCombustible != 0}"
-                              style="color: red; margin-left: 10px; font-family: serif;"
-                              th:text="'Pagado por combustible'"></span>
                         <form th:action="@{'/perfil/' + ${usuario.id} + '/alquileres/' + ${vehiculo.id} + '/arrendatario/eliminar/' + ${alquiler.id}}" method="post">
                             <button type="submit" class="bg-red-600 text-white font-bold py-1 px-3 rounded focus:outline-none hover:bg-red-700">X</button>
                         </form>

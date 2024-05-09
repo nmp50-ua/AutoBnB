@@ -36,48 +36,50 @@
 
         <div class="row mt-3">
             <div class="col">
-                <table class="table table-striped">
-                    <thead>
-                    <tr>
-                        <th style="color: #333; font-family: serif;">ID</th>
-                        <th style="color: #333; font-family: serif;">Nombre</th>
-                        <th style="color: #333; font-family: serif;">Apellidos</th>
-                        <th style="color: #333; font-family: serif;">Email</th>
-                        <th style="color: #333; font-family: serif;">Teléfono</th>
-                        <th style="color: #333; font-family: serif;">Dirección</th>
-                        <th style="color: #333; font-family: serif;">Ciudad</th>
-                        <th style="color: #333; font-family: serif;">C. Postal</th>
-                        <th style="color: #333; font-family: serif;">DNI</th>
-                        <th style="color: #333; font-family: serif;">Cad. DNI</th>
-                        <th style="color: #333; font-family: serif;">Carnet</th>
-                        <th></th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="user: ${usuarios.content}">
-                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${user.id}"></td>
-                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${user.nombre}"></td>
-                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${user.apellidos} ?: '-'"></td>
-                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${user.email}"></td>
-                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${user.telefono}"></td>
-                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${user.direccion}"></td>
-                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${user.ciudad}"></td>
-                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${user.codigoPostal}"></td>
-                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${user.dni}"></td>
-                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${user.fechaCaducidadDni}"></td>
-                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${user.fechaCarnetConducir}"></td>
-                        <td>
-                            <a class="btn btn-xs" style="background-color: #81c784; color: #fbfcfc; font-family: serif;" th:href="@{/administracion/usuarios/editar/{usuarioId}(usuarioId=${user.id})}">Editar</a>
-                        </td>
-                        <td>
-                            <form style="font-family: serif" th:action="@{'/administracion/usuarios/eliminar/' + ${user.id}}" method="post">
-                                <button type="submit" class="btn btn-danger btn-xs">X</button>
-                            </form>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive table-usuarios-admin">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th style="color: #333; font-family: serif;">ID</th>
+                            <th style="color: #333; font-family: serif;">Nombre</th>
+                            <th style="color: #333; font-family: serif;">Apellidos</th>
+                            <th style="color: #333; font-family: serif;">Email</th>
+                            <th style="color: #333; font-family: serif;">Teléfono</th>
+                            <th style="color: #333; font-family: serif;">Dirección</th>
+                            <th style="color: #333; font-family: serif;">Ciudad</th>
+                            <th style="color: #333; font-family: serif;">C. Postal</th>
+                            <th style="color: #333; font-family: serif;">DNI</th>
+                            <th style="color: #333; font-family: serif;">Cad. DNI</th>
+                            <th style="color: #333; font-family: serif;">Carnet</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="user: ${usuarios.content}">
+                            <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${user.id}"></td>
+                            <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${user.nombre}"></td>
+                            <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${user.apellidos} ?: '-'"></td>
+                            <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${user.email}"></td>
+                            <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${user.telefono}"></td>
+                            <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${user.direccion}"></td>
+                            <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${user.ciudad}"></td>
+                            <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${user.codigoPostal}"></td>
+                            <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${user.dni}"></td>
+                            <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${user.fechaCaducidadDni}"></td>
+                            <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${user.fechaCarnetConducir}"></td>
+                            <td>
+                                <a class="btn btn-xs" style="background-color: #81c784; color: #fbfcfc; font-family: serif;" th:href="@{/administracion/usuarios/editar/{usuarioId}(usuarioId=${user.id})}">Editar</a>
+                            </td>
+                            <td>
+                                <form style="font-family: serif" th:action="@{'/administracion/usuarios/eliminar/' + ${user.id}}" method="post">
+                                    <button type="submit" class="btn btn-danger btn-xs">X</button>
+                                </form>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
         <div th:if="${cantidad != null}" class="d-flex justify-content-center" style="font-family: serif;">

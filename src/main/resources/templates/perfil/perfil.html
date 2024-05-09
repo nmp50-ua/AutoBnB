@@ -72,35 +72,21 @@
                 </div>
             </div>
 
-            <div class="row mt-4" style="font-family: serif; margin-top: 20px">
-                <div class="col">
-                    <div class="text-center">
-                        <a th:href="@{'/perfil/' + ${logueado.getId()} + '/actualizar'}" style="background-color: #81c784; color: #fbfcfc;" class="btn">Actualizar Perfil</a>
-                    </div>
-                </div>
-                <div th:if="${usuario.esArrendador}" class="col">
-                    <div class="text-center">
-                        <a href="" class="btn" style="background-color: #81c784; color: #fbfcfc;" th:href="@{'/perfil/' + ${logueado.getId()} + '/vehiculos'}">Ver Vehiculos</a>
-                    </div>
-                </div>
-                <div th:if="${usuario.esArrendador}" class="col">
-                    <div class="text-center">
-                        <a href="" class="btn" style="background-color: #81c784; color: #fbfcfc;" th:href="@{'/perfil/' + ${logueado.getId()} + '/añadir-vehiculo'}">Añadir Vehiculo</a>
-                    </div>
-                </div>
-                <div th:if="${usuario.esArrendatario}" class="col">
-                    <div class="text-center">
-                        <a href="" class="btn" style="background-color: #81c784; color: #fbfcfc;" th:href="@{'/perfil/' + ${logueado.getId()} + '/comentarios'}">Ver Comentarios</a>
-                    </div>
-                </div>
-                <div th:if="${usuario.esArrendatario}" class="col">
-                    <div class="text-center">
-                        <a href="" class="btn" style="background-color: #81c784; color: #fbfcfc;" th:href="@{'/perfil/' + ${logueado.getId()} + '/vehiculosAlquiladosArrendatario'}">Ver Alquileres</a>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="text-center">
-                        <a href="" class="btn" style="background-color: #81c784; color: #fbfcfc;" th:href="@{'/perfil/' + ${logueado.getId()} + '/cuenta'}">Ver Cuenta</a>
+            <div class="row mt-4 justify-content-center" style="font-family: serif;">
+                <div class="col-md-8">
+                    <div class="d-flex flex-wrap justify-content-around"> <!-- Flex container for buttons -->
+                        <a th:href="@{'/perfil/' + ${logueado.getId()} + '/actualizar'}"
+                           class="btn" style="background-color: #81c784; color: #fbfcfc; padding: 10px 20px; margin: 5px;">Actualizar Perfil</a>
+                        <a th:href="@{'/perfil/' + ${logueado.getId()} + '/vehiculos'}"
+                           class="btn" style="background-color: #81c784; color: #fbfcfc; padding: 10px 20px; margin: 5px;" th:if="${usuario.esArrendador}">Ver Vehículos</a>
+                        <a th:href="@{'/perfil/' + ${logueado.getId()} + '/añadir-vehiculo'}"
+                           class="btn" style="background-color: #81c784; color: #fbfcfc; padding: 10px 20px; margin: 5px;" th:if="${usuario.esArrendador}">Añadir Vehículo</a>
+                        <a th:href="@{'/perfil/' + ${logueado.getId()} + '/comentarios'}"
+                           class="btn" style="background-color: #81c784; color: #fbfcfc; padding: 10px 20px; margin: 5px;" th:if="${usuario.esArrendatario}">Ver Comentarios</a>
+                        <a th:href="@{'/perfil/' + ${logueado.getId()} + '/vehiculosAlquiladosArrendatario'}"
+                           class="btn" style="background-color: #81c784; color: #fbfcfc; padding: 10px 20px; margin: 5px;" th:if="${usuario.esArrendatario}">Ver Alquileres</a>
+                        <a th:href="@{'/perfil/' + ${logueado.getId()} + '/cuenta'}"
+                           class="btn" style="background-color: #81c784; color: #fbfcfc; padding: 10px 20px; margin: 5px;">Ver Cuenta</a>
                     </div>
                 </div>
             </div>

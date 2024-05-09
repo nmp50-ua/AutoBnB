@@ -31,28 +31,31 @@
 
         <div class="row mt-3">
             <div class="col">
-                <table class="table table-striped">
-                    <thead>
-                    <tr style="font-family: serif">
-                        <th style="color: #333;">Vehículo</th>
-                        <th style="color: #333;">Fecha Entrega</th>
-                        <th style="color: #333;">Fecha Devolución</th>
-                        <th style="color: #333;">Días Alquilado</th>
-                        <th style="color: #333;">Litros Combustible</th>
-                        <th style="color: #333;">Precio Final</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="alquiler: ${alquileres}">
-                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${alquiler.vehiculo.marca.nombre} + ' ' + ${alquiler.vehiculo.modelo.nombre}"></td>
-                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${alquiler.fechaEntrega}"></td>
-                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${alquiler.fechaDevolucion}"></td>
-                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${alquiler.litrosCombustible == null || alquiler.litrosCombustible <= 0} ? ${diasDeAlquiler[alquiler.id]} : '-'"></td>
-                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${alquiler.litrosCombustible != null && alquiler.litrosCombustible > 0} ? ${alquiler.litrosCombustible} : '-'"></td>
-                        <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${alquiler.precioFinal} + ' €'"></td>
-                    </tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive table-alquileres-usuario">
+                    <table class="table table-striped">
+                        <thead>
+
+                        <tr style="font-family: serif">
+                            <th style="color: #333;">Vehículo</th>
+                            <th style="color: #333;">Fecha Entrega</th>
+                            <th style="color: #333;">Fecha Devolución</th>
+                            <th style="color: #333;">Días Alquilado</th>
+                            <th style="color: #333;">Litros Combustible</th>
+                            <th style="color: #333;">Precio Final</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="alquiler: ${alquileres}">
+                            <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${alquiler.vehiculo.marca.nombre} + ' ' + ${alquiler.vehiculo.modelo.nombre}"></td>
+                            <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${alquiler.fechaEntrega}"></td>
+                            <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${alquiler.fechaDevolucion}"></td>
+                            <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${alquiler.litrosCombustible == null || alquiler.litrosCombustible <= 0} ? ${diasDeAlquiler[alquiler.id]} : '-'"></td>
+                            <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${alquiler.litrosCombustible != null && alquiler.litrosCombustible > 0} ? ${alquiler.litrosCombustible} : '-'"></td>
+                            <td style="color: #333; font-family: 'Quicksand', sans-serif;" th:text="${alquiler.precioFinal} + ' €'"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
