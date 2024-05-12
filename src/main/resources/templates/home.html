@@ -32,25 +32,25 @@
                 <form th:action="@{'/listado-vehiculos/home/busqueda'}" method="get" th:object="${busquedaHomeData}" class="search-form">
                     <div class="row">
                         <div class="col-md-3">
-                            <select id="idMarca" class="form-control" name="idMarca" required>
+                            <select id="idMarca" class="form-control" name="idMarca" style="font-family: serif" required>
                                 <option value="">Seleccione una Marca...</option>
                                 <option th:each="marca : ${marcas}" th:value="${marca.id}" th:text="${marca.nombre}"></option>
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <select id="idCategoria" class="form-control" name="idCategoria" required>
+                            <select id="idCategoria" class="form-control" name="idCategoria" style="font-family: serif" required>
                                 <option value="">Seleccione una Categoria...</option>
                                 <option th:each="categoria : ${categorias}" th:value="${categoria.id}" th:text="${categoria.nombre}"></option>
                             </select>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-2" style="font-family: serif">
                             <input type="date" name="fechaInicial" class="form-control">
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-2" style="font-family: serif">
                             <input type="date" name="fechaFinal" class="form-control">
                         </div>
                         <div class="col-md-2">
-                            <button type="submit" class="btn w-100" style="background-color: #81c784; color: #fbfcfc;">Buscar</button>
+                            <button type="submit" class="btn w-100" style="background-color: #81c784; color: #fbfcfc; font-family: serif">Buscar</button>
                         </div>
                     </div>
                 </form>
